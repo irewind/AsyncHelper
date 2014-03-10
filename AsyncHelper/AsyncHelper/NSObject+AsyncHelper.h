@@ -1,0 +1,24 @@
+//
+//  NSObject+AsyncHelper.h
+//  AsyncHelper
+//
+//  Created by Walter Fettich on 05/03/14.
+//  Copyright (c) 2014 Walter Fettich. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
+
+#define _inv(x) inv(self,@selector(x))
+#define _inv1(x,y) inv(self,@selector(x),y,nil)
+
+NSInvocation* inv(id target,SEL selector);
+NSInvocation* invf(id target,SEL selector,...);
+
+@interface NSObject (AsyncHelper)
+
+-(void)parallelize:(NSArray*)invocations andThen:(void(^)(BOOL success))complete;
+-(void)queue:(NSArray*)invocations andThen:(void(^)(BOOL success))complete;
+-(void)ifFailed:(NSInvocation*)invocation retryEvery:(NSNumber*)sec secondsAndOnSuccess:(void(^)(BOOL))complete;
+-(void)ifFailed:(NSInvocation*)invocation retryEvery:(NSNumber*)sec secondsFor:(NSNumber*)times timesAndThen:(void(^)(BOOL))complete;
+
+@end
