@@ -18,7 +18,7 @@ NSInvocation* invf(id target,SEL selector,...);
 
 -(void)parallelize:(NSArray*)invocations andThen:(void(^)(BOOL success))complete;
 -(void)queue:(NSArray*)invocations andThen:(void(^)(BOOL success))complete;
--(void)ifFailed:(NSInvocation*)invocation retryEvery:(NSNumber*)sec secondsAndOnSuccess:(void(^)(BOOL))complete;
--(void)ifFailed:(NSInvocation*)invocation retryEvery:(NSNumber*)sec secondsFor:(NSNumber*)times timesAndThen:(void(^)(BOOL))complete;
+-(void)ifFailed:(NSInvocation*)invocation retryEverySeconds:(NSNumber*)sec andThen:(void(^)(BOOL))complete;
+-(void)ifFailed:(NSInvocation*)invocation retryEverySeconds:(NSNumber*)sec forTimes:(NSNumber*)times andThen:(void(^)(BOOL))complete;
 
 @end

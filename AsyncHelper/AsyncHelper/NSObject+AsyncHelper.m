@@ -10,12 +10,12 @@
 
 @implementation NSObject (AsyncHelper)
 
--(void)ifFailed:(NSInvocation*)invocation retryEvery:(NSNumber*)sec secondsAndOnSuccess:(void(^)(BOOL))complete
+-(void)ifFailed:(NSInvocation*)invocation retryEverySeconds:(NSNumber*)sec andThen:(void(^)(BOOL))complete
 {
-    [self ifFailed:invocation retryEvery:sec secondsFor:@(-1) timesAndThen:complete];
+    [self ifFailed:invocation retryEverySeconds:sec forTimes:@(-1) andThen:complete];
 }
 
--(void)ifFailed:(NSInvocation*)invocation retryEvery:(NSNumber*)sec secondsFor:(NSNumber*)times timesAndThen:(void(^)(BOOL))complete
+-(void)ifFailed:(NSInvocation*)invocation retryEverySeconds:(NSNumber*)sec forTimes:(NSNumber*)times andThen:(void(^)(BOOL))complete
 {
    __block int count = times.intValue;
     
@@ -47,6 +47,43 @@
 }
 
 -(void)parallelize:(NSArray*)invocations andThen:(void(^)(BOOL success))complete
+{
+    
+    NSOperationQueue* queue = [[NSOperationQueue alloc] init];
+    [queue setSuspended:YES];
+    
+    __block BOOL successful = YES;
+    
+    void (^finishedBlock)(BOOL success) =
+    ^(BOOL success)
+    {
+        successful &= success;
+        
+        if (queue.operationCount == 0)
+        {
+            if (complete)
+                complete (successful);
+        }
+    };
+    
+    for (NSInvocation* invocation in invocations)
+    {
+        NSUInteger nrArgs = [[invocation methodSignature] numberOfArguments];
+        [invocation setArgument:&finishedBlock atIndex:nrArgs-1];
+    }
+    
+    for (NSInvocation* invocation in invocations)
+    {
+        NSInvocationOperation* op = [[NSInvocationOperation alloc] initWithInvocation:invocation];
+
+        [queue addOperation:op];
+    }
+    
+    [queue setSuspended:NO];    
+}
+
+
+-(void)old_parallelize:(NSArray*)invocations andThen:(void(^)(BOOL success))complete
 {
     __block BOOL successful = YES;
     __block int operationCount = 0;

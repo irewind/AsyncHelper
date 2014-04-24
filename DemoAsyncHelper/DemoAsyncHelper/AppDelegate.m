@@ -113,7 +113,7 @@
 
 -(void)test4
 {
-    [self ifFailed:_inv(op3AndThen:) repeatEvery:@(2) andOnSuccess:
+    [self ifFailed:_inv(op3AndThen:) retryEverySeconds:@(2) andThen:
      ^(BOOL success)
      {
          NSLog(@"test 4 done %d",success);
@@ -127,7 +127,7 @@
                   _inv(op1AndThen:),
                   invf(self,@selector(parallelize:andThen:),
                        @[
-                         invf(self,@selector(ifFailed:repeatEvery:andOnSuccess:),
+                         invf(self,@selector(ifFailed:retryEverySeconds:andThen:),
                               _inv(op3AndThen:),
                               @(2),nil),
                          
@@ -150,7 +150,7 @@
 -(void)doStuff
 {
     
-    [self ifFailed:_inv(op1AndThen:) repeatEvery:@2 andOnSuccess:
+    [self ifFailed:_inv(op1AndThen:) retryEverySeconds:@2 andThen:
      ^(BOOL success)
     {
         [self op2AndThen:
@@ -161,15 +161,15 @@
         }];
     }];
 
-    [self test1];
-
-    [self test2];
+//    [self test1];
+//
+//    [self test2];
 
     [self test3];
-
-    [self test4];
-    
-    [self test5];
+//
+//    [self test4];
+//    
+//    [self test5];
 }
 
 
