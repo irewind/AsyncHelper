@@ -47,8 +47,9 @@
     [invocation invoke];
 }
 
--(NSInvocation*)parallelize:(NSArray*)invocations andThen:(void(^)(BOOL success, NSInvocation* invocation))complete
+-(NSInvocation*)parallelize:(NSArray*)invocations andThen:(void(^)(BOOL success))complete
 {
+    __block BOOL successful = YES;
     void (^finishedBlock)(BOOL success, NSInvocation* invocation) =
     ^(BOOL success, NSInvocation* invocation)
     {
@@ -62,7 +63,7 @@
         }
     };
     
-    return invf(self, @selector(runParallel:andThen:),invocations,finishedBlock);
+    return invf(self, @selector(doParallelize:andThen:),invocations,finishedBlock);
 }
 
 -(void)doParallelize:(NSArray*)invocations andThen:(void(^)(BOOL success,NSInvocation* invocation))complete
