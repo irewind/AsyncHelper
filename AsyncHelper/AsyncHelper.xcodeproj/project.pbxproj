@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B601C219191128BF00907991 /* NSInvocation+AsyncHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = B601C218191128BF00907991 /* NSInvocation+AsyncHelper.m */; };
 		B678A83418C743BF00600A38 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B678A83318C743BF00600A38 /* Foundation.framework */; };
 		B678A83B18C743BF00600A38 /* AsyncHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = B678A83A18C743BF00600A38 /* AsyncHelper.m */; };
 		B678A84218C743BF00600A38 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B678A84118C743BF00600A38 /* XCTest.framework */; };
@@ -43,6 +44,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		B601C217191128BF00907991 /* NSInvocation+AsyncHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSInvocation+AsyncHelper.h"; sourceTree = "<group>"; };
+		B601C218191128BF00907991 /* NSInvocation+AsyncHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSInvocation+AsyncHelper.m"; sourceTree = "<group>"; };
 		B678A83018C743BF00600A38 /* libAsyncHelper.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libAsyncHelper.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		B678A83318C743BF00600A38 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		B678A83718C743BF00600A38 /* AsyncHelper-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AsyncHelper-Prefix.pch"; sourceTree = "<group>"; };
@@ -118,6 +121,8 @@
 				B678A83618C743BF00600A38 /* Supporting Files */,
 				B678A86618C7444500600A38 /* NSObject+AsyncHelper.h */,
 				B678A86718C7444500600A38 /* NSObject+AsyncHelper.m */,
+				B601C217191128BF00907991 /* NSInvocation+AsyncHelper.h */,
+				B601C218191128BF00907991 /* NSInvocation+AsyncHelper.m */,
 			);
 			path = AsyncHelper;
 			sourceTree = "<group>";
@@ -229,6 +234,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B601C219191128BF00907991 /* NSInvocation+AsyncHelper.m in Sources */,
 				B678A86818C7444500600A38 /* NSObject+AsyncHelper.m in Sources */,
 				B678A83B18C743BF00600A38 /* AsyncHelper.m in Sources */,
 			);

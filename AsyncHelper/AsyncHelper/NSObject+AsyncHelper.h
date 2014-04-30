@@ -16,7 +16,7 @@ NSInvocation* invf(id target,SEL selector,...);
 
 @interface NSObject (AsyncHelper)
 
--(void)parallelize:(NSArray*)invocations andThen:(void(^)(BOOL success))complete;
+-(NSInvocation*)parallelize:(NSArray*)invocations andThen:(void(^)(BOOL success,NSInvocation* invocation))complete;
 -(void)queue:(NSArray*)invocations andThen:(void(^)(BOOL success))complete;
 -(void)ifFailed:(NSInvocation*)invocation retryEverySeconds:(NSNumber*)sec andThen:(void(^)(BOOL))complete;
 -(void)ifFailed:(NSInvocation*)invocation retryEverySeconds:(NSNumber*)sec forTimes:(NSNumber*)times andThen:(void(^)(BOOL))complete;

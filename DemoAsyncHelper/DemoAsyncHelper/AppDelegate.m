@@ -59,7 +59,8 @@
 {
     [self parallelize:@[
                         _inv(op1AndThen:),
-                        _inv(op2AndThen:)
+                        _inv(op2AndThen:),
+                        _inv(op3AndThen:)
                         ]
               andThen:
      ^(BOOL success)
@@ -150,22 +151,22 @@
 -(void)doStuff
 {
     
-    [self ifFailed:_inv(op1AndThen:) retryEverySeconds:@2 andThen:
-     ^(BOOL success)
-    {
-        [self op2AndThen:
-         ^(BOOL success)
-        {
-            NSLog(@"OK!!!!");
+//    [self ifFailed:_inv(op1AndThen:) retryEverySeconds:@2 andThen:
+//     ^(BOOL success)
+//    {
+//        [self op2AndThen:
+//         ^(BOOL success)
+//        {
+//            NSLog(@"OK!!!!");
+//
+//        }];
+//    }];
 
-        }];
-    }];
-
-//    [self test1];
+    [self test1];
 //
 //    [self test2];
 
-    [self test3];
+//    [self test3];
 //
 //    [self test4];
 //    

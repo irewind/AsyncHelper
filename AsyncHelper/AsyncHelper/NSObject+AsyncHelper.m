@@ -7,6 +7,7 @@
 //
 
 #import "NSObject+AsyncHelper.h"
+#import "NSInvocation+AsyncHelper.h"
 
 @implementation NSObject (AsyncHelper)
 
@@ -46,20 +47,37 @@
     [invocation invoke];
 }
 
--(void)parallelize:(NSArray*)invocations andThen:(void(^)(BOOL success))complete
+-(NSInvocation*)parallelize:(NSArray*)invocations andThen:(void(^)(BOOL success, NSInvocation* invocation))complete
 {
+    void (^finishedBlock)(BOOL success, NSInvocation* invocation) =
+    ^(BOOL success, NSInvocation* invocation)
+    {
+        successful &= success;
+        [runningInvocations removeObject:invocation];
+        
+        if (runningInvocations.count == 0)
+        {
+            if (complete)
+                complete (successful);
+        }
+    };
     
-    NSOperationQueue* queue = [[NSOperationQueue alloc] init];
-    [queue setSuspended:YES];
+    return invf(self, @selector(runParallel:andThen:),invocations,finishedBlock);
+}
+
+-(void)doParallelize:(NSArray*)invocations andThen:(void(^)(BOOL success,NSInvocation* invocation))complete
+{
+    NSMutableArray* runningInvocations = [[NSMutableArray alloc] init];
     
     __block BOOL successful = YES;
     
-    void (^finishedBlock)(BOOL success) =
-    ^(BOOL success)
+    void (^finishedBlock)(BOOL success, NSInvocation* invocation) =
+    ^(BOOL success, NSInvocation* invocation)
     {
         successful &= success;
+        [runningInvocations removeObject:invocation];
         
-        if (queue.operationCount == 0)
+        if (runningInvocations.count == 0)
         {
             if (complete)
                 complete (successful);
@@ -74,12 +92,9 @@
     
     for (NSInvocation* invocation in invocations)
     {
-        NSInvocationOperation* op = [[NSInvocationOperation alloc] initWithInvocation:invocation];
-
-        [queue addOperation:op];
+        [runningInvocations addObject:invocation];
+        [invocation invoke];
     }
-    
-    [queue setSuspended:NO];    
 }
 
 
@@ -114,8 +129,46 @@
     }
 }
 
-
 -(void)queue:(NSArray*)invocations andThen:(void(^)(BOOL success))complete
+{
+    __block BOOL successful = YES;
+    __block int index = 0;
+    
+    NSOperationQueue* queue = [[NSOperationQueue alloc] init];
+    [queue setSuspended:YES];
+    [queue setMaxConcurrentOperationCount:1];
+    
+    void (^nextBlock)(BOOL success) =
+    ^(BOOL success)
+    {
+        successful &= success;
+        
+        if (invocations.count == index)
+        {
+            if (complete)
+                complete (successful);
+        }
+        else
+        {
+            NSInvocationOperation* op = [[NSInvocationOperation alloc] initWithInvocation:invocations[index++]];
+            [queue addOperation:op];
+        }
+    };
+    
+    for (NSInvocation* invocation in invocations)
+    {
+        NSUInteger nrArgs = [[invocation methodSignature] numberOfArguments];
+        [invocation setArgument:&nextBlock atIndex:nrArgs-1];
+    }
+    
+    NSInvocationOperation* op = [[NSInvocationOperation alloc] initWithInvocation:invocations[index++]];
+    
+    [queue addOperation:op];
+
+    [queue setSuspended:NO];
+}
+
+-(void)old_queue:(NSArray*)invocations andThen:(void(^)(BOOL success))complete
 {
     __block BOOL successful = YES;
     __block int operationCount = 0;
@@ -148,29 +201,26 @@
 
 NSInvocation* inv(id target,SEL selector)
 {
-    return invf(target, selector, nil);
+    NSInvocation* inv = [NSInvocation createWithTarget:target selector:selector arguments:@[]];
+    
+    return inv;
 }
 
 NSInvocation* invf(id target,SEL selector,...)
-{
+{    
     va_list arguments;
     va_start ( arguments, selector );
     
-    NSMethodSignature* signature = [[target class] instanceMethodSignatureForSelector:selector];
-    NSInvocation* invocation = [NSInvocation invocationWithMethodSignature:signature];
-    [invocation setSelector:selector];
-    [invocation setTarget:target];
+    NSMutableArray* argArray = [[NSMutableArray alloc] init];
     
-    NSInteger index = 2;
     id arg = nil;
     while((arg = va_arg(arguments, id))!=0)
     {
-        [invocation setArgument:&arg atIndex:index];
-        index++;
+        [argArray addObject:arg];
     }
     va_end ( arguments );
     
-    [invocation retainArguments];
+    NSInvocation* invocation = [NSInvocation createWithTarget:target selector:selector arguments:argArray];
     
     return invocation;
 }
