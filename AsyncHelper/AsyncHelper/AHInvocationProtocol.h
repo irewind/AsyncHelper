@@ -8,9 +8,10 @@
 
 #import <Foundation/Foundation.h>
 @class AHInvocationProtocol;
-typedef void (^CompletionBlock)(BOOL success, id<AHInvocationProtocol>);
 
 @protocol AHInvocationProtocol <NSObject>
--(void)setFinishBlock:(CompletionBlock)finishedBlock;
+-(void)setFinishBlock:(void(^)(BOOL success, id<AHInvocationProtocol>))finishedBlock;
 -(void)invoke;
 @end
+
+typedef void (^CompletionBlock)(BOOL success, id<AHInvocationProtocol>);

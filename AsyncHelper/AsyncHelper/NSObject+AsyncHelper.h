@@ -7,16 +7,17 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "AHSingleInvocation.h"
 
 #define _inv(x) inv(self,@selector(x))
 #define _inv1(x,y) inv(self,@selector(x),y,nil)
 
-NSInvocation* inv(id target,SEL selector);
-NSInvocation* invf(id target,SEL selector,...);
+id<AHInvocationProtocol> inv(id target,SEL selector);
+id<AHInvocationProtocol> invf(id target,SEL selector,...);
 
 @interface NSObject (AsyncHelper)
 
--(NSInvocation*)parallelize:(NSArray*)invocations andThen:(void(^)(BOOL success,NSInvocation* invocation))complete;
+-(id<AHInvocationProtocol>)parallelize:(NSArray*)invocations andThen:(CompletionBlock)complete;
 -(void)queue:(NSArray*)invocations andThen:(void(^)(BOOL success))complete;
 -(void)ifFailed:(NSInvocation*)invocation retryEverySeconds:(NSNumber*)sec andThen:(void(^)(BOOL))complete;
 -(void)ifFailed:(NSInvocation*)invocation retryEverySeconds:(NSNumber*)sec forTimes:(NSNumber*)times andThen:(void(^)(BOOL))complete;

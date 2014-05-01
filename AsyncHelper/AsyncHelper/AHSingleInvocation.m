@@ -6,13 +6,13 @@
 //  Copyright (c) 2014 Walter Fettich. All rights reserved.
 //
 
-#import "AHInvocation.h"
+#import "AHSingleInvocation.h"
 
-@interface AHInvocation ()
+@interface AHSingleInvocation ()
     @property(strong,nonatomic) NSInvocation* invocation;
 @end
 
-@implementation AHInvocation
+@implementation AHSingleInvocation
 
 -(instancetype) initWithTarget:(id)target selector:(SEL)selector arguments:(NSArray*)arguments
 {

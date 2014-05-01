@@ -7,7 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "AHInvocationProtocol.h"
 
-@interface AHParallelInvocation : NSObject
-
+@interface AHParallelInvocation : NSObject<AHInvocationProtocol>
+-(instancetype) initWithInvocations:(NSArray*)invocations andCompletionBlock:(CompletionBlock)complete
 @end

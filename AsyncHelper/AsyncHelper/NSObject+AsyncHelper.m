@@ -8,6 +8,9 @@
 
 #import "NSObject+AsyncHelper.h"
 #import "NSInvocation+AsyncHelper.h"
+#import "AHInvocationProtocol.h"
+#import "AHParallelInvocation.h"
+#import "AHSingleInvocation.h"
 
 @implementation NSObject (AsyncHelper)
 
@@ -47,57 +50,14 @@
     [invocation invoke];
 }
 
--(NSInvocation*)parallelize:(NSArray*)invocations andThen:(void(^)(BOOL success))complete
+-(id<AHInvocationProtocol>)parallelize:(NSArray*)invocations andThen:(CompletionBlock)complete
 {
-    __block BOOL successful = YES;
-    void (^finishedBlock)(BOOL success, NSInvocation* invocation) =
-    ^(BOOL success, NSInvocation* invocation)
-    {
-        successful &= success;
-        [runningInvocations removeObject:invocation];
-        
-        if (runningInvocations.count == 0)
-        {
-            if (complete)
-                complete (successful);
-        }
-    };
+    AHParallelInvocation* inv = [[AHParallelInvocation alloc] initWithInvocations:invocations andCompletionBlock:complete];
     
-    return invf(self, @selector(doParallelize:andThen:),invocations,finishedBlock);
+    [inv invoke];
+    
+    return inv;
 }
-
--(void)doParallelize:(NSArray*)invocations andThen:(void(^)(BOOL success,NSInvocation* invocation))complete
-{
-    NSMutableArray* runningInvocations = [[NSMutableArray alloc] init];
-    
-    __block BOOL successful = YES;
-    
-    void (^finishedBlock)(BOOL success, NSInvocation* invocation) =
-    ^(BOOL success, NSInvocation* invocation)
-    {
-        successful &= success;
-        [runningInvocations removeObject:invocation];
-        
-        if (runningInvocations.count == 0)
-        {
-            if (complete)
-                complete (successful);
-        }
-    };
-    
-    for (NSInvocation* invocation in invocations)
-    {
-        NSUInteger nrArgs = [[invocation methodSignature] numberOfArguments];
-        [invocation setArgument:&finishedBlock atIndex:nrArgs-1];
-    }
-    
-    for (NSInvocation* invocation in invocations)
-    {
-        [runningInvocations addObject:invocation];
-        [invocation invoke];
-    }
-}
-
 
 -(void)old_parallelize:(NSArray*)invocations andThen:(void(^)(BOOL success))complete
 {
@@ -200,14 +160,13 @@
     [invocations[0] invoke];
 }
 
-NSInvocation* inv(id target,SEL selector)
+id<AHInvocationProtocol> inv(id target,SEL selector)
 {
-    NSInvocation* inv = [NSInvocation createWithTarget:target selector:selector arguments:@[]];
-    
+    AHSingleInvocation* inv = [[AHSingleInvocation alloc] initWithTarget:target selector:selector arguments:@[]];
     return inv;
 }
 
-NSInvocation* invf(id target,SEL selector,...)
+id<AHInvocationProtocol> invf(id target,SEL selector,...)
 {    
     va_list arguments;
     va_start ( arguments, selector );
@@ -221,7 +180,7 @@ NSInvocation* invf(id target,SEL selector,...)
     }
     va_end ( arguments );
     
-    NSInvocation* invocation = [NSInvocation createWithTarget:target selector:selector arguments:argArray];
+    AHSingleInvocation* invocation = [[AHSingleInvocation alloc] initWithTarget:target selector:selector arguments:argArray];
     
     return invocation;
 }

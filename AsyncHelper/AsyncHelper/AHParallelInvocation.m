@@ -7,7 +7,7 @@
 //
 
 #import "AHParallelInvocation.h"
-#import "AHInvocation.h"
+#import "AHSingleInvocation.h"
 
 @interface AHParallelInvocation ()
 @property (strong,nonatomic) NSMutableArray* runningInvocations;
@@ -23,29 +23,35 @@
         self.runningInvocations = [[NSMutableArray alloc] init];
         self.invocations = invocations;
         
-        __block BOOL successful = YES;
+        [self setFinishBlock:complete];
         
-        CompletionBlock finishedBlock =
-        ^(BOOL success, NSInvocation* invocation)
-        {
-            successful &= success;
-            [self.runningInvocations removeObject:invocation];
-            
-            if (self.runningInvocations.count == 0)
-            {
-                if (complete)
-                    complete (successful);
-            }
-        };
-        
-        for (AHInvocation* invocation in invocations)
-        {
-            [invocation setFinishBlock:complete];
-        }
     }
     return self;
 }
 
+-(void)setFinishBlock:(void (^)(BOOL, id<AHInvocationProtocol>))complete
+{
+    __block BOOL successful = YES;
+    __block AHParallelInvocation* bself = self;
+    
+    CompletionBlock finishedBlock =
+    ^(BOOL success, id<AHInvocationProtocol> invocation)
+    {
+        successful &= success;
+        [self.runningInvocations removeObject:invocation];
+        
+        if (self.runningInvocations.count == 0)
+        {
+            if (complete)
+                complete (successful,bself);
+        }
+    };
+
+    for (AHSingleInvocation* invocation in self.invocations)
+    {
+        [invocation setFinishBlock:finishedBlock];
+    }
+}
 
 -(void)invoke
 {

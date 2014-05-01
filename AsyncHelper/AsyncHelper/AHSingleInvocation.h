@@ -9,10 +9,8 @@
 
 #import "AHInvocationProtocol.h"
 
-@interface AHInvocation : NSObject
+@interface AHSingleInvocation : NSObject<AHInvocationProtocol>
 
 -(instancetype) initWithTarget:(id)target selector:(SEL)selector arguments:(NSArray*)arguments;
--(void)setFinishBlock:(CompletionBlock)finishedBlock;
--(void)invoke;
 
 @end
