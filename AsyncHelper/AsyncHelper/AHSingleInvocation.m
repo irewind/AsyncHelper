@@ -38,8 +38,14 @@
 
 -(void)setFinishBlock:(CompletionBlock)finishedBlock
 {
+    void (^completionBlock) (BOOL success) =
+    ^(BOOL success)
+    {
+        finishedBlock(success,self);
+    };
+    
     NSUInteger nrArgs = [[self.invocation methodSignature] numberOfArguments];
-    [self.invocation setArgument:&finishedBlock atIndex:nrArgs-1];
+    [self.invocation setArgument:&completionBlock atIndex:nrArgs-1];
 }
 
 -(void)invoke

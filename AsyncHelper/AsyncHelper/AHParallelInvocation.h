@@ -10,5 +10,5 @@
 #import "AHInvocationProtocol.h"
 
 @interface AHParallelInvocation : NSObject<AHInvocationProtocol>
--(instancetype) initWithInvocations:(NSArray*)invocations andCompletionBlock:(CompletionBlock)complete
+-(instancetype) initWithInvocations:(NSArray*)invocations andCompletionBlock:(CompletionBlock)complete;
 @end

@@ -29,7 +29,7 @@
     return self;
 }
 
--(void)setFinishBlock:(void (^)(BOOL, id<AHInvocationProtocol>))complete
+-(void)setFinishBlock:(CompletionBlock)complete
 {
     __block BOOL successful = YES;
     __block AHParallelInvocation* bself = self;

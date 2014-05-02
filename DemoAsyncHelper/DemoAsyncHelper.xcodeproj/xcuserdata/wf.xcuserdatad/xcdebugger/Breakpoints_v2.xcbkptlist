@@ -25,7 +25,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "126"
             endingLineNumber = "126"
-            landmarkName = "-old_parallelize:andThen:"
+            landmarkName = "-queue:andThen:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -41,7 +41,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "137"
             endingLineNumber = "137"
-            landmarkName = "-queue:andThen:"
+            landmarkName = "-old_queue:andThen:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

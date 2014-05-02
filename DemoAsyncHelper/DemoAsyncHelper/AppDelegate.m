@@ -63,7 +63,7 @@
                         _inv(op3AndThen:)
                         ]
               andThen:
-     ^(BOOL success)
+     ^(BOOL success, id<AHInvocationProtocol> inv)
      {
          NSLog(@"parallel all done %d",success);
      }];
@@ -87,7 +87,7 @@
                              _inv(op2AndThen:),
                              _inv(op2AndThen:)
                              ] andThen:
-          ^(BOOL success)
+          ^(BOOL success, id<AHInvocationProtocol> inv)
           {
               NSLog(@"parallel 2 all done %d",success);
           }];
