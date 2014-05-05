@@ -38,7 +38,7 @@
 -(void)op3AndThen:(void(^)(BOOL success))complete
 {
     static int n = 3;
-    NSLog(@"exec op3 n=%d",n);
+    NSLog(@"started op3 n=%d",n);
     
     dispatch_async(dispatch_get_main_queue(),
        ^{
@@ -57,6 +57,8 @@
 
 -(void)test1
 {
+    NSLog(@"begin test1");
+    
     [self parallelize:@[
                         _inv(op1AndThen:),
                         _inv(op2AndThen:),
@@ -65,57 +67,59 @@
               andThen:
      ^(BOOL success, id<AHInvocationProtocol> inv)
      {
-         NSLog(@"parallel all done %d",success);
+         NSLog(@"test1 done %d",success);
      }];
 }
 
 
--(void)test2
-{
-    [self queue:@[
-                  _inv(op1AndThen:),
-                  _inv(op2AndThen:)
-                  ]
-        andThen:
-     ^(BOOL success)
-     {
-         NSLog(@"queue all done %d",success);
-         
-         [self parallelize:@[
-                             _inv(op2AndThen:),
-                             _inv(op2AndThen:),
-                             _inv(op2AndThen:),
-                             _inv(op2AndThen:)
-                             ] andThen:
-          ^(BOOL success, id<AHInvocationProtocol> inv)
-          {
-              NSLog(@"parallel 2 all done %d",success);
-          }];
-     }];
-}
+//-(void)test2
+//{
+//    NSLog(@"begin test2");
+//    [self queue:@[
+//                  _inv(op1AndThen:),
+//                  _inv(op2AndThen:)
+//                  ]
+//        andThen:
+//     ^(BOOL success, id<AHInvocationProtocol> inv)
+//     {
+//         NSLog(@"queue all done %d",success);
+//         
+//         [self parallelize:@[
+//                             _inv(op2AndThen:),
+//                             _inv(op2AndThen:),
+//                             _inv(op2AndThen:)
+//                             ] andThen:
+//          ^(BOOL success, id<AHInvocationProtocol> inv)
+//          {
+//              NSLog(@"test 2 all done %d",success);
+//          }];
+//     }];
+//}
 
 -(void)test3
 {
+    NSLog(@"begin test3");
     [self queue:@[
                   _inv(op1AndThen:),
-                  invf(self,@selector(parallelize:andThen:),
+                  [self parallelize:
                        @[
                          _inv(op2AndThen:),
                          _inv(op2AndThen:)
-                         ],nil)
+                         ] andThen:nil]
                   ]
         andThen:
-     ^(BOOL success)
+     ^(BOOL success, id<AHInvocationProtocol> inv)
      {
-         NSLog(@"queue all done %d",success);
+         NSLog(@"test3 done %d",success);
      }];
     
 }
 
 -(void)test4
 {
+    NSLog(@"begin test4");
     [self ifFailed:_inv(op3AndThen:) retryEverySeconds:@(2) andThen:
-     ^(BOOL success)
+     ^(BOOL success, id<AHInvocationProtocol> inv)
      {
          NSLog(@"test 4 done %d",success);
      }];
@@ -123,29 +127,53 @@
 
 -(void)test5
 {
-    
+    NSLog(@"begin test5");
     [self queue:@[
                   _inv(op1AndThen:),
-                  invf(self,@selector(parallelize:andThen:),
+                  [self parallelize:
                        @[
-                         invf(self,@selector(ifFailed:retryEverySeconds:andThen:),
-                              _inv(op3AndThen:),
-                              @(2),nil),
-                         
+                          [self ifFailed:_inv(op3AndThen:) retryEverySeconds:@(2) andThen:nil],
                          _inv(op2AndThen:)
-                         ],nil)
+                         ] andThen:nil]
                   ]
         andThen:
-     ^(BOOL success)
+     ^(BOOL success, id<AHInvocationProtocol> inv)
      {
-         NSLog(@"queue all done %d",success);
+         NSLog(@"test5 done %d",success);
+     }];
+}
+
+-(void)test6
+{
+    NSLog(@"begin test6");
+     AHQueueInvocation* queue = [self queue:@[
+                  _inv(op1AndThen:),
+                  _inv(op2AndThen:),
+                  _inv(op1AndThen:),
+                  _inv(op2AndThen:),
+                  ]
+        andThen:
+     ^(BOOL success, id<AHInvocationProtocol> inv)
+     {
+         NSLog(@"test6 done %d",success);
      }];
     
-    //    [self ifFailed:_inv(op3AndThen:) repeatEvery:@(2) andOnSuccess:
-    //     ^(BOOL success)
-    //     {
-    //         NSLog(@"test 4 done %d",success);
-    //     }];
+    [queue addInvocation:_inv(op3AndThen:)];
+}
+
+-(void)test7
+{
+    NSLog(@"begin test7");
+    
+    [self ifFailed:_inv(op3AndThen:) retryEverySeconds:@2 forTimes:@1 andThen:
+     ^(BOOL success, id<AHInvocationProtocol> inv)
+    {
+        [self op2AndThen:
+         ^(BOOL success)
+        {
+            NSLog(@"test7 done %d",success);
+        }];
+    }];
 }
 
 -(void)doStuff
@@ -163,14 +191,18 @@
 //    }];
 
     [self test1];
-//
-//    [self test2];
 
-//    [self test3];
+//    [self test2];
 //
-//    [self test4];
-//    
-//    [self test5];
+    [self test3];
+//
+    [self test4];
+//
+    [self test5];
+//
+    [self test6];
+    
+    [self test7];    
 }
 
 

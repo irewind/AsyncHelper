@@ -9,17 +9,30 @@
 #import "NSObject+AsyncHelper.h"
 #import "NSInvocation+AsyncHelper.h"
 #import "AHInvocationProtocol.h"
-#import "AHParallelInvocation.h"
 #import "AHSingleInvocation.h"
+#import "AHInsistentInvocation.h"
 
 @implementation NSObject (AsyncHelper)
 
--(void)ifFailed:(NSInvocation*)invocation retryEverySeconds:(NSNumber*)sec andThen:(void(^)(BOOL))complete
+-(AHInsistentInvocation*)ifFailed:(AHSingleInvocation*)invocation retryEverySeconds:(NSNumber*)sec andThen:(CompletionBlock)complete
 {
-    [self ifFailed:invocation retryEverySeconds:sec forTimes:@(-1) andThen:complete];
+    AHInsistentInvocation* inv = [[AHInsistentInvocation alloc] initWithInvocation:invocation retryEverySeconds:sec andCompletionBlock:complete];
+    
+    [inv invoke];
+    
+    return inv;
 }
 
--(void)ifFailed:(NSInvocation*)invocation retryEverySeconds:(NSNumber*)sec forTimes:(NSNumber*)times andThen:(void(^)(BOOL))complete
+-(AHInsistentInvocation*)ifFailed:(AHSingleInvocation*)invocation retryEverySeconds:(NSNumber*)sec forTimes:(NSNumber*)times andThen:(CompletionBlock)complete
+{
+    AHInsistentInvocation* inv = [[AHInsistentInvocation alloc] initWithInvocation:invocation retryEverySeconds:sec forTimes:times andCompletionBlock:complete];
+    
+    [inv invoke];
+    
+    return inv;
+}
+
+-(void)old_ifFailed:(NSInvocation*)invocation retryEverySeconds:(NSNumber*)sec forTimes:(NSNumber*)times andThen:(void(^)(BOOL))complete
 {
    __block int count = times.intValue;
     
@@ -50,7 +63,7 @@
     [invocation invoke];
 }
 
--(id<AHInvocationProtocol>)parallelize:(NSArray*)invocations andThen:(CompletionBlock)complete
+-(AHParallelInvocation*)parallelize:(NSArray*)invocations andThen:(CompletionBlock)complete
 {
     AHParallelInvocation* inv = [[AHParallelInvocation alloc] initWithInvocations:invocations andCompletionBlock:complete];
     
@@ -59,114 +72,84 @@
     return inv;
 }
 
--(void)old_parallelize:(NSArray*)invocations andThen:(void(^)(BOOL success))complete
+//-(void)old_parallelize:(NSArray*)invocations andThen:(void(^)(BOOL success))complete
+//{
+//    __block BOOL successful = YES;
+//    __block int operationCount = 0;
+//    
+//    void (^finishedBlock)(BOOL success) =
+//    ^(BOOL success)
+//    {
+//        --operationCount;
+//        successful &= success;
+//        
+//        if (operationCount == 0)
+//        {
+//            if (complete)
+//                complete (successful);
+//        }
+//    };
+//    
+//    for (NSInvocation* invocation in invocations)
+//    {
+//        operationCount++;
+//        NSUInteger nrArgs = [[invocation methodSignature] numberOfArguments];
+//        [invocation setArgument:&finishedBlock atIndex:nrArgs-1];
+//    }
+//    
+//    for (NSInvocation* invocation in invocations)
+//    {
+//        [invocation invoke];
+//    }
+//}
+
+-(AHQueueInvocation*)queue:(NSArray*)invocations andThen:(CompletionBlock)complete
 {
-    __block BOOL successful = YES;
-    __block int operationCount = 0;
+    AHQueueInvocation* inv = [[AHQueueInvocation alloc] initWithInvocations:invocations andCompletionBlock:complete];
     
-    void (^finishedBlock)(BOOL success) =
-    ^(BOOL success)
-    {
-        --operationCount;
-        successful &= success;
-        
-        if (operationCount == 0)
-        {
-            if (complete)
-                complete (successful);
-        }
-    };
+    [inv invoke];
     
-    for (NSInvocation* invocation in invocations)
-    {
-        operationCount++;
-        NSUInteger nrArgs = [[invocation methodSignature] numberOfArguments];
-        [invocation setArgument:&finishedBlock atIndex:nrArgs-1];
-    }
-    
-    for (NSInvocation* invocation in invocations)
-    {
-        [invocation invoke];
-    }
+    return inv;
 }
 
--(void)queue:(NSArray*)invocations andThen:(void(^)(BOOL success))complete
-{
-    __block BOOL successful = YES;
-    __block int index = 0;
-    
-    NSOperationQueue* queue = [[NSOperationQueue alloc] init];
-    [queue setSuspended:YES];
-    [queue setMaxConcurrentOperationCount:1];
-    
-    void (^nextBlock)(BOOL success) =
-    ^(BOOL success)
-    {
-        successful &= success;
-        
-        if (invocations.count == index)
-        {
-            if (complete)
-                complete (successful);
-        }
-        else
-        {
-            NSInvocationOperation* op = [[NSInvocationOperation alloc] initWithInvocation:invocations[index++]];
-            [queue addOperation:op];
-        }
-    };
-    
-    for (NSInvocation* invocation in invocations)
-    {
-        NSUInteger nrArgs = [[invocation methodSignature] numberOfArguments];
-        [invocation setArgument:&nextBlock atIndex:nrArgs-1];
-    }
-    
-    NSInvocationOperation* op = [[NSInvocationOperation alloc] initWithInvocation:invocations[index++]];
-    
-    [queue addOperation:op];
+//-(void)old_queue:(NSArray*)invocations andThen:(void(^)(BOOL success))complete
+//{
+//    __block BOOL successful = YES;
+//    __block int operationCount = 0;
+//    
+//    void (^nextBlock)(BOOL success) =
+//    ^(BOOL success)
+//    {
+//        successful &= success;
+//        
+//        ++operationCount;
+//        if (operationCount == invocations.count)
+//        {
+//            if (complete)
+//                complete (successful);
+//        }
+//        else
+//        {
+//            [invocations[operationCount] invoke];
+//        }
+//    };
+//    
+//    for (NSInvocation* invocation in invocations)
+//    {
+//        NSUInteger nrArgs = [[invocation methodSignature] numberOfArguments];
+//        [invocation setArgument:&nextBlock atIndex:nrArgs-1];
+//    }
+//    
+//    [invocations[0] invoke];
+//}
 
-    [queue setSuspended:NO];
-}
-
--(void)old_queue:(NSArray*)invocations andThen:(void(^)(BOOL success))complete
-{
-    __block BOOL successful = YES;
-    __block int operationCount = 0;
-    
-    void (^nextBlock)(BOOL success) =
-    ^(BOOL success)
-    {
-        successful &= success;
-        
-        ++operationCount;
-        if (operationCount == invocations.count)
-        {
-            if (complete)
-                complete (successful);
-        }
-        else
-        {
-            [invocations[operationCount] invoke];
-        }
-    };
-    
-    for (NSInvocation* invocation in invocations)
-    {
-        NSUInteger nrArgs = [[invocation methodSignature] numberOfArguments];
-        [invocation setArgument:&nextBlock atIndex:nrArgs-1];
-    }
-    
-    [invocations[0] invoke];
-}
-
-id<AHInvocationProtocol> inv(id target,SEL selector)
+AHSingleInvocation* inv(id target,SEL selector)
 {
     AHSingleInvocation* inv = [[AHSingleInvocation alloc] initWithTarget:target selector:selector arguments:@[]];
     return inv;
 }
 
-id<AHInvocationProtocol> invf(id target,SEL selector,...)
+AHSingleInvocation* invf(id target,SEL selector,...)
 {    
     va_list arguments;
     va_start ( arguments, selector );

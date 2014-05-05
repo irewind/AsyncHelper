@@ -12,5 +12,6 @@
 @interface AHSingleInvocation : NSObject<AHInvocationProtocol>
 
 -(instancetype) initWithTarget:(id)target selector:(SEL)selector arguments:(NSArray*)arguments;
+-(instancetype) initWithNSInvocation:(NSInvocation*)invocation;
 
 @end

@@ -8,18 +8,20 @@
 
 #import <Foundation/Foundation.h>
 #import "AHSingleInvocation.h"
+#import "AHParallelInvocation.h"
+#import "AHQueueInvocation.h"
+#import "AHInsistentInvocation.h"
 
 #define _inv(x) inv(self,@selector(x))
 #define _inv1(x,y) inv(self,@selector(x),y,nil)
 
-id<AHInvocationProtocol> inv(id target,SEL selector);
-id<AHInvocationProtocol> invf(id target,SEL selector,...);
+AHSingleInvocation* inv(id target,SEL selector);
+AHSingleInvocation* invf(id target,SEL selector,...);
 
 @interface NSObject (AsyncHelper)
 
--(id<AHInvocationProtocol>)parallelize:(NSArray*)invocations andThen:(CompletionBlock)complete;
--(void)queue:(NSArray*)invocations andThen:(void(^)(BOOL success))complete;
--(void)ifFailed:(NSInvocation*)invocation retryEverySeconds:(NSNumber*)sec andThen:(void(^)(BOOL))complete;
--(void)ifFailed:(NSInvocation*)invocation retryEverySeconds:(NSNumber*)sec forTimes:(NSNumber*)times andThen:(void(^)(BOOL))complete;
-
+-(AHParallelInvocation*)parallelize:(NSArray*)invocations andThen:(CompletionBlock)complete;
+-(AHQueueInvocation*)queue:(NSArray*)invocations andThen:(CompletionBlock)complete;
+-(AHInsistentInvocation*)ifFailed:(AHSingleInvocation*)invocation retryEverySeconds:(NSNumber*)sec forTimes:(NSNumber*)times andThen:(CompletionBlock)complete;
+-(AHInsistentInvocation*)ifFailed:(AHSingleInvocation*)invocation retryEverySeconds:(NSNumber*)sec andThen:(CompletionBlock)complete;
 @end

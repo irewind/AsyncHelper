@@ -10,6 +10,8 @@
 		B601C219191128BF00907991 /* NSInvocation+AsyncHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = B601C218191128BF00907991 /* NSInvocation+AsyncHelper.m */; };
 		B601C22819113B2C00907991 /* AHSingleInvocation.m in Sources */ = {isa = PBXBuildFile; fileRef = B601C22719113B2C00907991 /* AHSingleInvocation.m */; };
 		B601C22B19113D4300907991 /* AHParallelInvocation.m in Sources */ = {isa = PBXBuildFile; fileRef = B601C22A19113D4300907991 /* AHParallelInvocation.m */; };
+		B601C2511913EB3B00907991 /* AHQueueInvocation.m in Sources */ = {isa = PBXBuildFile; fileRef = B601C2501913EB3B00907991 /* AHQueueInvocation.m */; };
+		B601C2541917A86800907991 /* AHInsistentInvocation.m in Sources */ = {isa = PBXBuildFile; fileRef = B601C2531917A86800907991 /* AHInsistentInvocation.m */; };
 		B678A83418C743BF00600A38 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B678A83318C743BF00600A38 /* Foundation.framework */; };
 		B678A83B18C743BF00600A38 /* AsyncHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = B678A83A18C743BF00600A38 /* AsyncHelper.m */; };
 		B678A84218C743BF00600A38 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B678A84118C743BF00600A38 /* XCTest.framework */; };
@@ -53,6 +55,10 @@
 		B601C22919113D4300907991 /* AHParallelInvocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AHParallelInvocation.h; sourceTree = "<group>"; };
 		B601C22A19113D4300907991 /* AHParallelInvocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AHParallelInvocation.m; sourceTree = "<group>"; };
 		B601C23619114AB100907991 /* AHInvocationProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AHInvocationProtocol.h; sourceTree = "<group>"; };
+		B601C24F1913EB3B00907991 /* AHQueueInvocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AHQueueInvocation.h; sourceTree = "<group>"; };
+		B601C2501913EB3B00907991 /* AHQueueInvocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AHQueueInvocation.m; sourceTree = "<group>"; };
+		B601C2521917A86800907991 /* AHInsistentInvocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AHInsistentInvocation.h; sourceTree = "<group>"; };
+		B601C2531917A86800907991 /* AHInsistentInvocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AHInsistentInvocation.m; sourceTree = "<group>"; };
 		B678A83018C743BF00600A38 /* libAsyncHelper.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libAsyncHelper.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		B678A83318C743BF00600A38 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		B678A83718C743BF00600A38 /* AsyncHelper-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AsyncHelper-Prefix.pch"; sourceTree = "<group>"; };
@@ -135,6 +141,10 @@
 				B601C22919113D4300907991 /* AHParallelInvocation.h */,
 				B601C22A19113D4300907991 /* AHParallelInvocation.m */,
 				B601C23619114AB100907991 /* AHInvocationProtocol.h */,
+				B601C24F1913EB3B00907991 /* AHQueueInvocation.h */,
+				B601C2501913EB3B00907991 /* AHQueueInvocation.m */,
+				B601C2521917A86800907991 /* AHInsistentInvocation.h */,
+				B601C2531917A86800907991 /* AHInsistentInvocation.m */,
 			);
 			path = AsyncHelper;
 			sourceTree = "<group>";
@@ -247,7 +257,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				B601C219191128BF00907991 /* NSInvocation+AsyncHelper.m in Sources */,
+				B601C2541917A86800907991 /* AHInsistentInvocation.m in Sources */,
 				B601C22819113B2C00907991 /* AHSingleInvocation.m in Sources */,
+				B601C2511913EB3B00907991 /* AHQueueInvocation.m in Sources */,
 				B678A86818C7444500600A38 /* NSObject+AsyncHelper.m in Sources */,
 				B601C22B19113D4300907991 /* AHParallelInvocation.m in Sources */,
 				B678A83B18C743BF00600A38 /* AsyncHelper.m in Sources */,

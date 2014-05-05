@@ -13,6 +13,17 @@
 @end
 
 @implementation AHSingleInvocation
+@synthesize finishedBlock;
+@synthesize isRunning;
+
+-(instancetype) initWithNSInvocation:(NSInvocation*)invocation;
+{
+    if (self = [super init])
+    {
+        self.invocation = invocation;
+    }
+    return self;
+}
 
 -(instancetype) initWithTarget:(id)target selector:(SEL)selector arguments:(NSArray*)arguments
 {
@@ -36,12 +47,13 @@
     return self;
 }
 
--(void)setFinishBlock:(CompletionBlock)finishedBlock
+-(void)setFinishedBlock:(CompletionBlock)complete
 {
     void (^completionBlock) (BOOL success) =
     ^(BOOL success)
     {
-        finishedBlock(success,self);
+        self.isRunning = NO;
+        complete(success,self);
     };
     
     NSUInteger nrArgs = [[self.invocation methodSignature] numberOfArguments];
@@ -50,6 +62,7 @@
 
 -(void)invoke
 {
+    self.isRunning = YES;
     [self.invocation invoke];
 }
 

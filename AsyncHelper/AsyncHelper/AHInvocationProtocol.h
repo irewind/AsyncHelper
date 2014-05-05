@@ -10,8 +10,9 @@
 @class AHInvocationProtocol;
 
 @protocol AHInvocationProtocol <NSObject>
--(void)setFinishBlock:(void(^)(BOOL success, id<AHInvocationProtocol>))finishedBlock;
+@property (strong,nonatomic) void(^finishedBlock)(BOOL success, id<AHInvocationProtocol>);
 -(void)invoke;
+@property (assign,nonatomic) BOOL isRunning;
 @end
 
 typedef void (^CompletionBlock)(BOOL success, id<AHInvocationProtocol>);

@@ -1,16 +1,17 @@
 //
-//  AHParallelInvocation.h
+//  AHQueueInvocation.h
 //  AsyncHelper
 //
-//  Created by Walter Fettich on 30/04/14.
+//  Created by Walter Fettich on 02/05/14.
 //  Copyright (c) 2014 Walter Fettich. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
+
 #import "AHInvocationProtocol.h"
 #import "AHSingleInvocation.h"
 
-@interface AHParallelInvocation : NSObject<AHInvocationProtocol>
+@interface AHQueueInvocation : NSObject<AHInvocationProtocol>
 -(instancetype) initWithInvocations:(NSArray*)invocations andCompletionBlock:(CompletionBlock)complete;
 -(void)addInvocation:(AHSingleInvocation*)invocation;
 @end

@@ -1,20 +1,21 @@
 //
-//  AHParallelInvocation.m
+//  AHQueueInvocation.m
 //  AsyncHelper
 //
-//  Created by Walter Fettich on 30/04/14.
+//  Created by Walter Fettich on 02/05/14.
 //  Copyright (c) 2014 Walter Fettich. All rights reserved.
 //
 
-#import "AHParallelInvocation.h"
+#import "AHQueueInvocation.h"
 #import "AHSingleInvocation.h"
 
-@interface AHParallelInvocation ()
+@interface AHQueueInvocation ()
+
 @property (strong,nonatomic) NSMutableArray* runningInvocations;
 @property (strong,nonatomic) NSMutableArray* invocations;
 @end
 
-@implementation AHParallelInvocation
+@implementation AHQueueInvocation
 @synthesize finishedBlock;
 @synthesize isRunning;
 
@@ -25,16 +26,16 @@
         self.runningInvocations = [[NSMutableArray alloc] init];
         self.invocations = [invocations mutableCopy];
         
-        [self setFinishedBlock:complete];
+        [self setFinishBlock:complete];
         
     }
     return self;
 }
 
--(void)setFinishedBlock:(CompletionBlock)complete
+-(void)setFinishBlock:(CompletionBlock)complete
 {
     __block BOOL successful = YES;
-    __block AHParallelInvocation* bself = self;
+    __block AHQueueInvocation* bself = self;
     
     CompletionBlock completionBlock =
     ^(BOOL success, id<AHInvocationProtocol> invocation)
@@ -48,8 +49,12 @@
             if (complete)
                 complete (successful,bself);
         }
+        else
+        {
+            [self.runningInvocations[0] invoke];
+        }
     };
-
+    
     for (AHSingleInvocation* invocation in self.invocations)
     {
         [invocation setFinishedBlock:completionBlock];
@@ -60,27 +65,21 @@
 {
     [self.invocations addObject:invocation];
     
-    if (self.isRunning)
-    {
-        [invocation setFinishedBlock:self.finishedBlock];
-        [invocation invoke];
-    }
+    [invocation setFinishedBlock:self.finishedBlock];
 }
 
 -(void)invoke
 {
-    if (self.invocations.count > 0)
+    if (self.invocations.count > 0 )
     {
-        for (NSInvocation* invocation in self.invocations)
-        {
-            [self.runningInvocations addObject:invocation];
-            [invocation invoke];
-        }
+        [self.runningInvocations addObjectsFromArray:self.invocations];
+        
+        [self.runningInvocations[0] invoke];
+        self.isRunning = YES;
     }
     else if (self.finishedBlock)
     {
         self.finishedBlock (YES,self);
     }
 }
-
 @end
