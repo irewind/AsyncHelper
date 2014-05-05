@@ -62,8 +62,11 @@
 
 -(void)invoke
 {
-    self.isRunning = YES;
-    [self.invocation invoke];
+    if (self.isRunning == NO)
+    {
+        self.isRunning = YES;
+        [self.invocation invoke];
+    }
 }
 
 @end

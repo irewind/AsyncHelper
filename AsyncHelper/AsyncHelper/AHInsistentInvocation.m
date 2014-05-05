@@ -10,8 +10,8 @@
 
 @interface AHInsistentInvocation ()
 @property (strong,nonatomic) id<AHInvocationProtocol> invocation;
-@property (assign,nonatomic) NSNumber* retryAfterSeconds;
-@property (assign,nonatomic) NSNumber* timesToRetry;
+@property (strong,nonatomic) NSNumber* retryAfterSeconds;
+@property (strong,nonatomic) NSNumber* timesToRetry;
 @property (assign,nonatomic) int remainingRetries;
 @end
 
@@ -46,41 +46,40 @@
 }
 
 
--(void)setFinishedBlock:(CompletionBlock)finishedBlock
+-(void)setFinishedBlock:(CompletionBlock)complete
 {
     if (self.timesToRetry != nil)
         self.remainingRetries = self.timesToRetry.intValue;
     
-//    NSUInteger nrArgs = [[self.invocation methodSignature] numberOfArguments];
-//    [invocation setArgument:&block1 atIndex:nrArgs-1];
-
+    __block AHInsistentInvocation* bself = self;
+    
     CompletionBlock completionBlock =
     ^(BOOL success, id<AHInvocationProtocol> invocation)
     {
         if (
-            (self.timesToRetry != nil && self.remainingRetries!=0) //this order is important here
-            && success == NO
+            success == NO && (bself.timesToRetry == nil || (bself.timesToRetry != nil && bself.remainingRetries>0))
             )
         {
-            double delayInSeconds = self.retryAfterSeconds.doubleValue;
+            double delayInSeconds = bself.retryAfterSeconds.doubleValue;
             dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
             dispatch_after(popTime, dispatch_get_main_queue(),
                ^(void)
                {
-                   if (self.timesToRetry != nil && self.remainingRetries!=0)
-                       self.remainingRetries--;
+                   if (bself.timesToRetry != nil && bself.remainingRetries!=0)
+                       bself.remainingRetries--;
                    
-                   [self.invocation invoke];
+                   [bself.invocation invoke];
                });
         }
         else
         {
-            self.isRunning = NO;
-            if (self.finishedBlock)
-                self.finishedBlock(success,self);
+            bself.isRunning = NO;
+            if (bself.finishedBlock)
+                bself.finishedBlock(success,bself);
         }
     };
     
+    finishedBlock = complete;
     [self.invocation setFinishedBlock:completionBlock];
 }
 

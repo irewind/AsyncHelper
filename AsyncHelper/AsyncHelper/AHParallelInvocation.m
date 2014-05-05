@@ -40,11 +40,11 @@
     ^(BOOL success, id<AHInvocationProtocol> invocation)
     {
         successful &= success;
-        [self.runningInvocations removeObject:invocation];
+        [bself.runningInvocations removeObject:invocation];
         
-        if (self.runningInvocations.count == 0)
+        if (bself.runningInvocations.count == 0)
         {
-            self.isRunning = NO;
+            bself.isRunning = NO;
             if (complete)
                 complete (successful,bself);
         }
@@ -71,7 +71,7 @@
 {
     if (self.invocations.count > 0)
     {
-        for (NSInvocation* invocation in self.invocations)
+        for (AHSingleInvocation* invocation in self.invocations)
         {
             [self.runningInvocations addObject:invocation];
             [invocation invoke];

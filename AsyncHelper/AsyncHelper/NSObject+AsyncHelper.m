@@ -18,8 +18,6 @@
 {
     AHInsistentInvocation* inv = [[AHInsistentInvocation alloc] initWithInvocation:invocation retryEverySeconds:sec andCompletionBlock:complete];
     
-    [inv invoke];
-    
     return inv;
 }
 
@@ -67,8 +65,6 @@
 {
     AHParallelInvocation* inv = [[AHParallelInvocation alloc] initWithInvocations:invocations andCompletionBlock:complete];
     
-    [inv invoke];
-    
     return inv;
 }
 
@@ -106,8 +102,6 @@
 -(AHQueueInvocation*)queue:(NSArray*)invocations andThen:(CompletionBlock)complete
 {
     AHQueueInvocation* inv = [[AHQueueInvocation alloc] initWithInvocations:invocations andCompletionBlock:complete];
-    
-    [inv invoke];
     
     return inv;
 }
