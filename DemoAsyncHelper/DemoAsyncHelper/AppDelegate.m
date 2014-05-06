@@ -83,7 +83,7 @@
               andThen:
      ^(BOOL success, id<AHInvocationProtocol> inv)
      {
-         NSLog(@"test1 done %d",success);
+         NSLog(@"test1 done %d",NO == success);
      }] invoke]
     ;
 }
