@@ -48,6 +48,8 @@
 
 -(void)setFinishedBlock:(CompletionBlock)complete
 {
+    finishedBlock = complete;
+    
     if (self.timesToRetry != nil)
         self.remainingRetries = self.timesToRetry.intValue;
     
@@ -79,7 +81,6 @@
         }
     };
     
-    finishedBlock = complete;
     [self.invocation setFinishedBlock:completionBlock];
 }
 

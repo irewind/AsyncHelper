@@ -70,6 +70,17 @@
                    });
 }
 
+-(void) op5WithNum:(NSNumber*)num andStr:(NSString*)str andThen:(void(^)(BOOL success))complete
+{
+    NSLog(@"begin op5 args: %@ %@",num,str);
+    
+    dispatch_async(dispatch_get_main_queue(),
+        ^{
+//            NSLog(@"op5 done args: %@ %@",num,str);
+            if (complete)
+                complete(YES);
+        });
+}
 
 -(void)test1
 {
@@ -215,6 +226,24 @@
     ;
 }
 
+-(void)test9
+{
+    NSLog(@"begin test9");
+    
+    [[self parallelize:
+        @[
+          invf(self, @selector(op5WithNum:andStr:andThen:),@1,@"lala",nil)
+          ,invf(self, @selector(op5WithNum:andStr:andThen:),@1,@"lala",nil)
+        ]
+        andThen:
+    ^(BOOL success, id<AHInvocationProtocol> invocation)
+    {
+        NSLog(@"test9 done %d",success);
+    }] invoke];
+    ;
+}
+
+
 -(void)doStuff
 {
     
@@ -228,7 +257,7 @@
 //
 //        }];
 //    }];
-
+/*
     [self test1];
 
     [self test2];
@@ -243,7 +272,9 @@
 
     [self test7];
     
-    [self test8];        
+    [self test8];
+*/
+    [self test9];
 }
 
 

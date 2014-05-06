@@ -18,6 +18,16 @@
 @synthesize finishedBlock;
 @synthesize isRunning;
 
+-(instancetype) init
+{
+    if (self = [super init])
+    {
+        self.runningInvocations = [[NSMutableArray alloc] init];
+        self.invocations = [[NSMutableArray alloc] init];
+    }
+    return self;
+}
+
 -(instancetype) initWithInvocations:(NSArray*)invocations andCompletionBlock:(CompletionBlock)complete
 {
     if (self = [super init])
@@ -35,18 +45,25 @@
 {
     __block BOOL successful = YES;
     __block AHParallelInvocation* bself = self;
+    finishedBlock = complete;
     
     CompletionBlock completionBlock =
     ^(BOOL success, id<AHInvocationProtocol> invocation)
     {
+        if (NO == success)
+        {
+            int x = 0;
+            x++;
+        }
+        
         successful &= success;
         [bself.runningInvocations removeObject:invocation];
         
         if (bself.runningInvocations.count == 0)
         {
             bself.isRunning = NO;
-            if (complete)
-                complete (successful,bself);
+            if (bself.finishedBlock)
+                bself.finishedBlock (successful,bself);
         }
     };
 
@@ -60,9 +77,11 @@
 {
     [self.invocations addObject:invocation];
     
+    if (self.finishedBlock)
+        [invocation setFinishedBlock:self.finishedBlock];
+    
     if (self.isRunning)
     {
-        [invocation setFinishedBlock:self.finishedBlock];
         [invocation invoke];
     }
 }

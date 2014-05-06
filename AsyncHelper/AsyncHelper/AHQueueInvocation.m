@@ -36,6 +36,7 @@
 {
     __block BOOL successful = YES;
     __block AHQueueInvocation* bself = self;
+    finishedBlock = complete;
     
     CompletionBlock completionBlock =
     ^(BOOL success, id<AHInvocationProtocol> invocation)
@@ -46,8 +47,8 @@
         if (bself.runningInvocations.count == 0)
         {
             bself.isRunning = NO;
-            if (complete)
-                complete (successful,bself);
+            if (bself.finishedBlock)
+                bself.finishedBlock (successful,bself);
         }
         else
         {

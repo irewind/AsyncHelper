@@ -15,4 +15,4 @@
 @property (assign,nonatomic) BOOL isRunning;
 @end
 
-typedef void (^CompletionBlock)(BOOL success, id<AHInvocationProtocol>);
+typedef void (^CompletionBlock)(BOOL success, id<AHInvocationProtocol> invocation);

@@ -35,9 +35,9 @@
         [invocation setTarget:target];
         
         NSInteger index = 2;
-        for (id arg in arguments)
+        for (NSObject* arg in arguments)
         {
-            [invocation setArgument:(__bridge void *)(arg) atIndex:index];
+            [invocation setArgument:(void*)(&arg) atIndex:index];
             index++;
         }
         [invocation retainArguments];
@@ -49,11 +49,14 @@
 
 -(void)setFinishedBlock:(CompletionBlock)complete
 {
+    finishedBlock = complete;
+    __block AHSingleInvocation* bself = self;
     void (^completionBlock) (BOOL success) =
     ^(BOOL success)
     {
-        self.isRunning = NO;
-        complete(success,self);
+        bself.isRunning = NO;
+        if (bself.finishedBlock)
+        bself.finishedBlock(success,bself);
     };
     
     NSUInteger nrArgs = [[self.invocation methodSignature] numberOfArguments];
