@@ -19,6 +19,16 @@
 @synthesize finishedBlock;
 @synthesize isRunning;
 
+-(instancetype) init
+{
+    if (self = [super init])
+    {
+        self.runningInvocations = [[NSMutableArray alloc] init];
+        self.invocations = [[NSMutableArray alloc] init];
+    }
+    return self;
+}
+
 -(instancetype) initWithInvocations:(NSArray*)invocations andCompletionBlock:(CompletionBlock)complete
 {
     if (self = [super init])
@@ -62,7 +72,7 @@
     }
 }
 
--(void)addInvocation:(AHSingleInvocation*)invocation
+-(void)addInvocation:(id<AHInvocationProtocol>)invocation
 {
     [self.invocations addObject:invocation];
     

@@ -16,6 +16,14 @@
 @synthesize finishedBlock;
 @synthesize isRunning;
 
+-(instancetype) init
+{
+    if (self = [super init])
+    {
+    }
+    return self;
+}
+
 -(instancetype) initWithNSInvocation:(NSInvocation*)invocation;
 {
     if (self = [super init])

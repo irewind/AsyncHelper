@@ -73,7 +73,7 @@
     }
 }
 
--(void)addInvocation:(AHSingleInvocation*)invocation
+-(void)addInvocation:(id<AHInvocationProtocol>)invocation
 {
     [self.invocations addObject:invocation];
     
