@@ -13,6 +13,7 @@
 @property (strong,nonatomic) void(^finishedBlock)(BOOL success, id<AHInvocationProtocol>);
 -(void)invoke;
 @property (assign,nonatomic) BOOL isRunning;
+@property (strong,nonatomic) NSObject* result;
 @end
 
 typedef void (^CompletionBlock)(BOOL success, id<AHInvocationProtocol> invocation);

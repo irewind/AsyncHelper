@@ -12,6 +12,16 @@
 @implementation AppDelegate
 
 
+-(void)op11AndThen:(void(^)(BOOL success,NSObject* result))complete
+{
+    NSLog(@"started op1");
+    dispatch_async(dispatch_get_main_queue(),
+                   ^{
+                       NSLog(@"op1 done");
+                       complete(YES,@(666));
+                   });
+}
+
 -(void)op1AndThen:(void(^)(BOOL success))complete
 {
     NSLog(@"started op1");    
@@ -243,6 +253,20 @@
     ;
 }
 
+-(void)test10
+{
+    NSLog(@"begin test10");
+    
+    AHSingleInvocation* invocation = _inv(op11AndThen:);
+    
+    [invocation setFinishedBlock:^(BOOL success, id<AHInvocationProtocol> invocation)
+    {
+       NSLog(@"test10 done succes: %d, result: %@",success,invocation.result);
+    }];
+     
+     [invocation invoke];
+}
+
 
 -(void)doStuff
 {
@@ -273,8 +297,10 @@
     [self test7];
     
     [self test8];
-*/
+
     [self test9];
+*/
+    [self test10];
 }
 
 

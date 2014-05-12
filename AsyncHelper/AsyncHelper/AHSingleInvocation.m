@@ -15,6 +15,7 @@
 @implementation AHSingleInvocation
 @synthesize finishedBlock;
 @synthesize isRunning;
+@synthesize result;
 
 -(instancetype) init
 {
@@ -59,10 +60,11 @@
 {
     finishedBlock = complete;
     __block AHSingleInvocation* bself = self;
-    void (^completionBlock) (BOOL success) =
-    ^(BOOL success)
+    void (^completionBlock) (BOOL success, NSObject* result) =
+    ^(BOOL success, NSObject* res)
     {
         bself.isRunning = NO;
+        bself.result = res;
         if (bself.finishedBlock)
         bself.finishedBlock(success,bself);
     };

@@ -5,34 +5,34 @@
 	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
 	<false/>
 	<key>IDESourceControlProjectIdentifier</key>
-	<string>7E9DD117-38D9-4467-A2BD-86D558938D3E</string>
+	<string>8AB887DF-5414-47FD-AAFA-99FEF3A77BF1</string>
 	<key>IDESourceControlProjectName</key>
 	<string>DemoAsyncHelper</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
-		<key>45B21B32-E5F2-460B-B9B9-D462904A0309</key>
+		<key>0009DB54-63A7-400C-BC51-C8760D6AAADF</key>
 		<string>ssh://github.com/wfettich/AsyncHelper.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>DemoAsyncHelper/DemoAsyncHelper.xcodeproj/project.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
-		<key>45B21B32-E5F2-460B-B9B9-D462904A0309</key>
+		<key>0009DB54-63A7-400C-BC51-C8760D6AAADF</key>
 		<string>../../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
-	<string>ssh://github.com/wfettich/AsyncHelper.git</string>
+	<string>https://github.com/wfettich/irewind-ios</string>
 	<key>IDESourceControlProjectVersion</key>
 	<integer>110</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
-	<string>45B21B32-E5F2-460B-B9B9-D462904A0309</string>
+	<string>0009DB54-63A7-400C-BC51-C8760D6AAADF</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>45B21B32-E5F2-460B-B9B9-D462904A0309</string>
+			<string>0009DB54-63A7-400C-BC51-C8760D6AAADF</string>
 			<key>IDESourceControlWCCName</key>
 			<string>AsyncHelper</string>
 		</dict>
