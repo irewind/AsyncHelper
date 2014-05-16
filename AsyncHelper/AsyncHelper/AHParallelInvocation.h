@@ -13,4 +13,5 @@
 @interface AHParallelInvocation : NSObject<AHInvocationProtocol>
 -(instancetype) initWithInvocations:(NSArray*)invocations andCompletionBlock:(CompletionBlock)complete;
 -(void)addInvocation:(id<AHInvocationProtocol>)invocation;
+-(NSArray*)invocations;
 @end

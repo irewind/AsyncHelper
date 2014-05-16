@@ -17,6 +17,7 @@
 @implementation AHParallelInvocation
 @synthesize finishedBlock;
 @synthesize isRunning;
+@synthesize result;
 
 -(instancetype) init
 {
@@ -75,7 +76,7 @@
 
 -(void)addInvocation:(id<AHInvocationProtocol>)invocation
 {
-    [self.invocations addObject:invocation];
+    [_invocations addObject:invocation];
     
     if (self.finishedBlock)
         [invocation setFinishedBlock:self.finishedBlock];
@@ -102,4 +103,8 @@
     }
 }
 
+-(NSArray*)invocations
+{
+    return _invocations;
+}
 @end

@@ -18,6 +18,7 @@
 @implementation AHQueueInvocation
 @synthesize finishedBlock;
 @synthesize isRunning;
+@synthesize result;
 
 -(instancetype) init
 {
@@ -74,10 +75,30 @@
 
 -(void)addInvocation:(id<AHInvocationProtocol>)invocation
 {
-    [self.invocations addObject:invocation];
+    [_invocations addObject:invocation];
     
     [invocation setFinishedBlock:self.finishedBlock];
 }
+
+
+//-(void) setResult:(NSObject *)result
+//{
+//}
+//
+//-(NSObject*) result
+//{
+//    NSMutableArray* resultArray = [NSMutableArray array];
+//    
+//    for (id<AHInvocationProtocol> invocation in self.invocations)
+//    {
+//        if (invocation.result != nil)
+//        {
+//            [resultArray addObject:invocation.result];
+//        }
+//    }
+//    
+//    return [NSArray arrayWithArray:resultArray];
+//}
 
 -(void)invoke
 {
@@ -93,4 +114,10 @@
         self.finishedBlock (YES,self);
     }
 }
+
+-(NSArray*)invocations
+{
+    return _invocations;
+}
+
 @end
