@@ -27,7 +27,7 @@
     {
         self.runningInvocations = [[NSMutableArray alloc] init];
         self.invocations = [[NSMutableArray alloc] init];
-        self.name = AHNSStringF(@"%d",[self hash]);
+        self.name = AHNSStringF(@"%d_%@",[self hash], NSStringFromClass([self class]));
     }
     return self;
 }
@@ -38,7 +38,7 @@
     {
         self.runningInvocations = [[NSMutableArray alloc] init];
         self.invocations = [invocations mutableCopy];
-        self.name = AHNSStringF(@"%d",[self hash]);
+        self.name = AHNSStringF(@"%d_%@",[self hash], NSStringFromClass([self class]));
         
         [self setFinishedBlock:complete];
         [self prepareInvocations];
@@ -60,12 +60,6 @@
     CompletionBlock completionBlock =
     ^(BOOL success, id<AHInvocationProtocol> invocation)
     {
-        if (NO == success)
-        {
-            int x = 0;
-            x++;
-        }
-        
         successful &= success;
         [bself.runningInvocations removeObject:invocation];
         
@@ -106,13 +100,13 @@
     
     for (id<AHInvocationProtocol> invocation in self.invocations)
     {
-        if (invocation.result != nil)
+        if (invocation.result != nil && ((NSDictionary*)invocation.result)[invocation.name] != nil)
         {
-            resultDict[invocation.name] = invocation.result;
+            resultDict[invocation.name] = ((NSDictionary*)invocation.result)[invocation.name];
         }
     }
     
-    return [NSDictionary dictionaryWithDictionary:resultDict];
+    return @{self.name:resultDict};
 }
 
 -(void)invoke

@@ -32,7 +32,7 @@
     if (self = [super init])
     {
         self.invocation = invocation;
-        self.name = AHNSStringF(@"%d",[self hash]);
+        self.name = AHNSStringF(@"%d_%@",[self hash], NSStringFromSelector(invocation.selector));
     }
     return self;
 }
@@ -41,12 +41,12 @@
 {
     if (self = [super init])
     {
-        self.name = AHNSStringF(@"%d",[self hash]);
-        
         NSMethodSignature* signature = [[target class] instanceMethodSignatureForSelector:selector];
         NSInvocation* invocation = [NSInvocation invocationWithMethodSignature:signature];
         [invocation setSelector:selector];
         [invocation setTarget:target];
+        
+        self.name = AHNSStringF(@"%d_%@",[self hash], NSStringFromSelector(invocation.selector));
         
         NSInteger index = 2;
         for (NSObject* arg in arguments)
@@ -64,7 +64,8 @@
 -(void)prepareInvocation
 {
     __block AHSingleInvocation* bself = self;
-    void (^completionBlock) (BOOL success, NSObject* result) =
+    
+    ResponseBlock completionBlock =
     ^(BOOL success, NSObject* res)
     {
         bself.isRunning = NO;

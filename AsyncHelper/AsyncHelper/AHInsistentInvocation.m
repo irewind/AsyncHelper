@@ -28,7 +28,7 @@
     {
         self.invocation = invocation;
         self.retryAfterSeconds = sec;
-        self.name = AHNSStringF(@"%d",[self hash]);
+        self.name = AHNSStringF(@"%d_%@(%@)",[self hash], NSStringFromClass([self class]), invocation.name);
         [self setFinishedBlock:complete];
     }
     return self;
@@ -40,7 +40,7 @@
     {
         self.invocation = invocation;
         self.retryAfterSeconds = sec;
-        self.name = AHNSStringF(@"%d",[self hash]);
+        self.name = AHNSStringF(@"%d_%@",[self hash], NSStringFromClass([self class]));
         self.timesToRetry = times;
         
         [self setFinishedBlock:complete];

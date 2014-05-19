@@ -28,7 +28,7 @@
     {
         self.runningInvocations = [[NSMutableArray alloc] init];
         self.invocations = [[NSMutableArray alloc] init];
-        self.name = AHNSStringF(@"%d",[self hash]);
+        self.name = AHNSStringF(@"%d_%@",[self hash], NSStringFromClass([self class]));
     }
     return self;
 }
@@ -39,7 +39,7 @@
     {
         self.runningInvocations = [[NSMutableArray alloc] init];
         self.invocations = [invocations mutableCopy];
-        self.name = AHNSStringF(@"%d",[self hash]);
+        self.name = AHNSStringF(@"%d_%@",[self hash], NSStringFromClass([self class]));
         
         [self setFinishBlock:complete];
         [self prepareInvocations];
@@ -102,13 +102,13 @@
     
     for (id<AHInvocationProtocol> invocation in self.invocations)
     {
-        if (invocation.result != nil)
+        if (invocation.result != nil && ((NSDictionary*)invocation.result)[invocation.name] != nil)
         {
-            resultDict[invocation.name] = invocation.result;
+            resultDict[invocation.name] = ((NSDictionary*)invocation.result)[invocation.name];
         }
     }
     
-    return [NSDictionary dictionaryWithDictionary:resultDict];
+    return @{self.name:resultDict};
 }
 
 -(void)invoke

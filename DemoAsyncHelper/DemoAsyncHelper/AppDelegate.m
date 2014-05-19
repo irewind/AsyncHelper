@@ -8,18 +8,28 @@
 
 #import "AppDelegate.h"
 #import <NSObject+AsyncHelper.h>
+#import "NSString+Utils.h"
 
 @implementation AppDelegate
 
+#define _classStr NSStringFromClass([self class])
+#define _selStr NSStringFromSelector(_cmd)
+#define _a(x) /*NSAssert(x,@"[%@] %@ ASSERT FAILED!",_classStr,_selStr);*/ if (NO == (x)) { [AppDelegate breakPoint]; NSString* assertMsg = AHNSStringF(@"[%@] %@ ASSERT FAILED! %s",_classStr,_selStr,#x); NSLog(@"%@",assertMsg);}
+
++(void)breakPoint
+{
+    int x = 0;
+    x++;
+}
 
 -(void)op11AndThen:(void(^)(BOOL success,NSObject* result))complete
 {
     NSLog(@"started op11");
     dispatch_async(dispatch_get_main_queue(),
-                   ^{
-                       NSLog(@"op11 done");
-                       complete(YES,@(666));
-                   });
+       ^{
+           NSLog(@"op11 done");
+           complete(YES,@(666));
+       });
 }
 
 -(void)op1AndThen:(void(^)(BOOL success,NSObject* result))complete
@@ -92,7 +102,7 @@
         });
 }
 
--(void)test1
+-(void)test1AndThen:(ResponseBlock)complete
 {
     NSLog(@"begin test1");
     
@@ -105,12 +115,18 @@
      ^(BOOL success, id<AHInvocationProtocol> inv)
      {
          NSLog(@"test1 done %d, results: %@",NO == success, inv.result);
+         NSLog(@"--------1--------");
+         _a(NO == success);
+         
+         if (complete)
+             complete (NO == success,nil);
+         
      }] invoke]
     ;
 }
 
 
--(void)test2
+-(void)test2AndThen:(ResponseBlock)complete
 {
     NSLog(@"begin test2");
     [[self queue:@[
@@ -130,13 +146,19 @@
           ^(BOOL success, id<AHInvocationProtocol> inv)
           {
               NSLog(@"test2 done %d",success);
+              NSLog(@"--------2--------");
+              _a(success);
+              if (complete)
+                  complete (success,nil);
+              
+              
           }] invoke];
          
      }] invoke]
     ;
 }
 
--(void)test3
+-(void)test3AndThen:(ResponseBlock)complete
 {
     NSLog(@"begin test3");
     [[self queue:@[
@@ -151,22 +173,32 @@
      ^(BOOL success, id<AHInvocationProtocol> inv)
      {
          NSLog(@"test3 done %d",success);
+         NSLog(@"--------3--------");
+          _a(success);
+         if (complete)
+             complete (success,nil);
+
      }] invoke]
     ;
     
 }
 
--(void)test4
+-(void)test4AndThen:(ResponseBlock)complete
 {
     NSLog(@"begin test4");
     [[self ifFailed:_inv(op3AndThen:) retryEverySeconds:@(2) andThen:
      ^(BOOL success, id<AHInvocationProtocol> inv)
      {
          NSLog(@"test4 done %d",success);
+         NSLog(@"--------4--------");
+          _a(success);
+         if (complete)
+             complete (success,nil);
+
      }] invoke];
 }
 
--(void)test5
+-(void)test5AndThen:(ResponseBlock)complete
 {
     NSLog(@"begin test5");
     [[self queue:@[
@@ -181,11 +213,16 @@
      ^(BOOL success, id<AHInvocationProtocol> inv)
      {
          NSLog(@"test5 done %d",success);
+         NSLog(@"--------5--------");
+          _a(success);
+         if (complete)
+             complete (success,nil);
+
      }] invoke]
     ;
 }
 
--(void)test6
+-(void)test6AndThen:(ResponseBlock)complete
 {
     NSLog(@"begin test6");
      AHQueueInvocation* queue = [self queue:@[
@@ -198,13 +235,18 @@
      ^(BOOL success, id<AHInvocationProtocol> inv)
      {
          NSLog(@"test6 done %d",success);
+         NSLog(@"--------6--------");
+          _a(success);
+         if (complete)
+             complete (success,nil);
+
      }];
     [queue invoke];
     
     [queue addInvocation:_inv(op3AndThen:)];
 }
 
--(void)test7
+-(void)test7AndThen:(ResponseBlock)complete
 {
     NSLog(@"begin test7");
     
@@ -215,12 +257,17 @@
          ^(BOOL success,NSObject* result)
         {
             NSLog(@"test7 done %d",success);
+            NSLog(@"--------7--------");
+              _a(success);
+            if (complete)
+                complete (success,nil);
+
         }];
     }] invoke]
     ;
 }
 
--(void)test8
+-(void)test8AndThen:(ResponseBlock)complete
 {
     NSLog(@"begin test8");
     
@@ -231,12 +278,17 @@
           ^(BOOL success,NSObject* result)
           {
               NSLog(@"test8 done %d",success);
+              NSLog(@"--------8--------");
+              _a(success);
+              if (complete)
+                  complete (success,nil);
+
           }];
      }] invoke]
     ;
 }
 
--(void)test9
+-(void)test9AndThen:(ResponseBlock)complete
 {
     NSLog(@"begin test9");
     
@@ -249,11 +301,16 @@
     ^(BOOL success, id<AHInvocationProtocol> invocation)
     {
         NSLog(@"test9 done %d",success);
+         NSLog(@"--------9--------");
+          _a(success);
+        if (complete)
+            complete (success,nil);
+
     }] invoke];
     ;
 }
 
--(void)test10
+-(void)test10AndThen:(ResponseBlock)complete
 {
     NSLog(@"begin test10");
     
@@ -262,12 +319,17 @@
     [invocation setFinishedBlock:^(BOOL success, id<AHInvocationProtocol> invocation)
     {
        NSLog(@"test10 done succes: %d, result: %@",success,invocation.result);
+       NSLog(@"--------10--------");
+      _a(success);
+        if (complete)
+            complete (success,nil);
+
     }];
-     
+    
      [invocation invoke];
 }
 
--(void)test11
+-(void)test11AndThen:(ResponseBlock)complete
 {
     NSLog(@"begin test11");
     
@@ -277,6 +339,11 @@
       ^(BOOL success, id<AHInvocationProtocol> invocation)
       {
           NSLog(@"test11 done %d, results: %@",success,invocation.result);
+          NSLog(@"--------11--------");
+          _a(success);
+          if (complete)
+              complete (success,nil);
+
       }];
     
     [parallel addInvocation:invf(self, @selector(op5WithNum:andStr:andThen:),@1,@"lala",nil)];
@@ -286,7 +353,7 @@
 }
 
 
--(void)test13
+-(void)test13AndThen:(ResponseBlock)complete
 {
     NSLog(@"begin test13");
     
@@ -309,6 +376,11 @@
                                       ^(BOOL success, id<AHInvocationProtocol> invocation)
                                       {
                                           NSLog(@"test13 done %d, results: %@",success,invocation.result);
+                                          NSLog(@"--------13-------");
+                                          _a(success);
+                                          if (complete)
+                                              complete (success,nil);
+
                                       }];
     
     [queue addInvocation:invf(self, @selector(op5WithNum:andStr:andThen:),@1,@"lala",nil)];
@@ -323,7 +395,7 @@
 }
 
 
--(void)test12
+-(void)test12AndThen:(ResponseBlock)complete
 {
     NSLog(@"begin test12");
     
@@ -333,6 +405,11 @@
                                 ^(BOOL success, id<AHInvocationProtocol> invocation)
                                 {
                                     NSLog(@"test12 done %d, results: %@",success,invocation.result);
+                                    NSLog(@"--------12--------");                                    
+                                      _a(success);
+                                    if (complete)
+                                        complete (success,nil);
+
                                 }];
     
     [queue addInvocation:invf(self, @selector(op5WithNum:andStr:andThen:),@1,@"lala",nil)];
@@ -355,32 +432,39 @@
 //        }];
 //    }];
 
-    [self test1];
-
- /*
-    [self test2];
-
-    [self test3];
-
-    [self test4];
-
-    [self test5];
-
-    [self test6];
-
-    [self test7];
+    AHQueueInvocation* queue = [self queue:@[] andThen:^(BOOL success, id<AHInvocationProtocol> invocation) {
     
-    [self test8];
-
-    [self test9];
-
-    [self test10];
+        NSLog(@"all done, success: %d",success);
+    }];
     
-    [self test11];
+    [queue addInvocation:_inv(test1AndThen:)];
+    
+    [queue addInvocation:_inv(test2AndThen:)];
 
-    [self test12];
-*/
-    [self test13];
+    [queue addInvocation:_inv(test3AndThen:)];
+
+    [queue addInvocation:_inv(test4AndThen:)];
+
+    [queue addInvocation:_inv(test5AndThen:)];
+
+    [queue addInvocation:_inv(test6AndThen:)];
+
+    [queue addInvocation:_inv(test7AndThen:)];
+    
+    [queue addInvocation:_inv(test8AndThen:)];
+
+    [queue addInvocation:_inv(test9AndThen:)];
+
+    [queue addInvocation:_inv(test10AndThen:)];
+    
+    [queue addInvocation:_inv(test11AndThen:)];
+
+    [queue addInvocation:_inv(test12AndThen:)];
+
+    [queue addInvocation:_inv(test13AndThen:)];
+    
+    [queue invoke];
+    
 }
 
 

@@ -17,4 +17,5 @@
 @property (strong,nonatomic) NSString* name;
 @end
 
+typedef void (^ResponseBlock)(BOOL success, NSObject* result);
 typedef void (^CompletionBlock)(BOOL success, id<AHInvocationProtocol> invocation);
