@@ -418,6 +418,37 @@
     [queue invoke];
 }
 
+
+-(void)test14AndThen:(ResponseBlock)complete
+{
+    NSLog(@"begin test14");
+
+    
+    AHParallelInvocation* parallel1 = [self parallelize:@[] andThen:^(BOOL success, id<AHInvocationProtocol> invocation) {
+        
+        NSLog(@"finished %@",invocation.name);
+    }];
+
+    AHParallelInvocation* parallel2 = [self parallelize:@[] andThen:^(BOOL success, id<AHInvocationProtocol> invocation) {
+        
+        NSLog(@"finished %@",invocation.name);
+    }];
+
+    AHQueueInvocation* queue = [self queue:@[parallel1,parallel2] andThen:
+            ^(BOOL success, id<AHInvocationProtocol> invocation)
+    {
+        NSLog(@"test14 done %d, results: %@",success,invocation.result);
+        NSLog(@"--------14--------");
+        _a(success);
+        if (complete)
+            complete (success,nil);
+        
+    }];
+    
+    
+    [queue invoke];
+}
+
 -(void)doStuff
 {
     
@@ -437,6 +468,7 @@
         NSLog(@"all done, success: %d",success);
     }];
     
+
     [queue addInvocation:_inv(test1AndThen:)];
     
     [queue addInvocation:_inv(test2AndThen:)];
@@ -462,6 +494,8 @@
     [queue addInvocation:_inv(test12AndThen:)];
 
     [queue addInvocation:_inv(test13AndThen:)];
+
+    [queue addInvocation:_inv(test14AndThen:)];
     
     [queue invoke];
     

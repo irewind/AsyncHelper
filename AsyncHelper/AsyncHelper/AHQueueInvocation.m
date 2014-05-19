@@ -13,6 +13,7 @@
 @interface AHQueueInvocation ()
 
 @property (strong,nonatomic) NSMutableArray* runningInvocations;
+@property (strong,nonatomic) NSMutableArray* preparedInvocations;
 @property (strong,nonatomic) NSMutableArray* invocations;
 @end
 
@@ -27,6 +28,7 @@
     if (self = [super init])
     {
         self.runningInvocations = [[NSMutableArray alloc] init];
+        self.preparedInvocations = [[NSMutableArray alloc] init];
         self.invocations = [[NSMutableArray alloc] init];
         self.name = AHNSStringF(@"%d_%@",[self hash], NSStringFromClass([self class]));
     }
@@ -38,6 +40,7 @@
     if (self = [super init])
     {
         self.runningInvocations = [[NSMutableArray alloc] init];
+        self.preparedInvocations = [[NSMutableArray alloc] init];
         self.invocations = [invocations mutableCopy];
         self.name = AHNSStringF(@"%d_%@",[self hash], NSStringFromClass([self class]));
         
@@ -53,7 +56,7 @@
     __block BOOL successful = YES;
     __block AHQueueInvocation* bself = self;
 
-    CompletionBlock completionBlock =
+    CompletionBlock invocationCompleted =
     ^(BOOL success, id<AHInvocationProtocol> invocation)
     {
         successful &= success;
@@ -73,15 +76,26 @@
     
     for (AHSingleInvocation* invocation in self.invocations)
     {
-        [invocation setFinishedBlock:completionBlock];
+        if (NO == [self.preparedInvocations containsObject:invocation])
+        {
+            ResponseBlock originalBlock = invocation.finishedBlock;
+            
+            [invocation setFinishedBlock:
+             ^(BOOL success, id<AHInvocationProtocol> invocation)
+             {
+                 if (originalBlock)
+                     originalBlock(success,invocation);
+                 invocationCompleted(success,invocation);
+             }];
+            
+            [self.preparedInvocations addObject:invocation];
+        }
     }
 }
 
 -(void)setFinishBlock:(CompletionBlock)complete
 {
     finishedBlock = complete;
-    
-//    [self prepareInvocations];
 }
 
 -(void)addInvocation:(id<AHInvocationProtocol>)invocation

@@ -57,7 +57,7 @@
     __block BOOL successful = YES;
     __block AHParallelInvocation* bself = self;
 
-    CompletionBlock completionBlock =
+    CompletionBlock invocationCompleted =
     ^(BOOL success, id<AHInvocationProtocol> invocation)
     {
         successful &= success;
@@ -73,7 +73,15 @@
     
     for (AHSingleInvocation* invocation in self.invocations)
     {
-        [invocation setFinishedBlock:completionBlock];
+        ResponseBlock originalBlock = invocation.finishedBlock;
+        
+        [invocation setFinishedBlock:
+         ^(BOOL success, id<AHInvocationProtocol> invocation)
+         {
+             if (originalBlock)
+                  originalBlock(success,invocation);
+             invocationCompleted(success,invocation);
+         }];
     }
 
 }
