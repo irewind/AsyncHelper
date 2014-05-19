@@ -7,6 +7,7 @@
 //
 
 #import "AHInsistentInvocation.h"
+#import "NSString+Utils.h"
 
 @interface AHInsistentInvocation ()
 @property (strong,nonatomic) id<AHInvocationProtocol> invocation;
@@ -18,6 +19,8 @@
 @implementation AHInsistentInvocation
 @synthesize isRunning;
 @synthesize finishedBlock;
+@synthesize name;
+@synthesize result;
 
 -(instancetype) initWithInvocation:(id<AHInvocationProtocol>)invocation retryEverySeconds:(NSNumber*)sec  andCompletionBlock:(CompletionBlock)complete
 {
@@ -25,7 +28,7 @@
     {
         self.invocation = invocation;
         self.retryAfterSeconds = sec;
-        
+        self.name = AHNSStringF(@"%d",[self hash]);
         [self setFinishedBlock:complete];
     }
     return self;
@@ -37,6 +40,7 @@
     {
         self.invocation = invocation;
         self.retryAfterSeconds = sec;
+        self.name = AHNSStringF(@"%d",[self hash]);
         self.timesToRetry = times;
         
         [self setFinishedBlock:complete];
@@ -76,6 +80,7 @@
         else
         {
             bself.isRunning = NO;
+            bself.result = invocation.result;
             if (bself.finishedBlock)
                 bself.finishedBlock(success,bself);
         }
@@ -88,5 +93,10 @@
 {
     self.isRunning = YES;
     [self.invocation invoke];
+}
+
+-(NSString*)description
+{
+    return AHNSStringF(@"%@: name:%@ retries:%@ interval:%@ result:%@ isRunning:%d",NSStringFromClass([self class]),self.name,self.timesToRetry,self.retryAfterSeconds,self.result,self.isRunning);
 }
 @end

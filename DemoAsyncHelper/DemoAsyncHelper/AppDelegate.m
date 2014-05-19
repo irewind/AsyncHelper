@@ -14,37 +14,37 @@
 
 -(void)op11AndThen:(void(^)(BOOL success,NSObject* result))complete
 {
-    NSLog(@"started op1");
+    NSLog(@"started op11");
     dispatch_async(dispatch_get_main_queue(),
                    ^{
-                       NSLog(@"op1 done");
+                       NSLog(@"op11 done");
                        complete(YES,@(666));
                    });
 }
 
--(void)op1AndThen:(void(^)(BOOL success))complete
+-(void)op1AndThen:(void(^)(BOOL success,NSObject* result))complete
 {
     NSLog(@"started op1");    
     dispatch_async(dispatch_get_main_queue(),
        ^{
            NSLog(@"op1 done");
-           complete(YES);
+           complete(YES,nil);
        });
 }
 
 
--(void)op2AndThen:(void(^)(BOOL success))complete
+-(void)op2AndThen:(void(^)(BOOL success,NSObject* result))complete
 {
     // do smth
     NSLog(@"started op2");
     dispatch_async(dispatch_get_main_queue(),
        ^{
            NSLog(@"op2 done");
-           complete(YES);
+           complete(YES,nil);
        });
 }
 
--(void)op3AndThen:(void(^)(BOOL success))complete
+-(void)op3AndThen:(void(^)(BOOL success,NSObject* result))complete
 {
     static int n = 3;
     NSLog(@"started op3, remaining %d",n);
@@ -54,7 +54,7 @@
        n--;
        BOOL ok = n<=0;
        NSLog(@"op3 done %d, remaining %d",ok,n);
-       complete(ok);
+       complete(ok,@"res3");
        if (ok)
        {
            n=3;
@@ -62,7 +62,7 @@
     });
 }
 
--(void)op4AndThen:(void(^)(BOOL success))complete
+-(void)op4AndThen:(void(^)(BOOL success,NSObject* result))complete
 {
     static int n2 = 200;
 //    NSLog(@"started op4, remaining %d",n2);
@@ -72,7 +72,7 @@
                        n2--;
                        BOOL ok = n2<=0;
 //                       NSLog(@"op4 done %d, remaining %d",ok,n2);
-                       complete(ok);
+                       complete(ok,@"res4");
                        if (ok)
                        {
                            n2=200;
@@ -80,15 +80,15 @@
                    });
 }
 
--(void) op5WithNum:(NSNumber*)num andStr:(NSString*)str andThen:(void(^)(BOOL success))complete
+-(void) op5WithNum:(NSNumber*)num andStr:(NSString*)str andThen:(void(^)(BOOL success,NSObject* result))complete
 {
     NSLog(@"begin op5 args: %@ %@",num,str);
     
     dispatch_async(dispatch_get_main_queue(),
         ^{
-//            NSLog(@"op5 done args: %@ %@",num,str);
+            NSLog(@"op5 done args: %@ %@",num,str);
             if (complete)
-                complete(YES);
+                complete(YES,@"res5");
         });
 }
 
@@ -104,7 +104,7 @@
               andThen:
      ^(BOOL success, id<AHInvocationProtocol> inv)
      {
-         NSLog(@"test1 done %d",NO == success);
+         NSLog(@"test1 done %d, results: %@",NO == success, inv.result);
      }] invoke]
     ;
 }
@@ -212,7 +212,7 @@
      ^(BOOL success, id<AHInvocationProtocol> inv)
     {
         [self op2AndThen:
-         ^(BOOL success)
+         ^(BOOL success,NSObject* result)
         {
             NSLog(@"test7 done %d",success);
         }];
@@ -228,7 +228,7 @@
      ^(BOOL success, id<AHInvocationProtocol> inv)
      {
          [self op2AndThen:
-          ^(BOOL success)
+          ^(BOOL success,NSObject* result)
           {
               NSLog(@"test8 done %d",success);
           }];
@@ -267,6 +267,79 @@
      [invocation invoke];
 }
 
+-(void)test11
+{
+    NSLog(@"begin test11");
+    
+    AHParallelInvocation* parallel = [self parallelize:
+      @[]
+               andThen:
+      ^(BOOL success, id<AHInvocationProtocol> invocation)
+      {
+          NSLog(@"test11 done %d, results: %@",success,invocation.result);
+      }];
+    
+    [parallel addInvocation:invf(self, @selector(op5WithNum:andStr:andThen:),@1,@"lala",nil)];
+    [parallel addInvocation:invf(self, @selector(op11AndThen:),nil)];
+    
+    [parallel invoke];
+}
+
+
+-(void)test13
+{
+    NSLog(@"begin test13");
+    
+    
+    AHParallelInvocation* parallel = [self parallelize:
+                                      @[]
+                                               andThen:
+                                      ^(BOOL success, id<AHInvocationProtocol> invocation)
+                                      {
+                                          NSLog(@"parallel done %d, results: %@",success,invocation.result);
+                                      }];
+    
+    [parallel addInvocation:invf(self, @selector(op5WithNum:andStr:andThen:),@1,@"lala",nil)];
+    [parallel addInvocation:invf(self, @selector(op11AndThen:),nil)];
+
+    
+    AHQueueInvocation* queue = [self queue:
+                                      @[]
+                                               andThen:
+                                      ^(BOOL success, id<AHInvocationProtocol> invocation)
+                                      {
+                                          NSLog(@"test13 done %d, results: %@",success,invocation.result);
+                                      }];
+    
+    [queue addInvocation:invf(self, @selector(op5WithNum:andStr:andThen:),@1,@"lala",nil)];
+    [queue addInvocation:invf(self, @selector(op11AndThen:),nil)];
+    [queue addInvocation:parallel];
+    
+    AHInsistentInvocation* insist = [self ifFailed:_inv(op3AndThen:) retryEverySeconds:@2];
+    
+    [queue addInvocation:insist];
+    
+    [queue invoke];
+}
+
+
+-(void)test12
+{
+    NSLog(@"begin test12");
+    
+    AHQueueInvocation* queue = [self queue:
+                                @[]
+                                   andThen:
+                                ^(BOOL success, id<AHInvocationProtocol> invocation)
+                                {
+                                    NSLog(@"test12 done %d, results: %@",success,invocation.result);
+                                }];
+    
+    [queue addInvocation:invf(self, @selector(op5WithNum:andStr:andThen:),@1,@"lala",nil)];
+    [queue addInvocation:invf(self, @selector(op11AndThen:),nil)];
+    
+    [queue invoke];
+}
 
 -(void)doStuff
 {
@@ -281,9 +354,10 @@
 //
 //        }];
 //    }];
-/*
+
     [self test1];
 
+ /*
     [self test2];
 
     [self test3];
@@ -299,8 +373,14 @@
     [self test8];
 
     [self test9];
-*/
+
     [self test10];
+    
+    [self test11];
+
+    [self test12];
+*/
+    [self test13];
 }
 
 

@@ -8,6 +8,7 @@
 
 #import "AHQueueInvocation.h"
 #import "AHSingleInvocation.h"
+#import "NSString+Utils.h"
 
 @interface AHQueueInvocation ()
 
@@ -19,6 +20,7 @@
 @synthesize finishedBlock;
 @synthesize isRunning;
 @synthesize result;
+@synthesize name;
 
 -(instancetype) init
 {
@@ -26,6 +28,7 @@
     {
         self.runningInvocations = [[NSMutableArray alloc] init];
         self.invocations = [[NSMutableArray alloc] init];
+        self.name = AHNSStringF(@"%d",[self hash]);
     }
     return self;
 }
@@ -36,19 +39,20 @@
     {
         self.runningInvocations = [[NSMutableArray alloc] init];
         self.invocations = [invocations mutableCopy];
+        self.name = AHNSStringF(@"%d",[self hash]);
         
         [self setFinishBlock:complete];
+        [self prepareInvocations];
         
     }
     return self;
 }
 
--(void)setFinishBlock:(CompletionBlock)complete
+-(void)prepareInvocations
 {
     __block BOOL successful = YES;
     __block AHQueueInvocation* bself = self;
-    finishedBlock = complete;
-    
+
     CompletionBlock completionBlock =
     ^(BOOL success, id<AHInvocationProtocol> invocation)
     {
@@ -73,41 +77,47 @@
     }
 }
 
+-(void)setFinishBlock:(CompletionBlock)complete
+{
+    finishedBlock = complete;
+    
+//    [self prepareInvocations];
+}
+
 -(void)addInvocation:(id<AHInvocationProtocol>)invocation
 {
     [_invocations addObject:invocation];
     
-    [invocation setFinishedBlock:self.finishedBlock];
+    [self prepareInvocations];
 }
 
 
-//-(void) setResult:(NSObject *)result
-//{
-//}
-//
-//-(NSObject*) result
-//{
-//    NSMutableArray* resultArray = [NSMutableArray array];
-//    
-//    for (id<AHInvocationProtocol> invocation in self.invocations)
-//    {
-//        if (invocation.result != nil)
-//        {
-//            [resultArray addObject:invocation.result];
-//        }
-//    }
-//    
-//    return [NSArray arrayWithArray:resultArray];
-//}
+-(void) setResult:(NSObject *)result
+{
+}
+
+-(NSObject*) result
+{
+    NSMutableDictionary* resultDict = [NSMutableDictionary dictionary];
+    
+    for (id<AHInvocationProtocol> invocation in self.invocations)
+    {
+        if (invocation.result != nil)
+        {
+            resultDict[invocation.name] = invocation.result;
+        }
+    }
+    
+    return [NSDictionary dictionaryWithDictionary:resultDict];
+}
 
 -(void)invoke
 {
     if (self.invocations.count > 0 )
     {
         [self.runningInvocations addObjectsFromArray:self.invocations];
-        
-        [self.runningInvocations[0] invoke];
         self.isRunning = YES;
+        [self.runningInvocations[0] invoke];
     }
     else if (self.finishedBlock)
     {
@@ -118,6 +128,11 @@
 -(NSArray*)invocations
 {
     return _invocations;
+}
+
+-(NSString*)description
+{
+    return AHNSStringF(@"%@: name:%@ invocations count:%d result:%@ isRunning:%d",NSStringFromClass([self class]),self.name,self.invocations.count,self.result,self.isRunning);
 }
 
 @end

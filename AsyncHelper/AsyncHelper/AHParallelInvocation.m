@@ -8,6 +8,7 @@
 
 #import "AHParallelInvocation.h"
 #import "AHSingleInvocation.h"
+#import "NSString+Utils.h"
 
 @interface AHParallelInvocation ()
 @property (strong,nonatomic) NSMutableArray* runningInvocations;
@@ -18,6 +19,7 @@
 @synthesize finishedBlock;
 @synthesize isRunning;
 @synthesize result;
+@synthesize name;
 
 -(instancetype) init
 {
@@ -25,6 +27,7 @@
     {
         self.runningInvocations = [[NSMutableArray alloc] init];
         self.invocations = [[NSMutableArray alloc] init];
+        self.name = AHNSStringF(@"%d",[self hash]);
     }
     return self;
 }
@@ -35,8 +38,10 @@
     {
         self.runningInvocations = [[NSMutableArray alloc] init];
         self.invocations = [invocations mutableCopy];
+        self.name = AHNSStringF(@"%d",[self hash]);
         
         [self setFinishedBlock:complete];
+        [self prepareInvocations];
         
     }
     return self;
@@ -44,10 +49,14 @@
 
 -(void)setFinishedBlock:(CompletionBlock)complete
 {
+    finishedBlock = complete;
+}
+
+-(void)prepareInvocations
+{
     __block BOOL successful = YES;
     __block AHParallelInvocation* bself = self;
-    finishedBlock = complete;
-    
+
     CompletionBlock completionBlock =
     ^(BOOL success, id<AHInvocationProtocol> invocation)
     {
@@ -67,24 +76,43 @@
                 bself.finishedBlock (successful,bself);
         }
     };
-
+    
     for (AHSingleInvocation* invocation in self.invocations)
     {
         [invocation setFinishedBlock:completionBlock];
     }
+
 }
 
 -(void)addInvocation:(id<AHInvocationProtocol>)invocation
 {
     [_invocations addObject:invocation];
     
-    if (self.finishedBlock)
-        [invocation setFinishedBlock:self.finishedBlock];
+    [self prepareInvocations];
     
     if (self.isRunning)
     {
         [invocation invoke];
     }
+}
+
+-(void) setResult:(NSObject *)result
+{
+}
+
+-(NSObject*) result
+{
+    NSMutableDictionary* resultDict = [NSMutableDictionary dictionary];
+    
+    for (id<AHInvocationProtocol> invocation in self.invocations)
+    {
+        if (invocation.result != nil)
+        {
+            resultDict[invocation.name] = invocation.result;
+        }
+    }
+    
+    return [NSDictionary dictionaryWithDictionary:resultDict];
 }
 
 -(void)invoke
@@ -107,4 +135,10 @@
 {
     return _invocations;
 }
+
+-(NSString*)description
+{
+    return AHNSStringF(@"%@: name:%@ invocations count:%d result:%@ isRunning:%d",NSStringFromClass([self class]),self.name,self.invocations.count,self.result,self.isRunning);
+}
+
 @end

@@ -7,6 +7,7 @@
 //
 
 #import "AHSingleInvocation.h"
+#import "NSString+Utils.h"
 
 @interface AHSingleInvocation ()
     @property(strong,nonatomic) NSInvocation* invocation;
@@ -16,6 +17,7 @@
 @synthesize finishedBlock;
 @synthesize isRunning;
 @synthesize result;
+@synthesize name;
 
 -(instancetype) init
 {
@@ -30,6 +32,7 @@
     if (self = [super init])
     {
         self.invocation = invocation;
+        self.name = AHNSStringF(@"%d",[self hash]);
     }
     return self;
 }
@@ -38,6 +41,8 @@
 {
     if (self = [super init])
     {
+        self.name = AHNSStringF(@"%d",[self hash]);
+        
         NSMethodSignature* signature = [[target class] instanceMethodSignatureForSelector:selector];
         NSInvocation* invocation = [NSInvocation invocationWithMethodSignature:signature];
         [invocation setSelector:selector];
@@ -56,21 +61,27 @@
     return self;
 }
 
--(void)setFinishedBlock:(CompletionBlock)complete
+-(void)prepareInvocation
 {
-    finishedBlock = complete;
     __block AHSingleInvocation* bself = self;
     void (^completionBlock) (BOOL success, NSObject* result) =
     ^(BOOL success, NSObject* res)
     {
         bself.isRunning = NO;
-        bself.result = res;
+        bself.result = res == nil?res : @{bself.name:res};
         if (bself.finishedBlock)
-        bself.finishedBlock(success,bself);
+            bself.finishedBlock(success,bself);
     };
     
     NSUInteger nrArgs = [[self.invocation methodSignature] numberOfArguments];
     [self.invocation setArgument:&completionBlock atIndex:nrArgs-1];
+}
+
+-(void)setFinishedBlock:(CompletionBlock)complete
+{
+    finishedBlock = complete;
+    
+    [self prepareInvocation];
 }
 
 -(void)invoke
@@ -80,6 +91,11 @@
         self.isRunning = YES;
         [self.invocation invoke];
     }
+}
+
+-(NSString*)description
+{
+    return AHNSStringF(@"%@: name:%@ target:%@(%p) cmd:%@ result:%@ isRunning:%d",NSStringFromClass([self class]),self.name,NSStringFromClass(self.invocation.target),self.invocation.target,NSStringFromSelector(self.invocation.selector),self.result,self.isRunning);
 }
 
 @end

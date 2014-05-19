@@ -14,6 +14,7 @@
 -(void)invoke;
 @property (assign,nonatomic) BOOL isRunning;
 @property (strong,nonatomic) NSObject* result;
+@property (strong,nonatomic) NSString* name;
 @end
 
 typedef void (^CompletionBlock)(BOOL success, id<AHInvocationProtocol> invocation);
