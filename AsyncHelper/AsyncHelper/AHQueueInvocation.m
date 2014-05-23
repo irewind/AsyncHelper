@@ -61,6 +61,7 @@
     {
         successful &= success;
         [bself.runningInvocations removeObject:invocation];
+//        [bself->_invocations removeObject:invocation];
         
         if (bself.runningInvocations.count == 0)
         {
