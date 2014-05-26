@@ -10,7 +10,7 @@
 @class AHInvocationProtocol;
 
 @protocol AHInvocationProtocol <NSObject>
-@property (strong,nonatomic) void(^finishedBlock)(BOOL success, id<AHInvocationProtocol>);
+@property (copy,nonatomic) void(^finishedBlock)(BOOL success, id<AHInvocationProtocol>);
 -(void)invoke;
 @property (assign,nonatomic) BOOL isRunning;
 @property (strong,nonatomic) NSObject* result;

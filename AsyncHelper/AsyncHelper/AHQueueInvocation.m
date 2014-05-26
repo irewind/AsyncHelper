@@ -96,7 +96,7 @@
 
 -(void)setFinishBlock:(CompletionBlock)complete
 {
-    finishedBlock = complete;
+    finishedBlock = [complete copy];
 }
 
 -(void)addInvocation:(id<AHInvocationProtocol>)invocation

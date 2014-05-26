@@ -52,7 +52,7 @@
 
 -(void)setFinishedBlock:(CompletionBlock)complete
 {
-    finishedBlock = complete;
+    finishedBlock = [complete copy];
     
     if (self.timesToRetry != nil)
         self.remainingRetries = self.timesToRetry.intValue;

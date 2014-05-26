@@ -80,7 +80,7 @@
 
 -(void)setFinishedBlock:(CompletionBlock)complete
 {
-    finishedBlock = complete;
+    finishedBlock = [complete copy];
     
     [self prepareInvocation];
 }
