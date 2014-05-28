@@ -44,7 +44,7 @@
         self.invocations = [invocations mutableCopy];
         self.name = AHNSStringF(@"%d_%@",[self hash], NSStringFromClass([self class]));
         
-        [self setFinishBlock:complete];
+        [self setFinishedBlock:complete];
         [self prepareInvocations];
         
     }
@@ -94,7 +94,7 @@
     }
 }
 
--(void)setFinishBlock:(CompletionBlock)complete
+-(void)setFinishedBlock:(CompletionBlock)complete
 {
     finishedBlock = [complete copy];
 }
@@ -148,6 +148,11 @@
 -(NSString*)description
 {
     return AHNSStringF(@"%@: name:%@ invocations count:%d result:%@ isRunning:%d",NSStringFromClass([self class]),self.name,self.invocations.count,self.result,self.isRunning);
+}
+
+-(void)dealloc
+{
+    NSLog(@"dealloc %@",self.name);
 }
 
 @end

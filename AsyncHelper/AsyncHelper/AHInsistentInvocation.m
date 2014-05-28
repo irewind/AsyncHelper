@@ -99,4 +99,10 @@
 {
     return AHNSStringF(@"%@: name:%@ retries:%@ interval:%@ result:%@ isRunning:%d",NSStringFromClass([self class]),self.name,self.timesToRetry,self.retryAfterSeconds,self.result,self.isRunning);
 }
+
+-(void)dealloc
+{
+    NSLog(@"dealloc %@",self.name);
+}
+
 @end

@@ -144,4 +144,9 @@
     return AHNSStringF(@"%@: name:%@ invocations count:%d result:%@ isRunning:%d",NSStringFromClass([self class]),self.name,self.invocations.count,self.result,self.isRunning);
 }
 
+-(void)dealloc
+{
+    NSLog(@"dealloc %@",self.name);
+}
+
 @end

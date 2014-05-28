@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B601C219191128BF00907991 /* NSInvocation+AsyncHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = B601C218191128BF00907991 /* NSInvocation+AsyncHelper.m */; };
 		B601C22819113B2C00907991 /* AHSingleInvocation.m in Sources */ = {isa = PBXBuildFile; fileRef = B601C22719113B2C00907991 /* AHSingleInvocation.m */; };
 		B601C22B19113D4300907991 /* AHParallelInvocation.m in Sources */ = {isa = PBXBuildFile; fileRef = B601C22A19113D4300907991 /* AHParallelInvocation.m */; };
 		B601C2511913EB3B00907991 /* AHQueueInvocation.m in Sources */ = {isa = PBXBuildFile; fileRef = B601C2501913EB3B00907991 /* AHQueueInvocation.m */; };
@@ -49,8 +48,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		B601C217191128BF00907991 /* NSInvocation+AsyncHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSInvocation+AsyncHelper.h"; sourceTree = "<group>"; };
-		B601C218191128BF00907991 /* NSInvocation+AsyncHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSInvocation+AsyncHelper.m"; sourceTree = "<group>"; };
 		B601C22619113B2C00907991 /* AHSingleInvocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AHSingleInvocation.h; sourceTree = "<group>"; };
 		B601C22719113B2C00907991 /* AHSingleInvocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = AHSingleInvocation.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B601C22919113D4300907991 /* AHParallelInvocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AHParallelInvocation.h; sourceTree = "<group>"; };
@@ -139,8 +136,6 @@
 				B678A83618C743BF00600A38 /* Supporting Files */,
 				B678A86618C7444500600A38 /* NSObject+AsyncHelper.h */,
 				B678A86718C7444500600A38 /* NSObject+AsyncHelper.m */,
-				B601C217191128BF00907991 /* NSInvocation+AsyncHelper.h */,
-				B601C218191128BF00907991 /* NSInvocation+AsyncHelper.m */,
 				B601C22619113B2C00907991 /* AHSingleInvocation.h */,
 				B601C22719113B2C00907991 /* AHSingleInvocation.m */,
 				B601C22919113D4300907991 /* AHParallelInvocation.h */,
@@ -261,7 +256,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B601C219191128BF00907991 /* NSInvocation+AsyncHelper.m in Sources */,
 				B601C2541917A86800907991 /* AHInsistentInvocation.m in Sources */,
 				B601C22819113B2C00907991 /* AHSingleInvocation.m in Sources */,
 				B601C2511913EB3B00907991 /* AHQueueInvocation.m in Sources */,

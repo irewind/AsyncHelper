@@ -449,6 +449,32 @@
     [queue invoke];
 }
 
+
+-(void)doStuff3
+{
+    @autoreleasepool {
+
+       AHSingleInvocation* op =  _inv(op1AndThen:);
+        
+        [op invoke];
+    }
+}
+
+-(void)doStuff2
+{
+    @autoreleasepool {
+        
+        AHQueueInvocation* queue = [self queue:@[] andThen:^(BOOL success, id<AHInvocationProtocol> invocation) {
+            
+            NSLog(@"all done, success: %d",success);
+        }];
+
+        [queue addInvocation:_inv(op1AndThen:)];
+        
+        [queue invoke];
+    }
+}
+
 -(void)doStuff
 {
     
@@ -463,6 +489,9 @@
 //        }];
 //    }];
 
+    @autoreleasepool
+    {
+        
     AHQueueInvocation* queue = [self queue:@[] andThen:^(BOOL success, id<AHInvocationProtocol> invocation) {
     
         NSLog(@"all done, success: %d",success);
@@ -470,7 +499,8 @@
     
 
     [queue addInvocation:_inv(test1AndThen:)];
-    
+
+/*
     [queue addInvocation:_inv(test2AndThen:)];
 
     [queue addInvocation:_inv(test3AndThen:)];
@@ -496,8 +526,10 @@
     [queue addInvocation:_inv(test13AndThen:)];
 
     [queue addInvocation:_inv(test14AndThen:)];
-    
+*/
     [queue invoke];
+        
+    }
     
 }
 
@@ -509,7 +541,9 @@
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
     
-    [self doStuff];
+//    [self doStuff];
+    [self doStuff2];
+//    [self doStuff3];
     
     return YES;
 }
