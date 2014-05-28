@@ -452,12 +452,9 @@
 
 -(void)doStuff3
 {
-    @autoreleasepool {
-
        AHSingleInvocation* op =  _inv(op1AndThen:);
         
         [op invoke];
-    }
 }
 
 -(void)doStuff2
@@ -542,8 +539,8 @@
     [self.window makeKeyAndVisible];
     
 //    [self doStuff];
-    [self doStuff2];
-//    [self doStuff3];
+//    [self doStuff2];
+    [self doStuff3];
     
     return YES;
 }

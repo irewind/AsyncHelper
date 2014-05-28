@@ -64,7 +64,7 @@
 -(void)prepareInvocation
 {
     __block AHSingleInvocation* bself = self;
-    
+
     ResponseBlock completionBlock =
     ^(BOOL success, NSObject* res)
     {
