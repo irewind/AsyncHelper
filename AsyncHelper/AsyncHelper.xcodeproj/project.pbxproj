@@ -7,20 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B601C22819113B2C00907991 /* AHSingleInvocation.m in Sources */ = {isa = PBXBuildFile; fileRef = B601C22719113B2C00907991 /* AHSingleInvocation.m */; };
-		B601C22B19113D4300907991 /* AHParallelInvocation.m in Sources */ = {isa = PBXBuildFile; fileRef = B601C22A19113D4300907991 /* AHParallelInvocation.m */; };
-		B601C2511913EB3B00907991 /* AHQueueInvocation.m in Sources */ = {isa = PBXBuildFile; fileRef = B601C2501913EB3B00907991 /* AHQueueInvocation.m */; };
-		B601C2541917A86800907991 /* AHInsistentInvocation.m in Sources */ = {isa = PBXBuildFile; fileRef = B601C2531917A86800907991 /* AHInsistentInvocation.m */; };
-		B647081E19264F2D00CC22D7 /* NSString+Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = B647081D19264F2D00CC22D7 /* NSString+Utils.m */; };
+		B601C22819113B2C00907991 /* AHSingleInvocation.m in Sources */ = {isa = PBXBuildFile; fileRef = B601C22719113B2C00907991 /* AHSingleInvocation.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		B601C22B19113D4300907991 /* AHParallelInvocation.m in Sources */ = {isa = PBXBuildFile; fileRef = B601C22A19113D4300907991 /* AHParallelInvocation.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		B601C2511913EB3B00907991 /* AHQueueInvocation.m in Sources */ = {isa = PBXBuildFile; fileRef = B601C2501913EB3B00907991 /* AHQueueInvocation.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		B601C2541917A86800907991 /* AHInsistentInvocation.m in Sources */ = {isa = PBXBuildFile; fileRef = B601C2531917A86800907991 /* AHInsistentInvocation.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		B647081E19264F2D00CC22D7 /* NSString+Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = B647081D19264F2D00CC22D7 /* NSString+Utils.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		B678A83418C743BF00600A38 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B678A83318C743BF00600A38 /* Foundation.framework */; };
-		B678A83B18C743BF00600A38 /* AsyncHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = B678A83A18C743BF00600A38 /* AsyncHelper.m */; };
+		B678A83B18C743BF00600A38 /* AsyncHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = B678A83A18C743BF00600A38 /* AsyncHelper.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		B678A84218C743BF00600A38 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B678A84118C743BF00600A38 /* XCTest.framework */; };
 		B678A84318C743BF00600A38 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B678A83318C743BF00600A38 /* Foundation.framework */; };
 		B678A84518C743BF00600A38 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B678A84418C743BF00600A38 /* UIKit.framework */; };
 		B678A84818C743BF00600A38 /* libAsyncHelper.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B678A83018C743BF00600A38 /* libAsyncHelper.a */; };
 		B678A84E18C743BF00600A38 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = B678A84C18C743BF00600A38 /* InfoPlist.strings */; };
 		B678A85018C743BF00600A38 /* AsyncHelperTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B678A84F18C743BF00600A38 /* AsyncHelperTests.m */; };
-		B678A86818C7444500600A38 /* NSObject+AsyncHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = B678A86718C7444500600A38 /* NSObject+AsyncHelper.m */; };
+		B678A86818C7444500600A38 /* NSObject+AsyncHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = B678A86718C7444500600A38 /* NSObject+AsyncHelper.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		B678A87818C7486E00600A38 /* NSObject+AsyncHelper.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = B678A86618C7444500600A38 /* NSObject+AsyncHelper.h */; };
 /* End PBXBuildFile section */
 

@@ -14,7 +14,7 @@
 
 #define _classStr NSStringFromClass([self class])
 #define _selStr NSStringFromSelector(_cmd)
-#define _a(x) /*NSAssert(x,@"[%@] %@ ASSERT FAILED!",_classStr,_selStr);*/ if (NO == (x)) { [AppDelegate breakPoint]; NSString* assertMsg = AHNSStringF(@"[%@] %@ ASSERT FAILED! %s",_classStr,_selStr,#x); NSLog(@"%@",assertMsg);}
+#define _a(x) /*NSAssert(x,@"[%@] %@ ASSERT FAILED!",_classStr,_selStr);*/ if (NO == (x)) { [AppDelegate breakPoint]; NSString* assertMsg = [NSString stringWithFormat:@"[%@] %@ ASSERT FAILED! %s",_classStr,_selStr,#x]; NSLog(@"%@",assertMsg);}
 
 +(void)breakPoint
 {
@@ -538,9 +538,9 @@
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
     
-    [self doStuff];
+//    [self doStuff];
     [self doStuff3];
-    [self doStuff2];
+//    [self doStuff2];
 
     
     return YES;

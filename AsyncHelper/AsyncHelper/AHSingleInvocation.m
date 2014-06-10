@@ -32,7 +32,7 @@
     if (self = [super init])
     {
         self.invocation = invocation;
-        self.name = AHNSStringF(@"%d_%@",[self hash], NSStringFromSelector(invocation.selector));
+        self.name = [NSString stringWithFormat:@"%lu_%@",(unsigned long)[self hash], NSStringFromSelector(invocation.selector)];
         [self prepareInvocation];
     }
     return self;
@@ -47,7 +47,7 @@
         [invocation setSelector:selector];
         [invocation setTarget:target];
         
-        self.name = AHNSStringF(@"%d_%@",[self hash], NSStringFromSelector(invocation.selector));
+        self.name = [NSString stringWithFormat:@"%lu_%@",(unsigned long)[self hash], NSStringFromSelector(invocation.selector)];
         
         NSInteger index = 2;
         for (NSObject* arg in arguments)
@@ -74,7 +74,7 @@
         bself.result = res == nil?res : @{bself.name:res};
         if (bself.finishedBlock)
             bself.finishedBlock(success,bself);
-        bself = nil;
+        [bself release];
     };
     
     NSUInteger nrArgs = [[self.invocation methodSignature] numberOfArguments];
@@ -95,20 +95,23 @@
 {
     if (self.isRunning == NO)
     {
+        [self retain];
         self.isRunning = YES;
         [self.invocation invoke];
     }
 }
 
 -(NSString*)description
-{
-    return AHNSStringF(@"%@: name:%@ target:%@(%p) cmd:%@ result:%@ isRunning:%d",NSStringFromClass([self class]),self.name,NSStringFromClass(self.invocation.target),self.invocation.target,NSStringFromSelector(self.invocation.selector),self.result,self.isRunning);
+{    
+    return [NSString stringWithFormat:@"%@: name:%@ target:%@(%p) cmd:%@ result:%@ isRunning:%d",NSStringFromClass([self class]),self.name,NSStringFromClass(self.invocation.target),self.invocation.target,NSStringFromSelector(self.invocation.selector),self.result,self.isRunning ];
+    
+//    return AHNSStringF(@"%@: name:%@ target:%@(%p) cmd:%@ result:%@ isRunning:%d",NSStringFromClass([self class]),self.name,NSStringFromClass(self.invocation.target),self.invocation.target,NSStringFromSelector(self.invocation.selector),self.result,self.isRunning);
 }
 
 -(void)dealloc
 {
+    [super dealloc];
     NSLog(@"dealloc %@",self.name);
-    self.invocation = nil;
 }
 
 @end

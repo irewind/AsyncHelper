@@ -28,7 +28,7 @@
     {
         self.invocation = invocation;
         self.retryAfterSeconds = sec;
-        self.name = AHNSStringF(@"%d_%@(%@)",[self hash], NSStringFromClass([self class]), invocation.name);
+        self.name = [NSString stringWithFormat:@"%lu_%@",(unsigned long)[self hash], NSStringFromClass([self class])];
         [self setFinishedBlock:complete];
     }
     return self;
@@ -40,7 +40,7 @@
     {
         self.invocation = invocation;
         self.retryAfterSeconds = sec;
-        self.name = AHNSStringF(@"%d_%@",[self hash], NSStringFromClass([self class]));
+        self.name = [NSString stringWithFormat:@"%lu_%@",(unsigned long)[self hash], NSStringFromClass([self class])];
         self.timesToRetry = times;
         
         [self setFinishedBlock:complete];
@@ -97,11 +97,12 @@
 
 -(NSString*)description
 {
-    return AHNSStringF(@"%@: name:%@ retries:%@ interval:%@ result:%@ isRunning:%d",NSStringFromClass([self class]),self.name,self.timesToRetry,self.retryAfterSeconds,self.result,self.isRunning);
+    return [NSString stringWithFormat:@"%@: name:%@ retries:%@ interval:%@ result:%@ isRunning:%d",NSStringFromClass([self class]),self.name,self.timesToRetry,self.retryAfterSeconds,self.result,self.isRunning];
 }
 
 -(void)dealloc
 {
+    [super dealloc];
     NSLog(@"dealloc %@",self.name);
 }
 

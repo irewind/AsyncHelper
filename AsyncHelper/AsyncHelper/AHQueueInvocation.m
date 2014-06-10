@@ -27,10 +27,11 @@
 {
     if (self = [super init])
     {
-        self.runningInvocations = [[NSMutableArray alloc] init];
-        self.preparedInvocations = [[NSMutableArray alloc] init];
-        self.invocations = [[NSMutableArray alloc] init];
-        self.name = AHNSStringF(@"%d_%@",[self hash], NSStringFromClass([self class]));
+        self.runningInvocations = [NSMutableArray array];
+        self.preparedInvocations = [NSMutableArray array];
+        self.invocations = [NSMutableArray array];
+        self.name = [NSString stringWithFormat:@"%lu_%@",(unsigned long)[self hash], NSStringFromClass([self class])];
+
     }
     return self;
 }
@@ -39,10 +40,12 @@
 {
     if (self = [super init])
     {
-        self.runningInvocations = [[NSMutableArray alloc] init];
-        self.preparedInvocations = [[NSMutableArray alloc] init];
+        self.runningInvocations = [NSMutableArray array];
+        self.preparedInvocations = [NSMutableArray array];
         self.invocations = [invocations mutableCopy];
-        self.name = AHNSStringF(@"%d_%@",[self hash], NSStringFromClass([self class]));
+        
+        name = [NSString stringWithFormat:@"%lu_%@",(unsigned long)123456,@"AHQueueInvocation" ];
+//        self.name = [AHNSStringF(@"%d_%@",[self hash], NSStringFromClass([self class])) autorelease];
         
         [self setFinishedBlock:complete];
         [self prepareInvocations];
@@ -147,11 +150,16 @@
 
 -(NSString*)description
 {
-    return AHNSStringF(@"%@: name:%@ invocations count:%d result:%@ isRunning:%d",NSStringFromClass([self class]),self.name,self.invocations.count,self.result,self.isRunning);
+    return [NSString stringWithFormat:@"%@: name:%@ invocations count:%lu result:%@ isRunning:%d",NSStringFromClass([self class]),self.name,(unsigned long)self.invocations.count,self.result,self.isRunning];
 }
 
 -(void)dealloc
 {
+    [super dealloc];
+    
+    [self.invocations release];
+//    [self.preparedInvocations release];
+//    [self.runningInvocations release];
     NSLog(@"dealloc %@",self.name);
 }
 

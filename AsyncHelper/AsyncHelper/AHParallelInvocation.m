@@ -25,9 +25,9 @@
 {
     if (self = [super init])
     {
-        self.runningInvocations = [[NSMutableArray alloc] init];
-        self.invocations = [[NSMutableArray alloc] init];
-        self.name = AHNSStringF(@"%d_%@",[self hash], NSStringFromClass([self class]));
+        self.runningInvocations = [NSMutableArray array];
+        self.invocations = [NSMutableArray array];
+        self.name = [NSString stringWithFormat:@"%lu_%@",(unsigned long)[self hash], NSStringFromClass([self class])];
     }
     return self;
 }
@@ -36,9 +36,9 @@
 {
     if (self = [super init])
     {
-        self.runningInvocations = [[NSMutableArray alloc] init];
-        self.invocations = [invocations mutableCopy];
-        self.name = AHNSStringF(@"%d_%@",[self hash], NSStringFromClass([self class]));
+        self.runningInvocations = [NSMutableArray array];
+        self.invocations = [[invocations mutableCopy] autorelease];
+        self.name = [NSString stringWithFormat:@"%lu_%@",(unsigned long)[self hash], NSStringFromClass([self class])];
         
         [self setFinishedBlock:complete];
         [self prepareInvocations];
@@ -141,11 +141,16 @@
 
 -(NSString*)description
 {
-    return AHNSStringF(@"%@: name:%@ invocations count:%d result:%@ isRunning:%d",NSStringFromClass([self class]),self.name,self.invocations.count,self.result,self.isRunning);
+    return [NSString stringWithFormat:@"%@: name:%@ invocations count:%lu result:%@ isRunning:%d",NSStringFromClass([self class]),self.name,(unsigned long)self.invocations.count,self.result,self.isRunning];
 }
 
 -(void)dealloc
 {
+    [super dealloc];
+    
+    [self.invocations release];
+//    [self.runningInvocations release];
+    
     NSLog(@"dealloc %@",self.name);
 }
 

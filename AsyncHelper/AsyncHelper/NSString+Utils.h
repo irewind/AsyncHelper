@@ -20,7 +20,7 @@
 - (BOOL)containsString:(NSString *)string;
 - (BOOL)containsString:(NSString *)string
                options:(NSStringCompareOptions) options;
-NSString* AHNSStringF (NSString *format, ...);
+//NSString* AHNSStringF (NSString *format, ...);
 -(NSString*)trim;
 -(BOOL) isEmpty;
 +(NSString *)getUUID;
