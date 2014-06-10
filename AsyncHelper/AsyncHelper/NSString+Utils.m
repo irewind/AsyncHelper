@@ -181,6 +181,7 @@ extern NSString* AHNSStringF (NSString *format, ...)
     CFUUIDRef theUUID = CFUUIDCreate(NULL);
     CFStringRef string = CFUUIDCreateString(NULL, theUUID);
     CFRelease(theUUID);
+    CFRelease(string);
     return (__bridge NSString *)string;
 }
 

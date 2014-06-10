@@ -33,6 +33,7 @@
     {
         self.invocation = invocation;
         self.name = AHNSStringF(@"%d_%@",[self hash], NSStringFromSelector(invocation.selector));
+        [self prepareInvocation];
     }
     return self;
 }
@@ -54,9 +55,10 @@
             [invocation setArgument:(void*)(&arg) atIndex:index];
             index++;
         }
-        [invocation retainArguments];
         
         self.invocation = invocation;
+        
+        [self prepareInvocation];
     }
     return self;
 }
@@ -72,9 +74,11 @@
         bself.result = res == nil?res : @{bself.name:res};
         if (bself.finishedBlock)
             bself.finishedBlock(success,bself);
+        bself = nil;
     };
     
     NSUInteger nrArgs = [[self.invocation methodSignature] numberOfArguments];
+    
     [self.invocation setArgument:&completionBlock atIndex:nrArgs-1];
     
     [self.invocation retainArguments];

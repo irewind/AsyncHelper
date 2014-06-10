@@ -77,11 +77,11 @@
         ResponseBlock originalBlock = invocation.finishedBlock;
         
         [invocation setFinishedBlock:
-         ^(BOOL success, id<AHInvocationProtocol> invocation)
+         ^(BOOL success, id<AHInvocationProtocol> theInvocation)
          {
              if (originalBlock)
-                  originalBlock(success,invocation);
-             invocationCompleted(success,invocation);
+                  originalBlock(success,theInvocation);
+             invocationCompleted(success,theInvocation);
          }];
     }
 
