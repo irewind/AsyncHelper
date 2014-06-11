@@ -11,10 +11,11 @@
 
 @interface AHSingleInvocation ()
     @property(retain,nonatomic) NSInvocation* invocation;
+    @property(copy, nonatomic) CompletionBlock internalFinishedBlock;
 @end
 
 @implementation AHSingleInvocation
-@synthesize finishedBlock;
+//@synthesize finishedBlock;
 @synthesize isRunning;
 @synthesize result;
 @synthesize name;
@@ -86,14 +87,19 @@
 
 -(void)setFinishedBlock:(CompletionBlock)complete
 {
-    finishedBlock = [complete copy];
+    [self setInternalFinishedBlock:complete];
     
     [self prepareInvocation];
 }
 
+-(CompletionBlock)finishedBlock
+{
+    return self.internalFinishedBlock;
+}
+
 -(void)invoke
 {
-    if (self.isRunning == NO)
+    if (self.isRunning == NO && self.invocation != nil)
     {
         [self retain];
         self.isRunning = YES;
@@ -112,7 +118,7 @@
 {
     NSLog(@"dealloc %@",name);
     
-    [finishedBlock release];
+    [_internalFinishedBlock release];
     [_invocation release];
     [name release];
     [result release];

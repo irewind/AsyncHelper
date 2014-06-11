@@ -62,13 +62,13 @@
     {
         successful &= success;
         [bself.runningInvocations removeObject:invocation];
-//        [bself->_invocations removeObject:invocation];
         
         if (bself.runningInvocations.count == 0)
         {
             bself.isRunning = NO;
             if (bself.finishedBlock)
                 bself.finishedBlock (successful,bself);
+            [bself release];
         }
     };
     
@@ -120,6 +120,7 @@
 
 -(void)invoke
 {
+    [self retain];
     if (self.invocations.count > 0)
     {
         for (AHSingleInvocation* invocation in self.invocations)
@@ -128,9 +129,11 @@
             [invocation invoke];
         }
     }
-    else if (self.finishedBlock)
+    else
     {
-        self.finishedBlock (YES,self);
+        if (self.finishedBlock)
+            self.finishedBlock (YES,self);
+        [self release];
     }
 }
 
@@ -146,8 +149,11 @@
 
 -(void)dealloc
 {
-    [self.invocations release];
-//    [self.runningInvocations release];
+    [_invocations release];
+    [_runningInvocations release];
+    [finishedBlock release];
+    [name release];
+    [result release];
     
     NSLog(@"dealloc %@",self.name);
     

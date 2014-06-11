@@ -137,9 +137,10 @@
         self.isRunning = YES;
         [self.runningInvocations[0] invoke];
     }
-    else if (self.finishedBlock)
+    else
     {
-        self.finishedBlock (YES,self);
+        if (self.finishedBlock)
+            self.finishedBlock (YES,self);
         [self release];
     }
 }

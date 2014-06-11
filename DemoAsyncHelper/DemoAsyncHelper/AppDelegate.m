@@ -450,14 +450,14 @@
 }
 
 
--(void)doStuff3
+-(void)testSingle
 {
        AHSingleInvocation* op =  _inv(op1AndThen:);
         
         [op invoke];
 }
 
--(void)doStuff2
+-(void)testQueue
 {
     @autoreleasepool {
     
@@ -467,12 +467,29 @@
         }];
 
         [queue addInvocation:_inv(op1AndThen:)];
+        [queue addInvocation:_inv(op1AndThen:)];
         
         [queue invoke];
     }
 }
 
--(void)doStuff
+-(void)testParallel
+{
+    @autoreleasepool {
+        
+        AHParallelInvocation* parallel = [self parallelize:@[] andThen:^(BOOL success, id<AHInvocationProtocol> invocation) {
+            
+            NSLog(@"all done, success: %d",success);
+        }];
+        
+        [parallel addInvocation:_inv(op1AndThen:)];
+        [parallel addInvocation:_inv(op1AndThen:)];
+        
+        [parallel invoke];
+    }
+}
+
+-(void)testAll
 {
     
 //    [self ifFailed:_inv(op1AndThen:) retryEverySeconds:@2 andThen:
@@ -515,15 +532,15 @@
     [queue addInvocation:_inv(test9AndThen:)];
 
     [queue addInvocation:_inv(test10AndThen:)];
-    
+
     [queue addInvocation:_inv(test11AndThen:)];
 
     [queue addInvocation:_inv(test12AndThen:)];
 
 //    [queue addInvocation:_inv(test13AndThen:)];
 
-    [queue addInvocation:_inv(test14AndThen:)];
-        
+//    [queue addInvocation:_inv(test14AndThen:)];
+
     [queue invoke];
         
     }
@@ -538,9 +555,10 @@
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
     
-//    [self doStuff];
-//    [self doStuff3];
-    [self doStuff2];
+//    [self testSingle];
+//    [self testQueue];
+//    [self testParallel];
+    [self testAll];
 
     
     return YES;
