@@ -20,11 +20,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../AsyncHelper/AsyncHelper/AHQueueInvocation.m"
-            timestampString = "424180431.624335"
+            timestampString = "424186562.655807"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "155"
-            endingLineNumber = "155"
+            startingLineNumber = "156"
+            endingLineNumber = "156"
             landmarkName = "-dealloc"
             landmarkType = "5">
          </BreakpointContent>
@@ -36,11 +36,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../AsyncHelper/AsyncHelper/AHSingleInvocation.m"
-            timestampString = "424179899.870572"
+            timestampString = "424189443.463254"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "119"
-            endingLineNumber = "119"
+            startingLineNumber = "125"
+            endingLineNumber = "125"
             landmarkName = "-dealloc"
             landmarkType = "5">
          </BreakpointContent>
@@ -52,13 +52,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../AsyncHelper/AsyncHelper/AHParallelInvocation.m"
-            timestampString = "424180523.54863"
+            timestampString = "424189443.463254"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "147"
-            endingLineNumber = "147"
-            landmarkName = "-dealloc"
-            landmarkType = "5">
+            startingLineNumber = "159"
+            endingLineNumber = "159">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -100,11 +98,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../AsyncHelper/AsyncHelper/AHSingleInvocation.m"
-            timestampString = "424179899.870572"
+            timestampString = "424189443.463254"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "102"
-            endingLineNumber = "102"
+            startingLineNumber = "109"
+            endingLineNumber = "109"
             landmarkName = "-invoke"
             landmarkType = "5">
          </BreakpointContent>
@@ -116,11 +114,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../AsyncHelper/AsyncHelper/AHSingleInvocation.m"
-            timestampString = "424179899.870572"
+            timestampString = "424189443.463254"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "104"
-            endingLineNumber = "104"
+            startingLineNumber = "112"
+            endingLineNumber = "112"
             landmarkName = "-invoke"
             landmarkType = "5">
          </BreakpointContent>
@@ -132,12 +130,28 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../AsyncHelper/AsyncHelper/AHSingleInvocation.m"
-            timestampString = "424179899.870572"
+            timestampString = "424189443.463254"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "108"
-            endingLineNumber = "108"
+            startingLineNumber = "116"
+            endingLineNumber = "116"
             landmarkName = "-invoke"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../AsyncHelper/AsyncHelper/AHSingleInvocation.m"
+            timestampString = "424187202.944412"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "27"
+            endingLineNumber = "27"
+            landmarkName = "-init"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

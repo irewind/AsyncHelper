@@ -29,6 +29,9 @@
         self.invocation = invocation;
         self.retryAfterSeconds = sec;
         self.name = [NSString stringWithFormat:@"%lu_%@",(unsigned long)[self hash], NSStringFromClass([self class])];
+        
+        NSLog(@"alloc %@ %p",self.name,self);
+        
         [self setFinishedBlock:complete];
     }
     return self;
@@ -41,6 +44,8 @@
         self.invocation = invocation;
         self.retryAfterSeconds = sec;
         self.name = [NSString stringWithFormat:@"%lu_%@",(unsigned long)[self hash], NSStringFromClass([self class])];
+        NSLog(@"alloc %@ %p",self.name,self);
+        
         self.timesToRetry = times;
         
         [self setFinishedBlock:complete];
@@ -102,7 +107,7 @@
 
 -(void)dealloc
 {
-    NSLog(@"dealloc %@",self.name);
+    NSLog(@"dealloc %@ %p",self.name,self);
     
     [super dealloc];
 }

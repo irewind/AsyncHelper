@@ -447,6 +447,9 @@
     
     
     [queue invoke];
+//    [parallel1 addInvocation:invf(self, @selector(op11AndThen:),nil)];
+    
+//    [parallel1 invoke];
 }
 
 
@@ -539,7 +542,7 @@
 
 //    [queue addInvocation:_inv(test13AndThen:)];
 
-//    [queue addInvocation:_inv(test14AndThen:)];
+    [queue addInvocation:_inv(test14AndThen:)];
 
     [queue invoke];
         
