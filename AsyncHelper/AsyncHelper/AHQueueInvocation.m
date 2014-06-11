@@ -40,9 +40,9 @@
 {
     if (self = [super init])
     {
-        self.runningInvocations = [[NSMutableArray alloc] init];
-        self.preparedInvocations = [[NSMutableArray alloc] init];
-        self.invocations = [invocations mutableCopy];
+        self.runningInvocations = [NSMutableArray array];
+        self.preparedInvocations = [NSMutableArray array];
+        self.invocations = [[invocations mutableCopy] autorelease];
         
         self.name = [NSString stringWithFormat:@"%lu_%@",(unsigned long)[self hash], NSStringFromClass([self class])];
         
@@ -92,7 +92,6 @@
              }];
             
             [self.preparedInvocations addObject:invocation];
-            [invocation release];
         }
     }
 }
@@ -105,7 +104,6 @@
 -(void)addInvocation:(id<AHInvocationProtocol>)invocation
 {
     [_invocations addObject:invocation];
-    [invocation release];
     
     [self prepareInvocations];
 }
@@ -160,9 +158,9 @@
 {
     NSLog(@"dealloc %@",self.name);
     
-    self.preparedInvocations = nil;
-    self.invocations = nil;
-    self.runningInvocations = nil;
+    [_preparedInvocations release];
+    [_invocations release];
+    [_runningInvocations release];
     [finishedBlock release];
     [result release];
     [name release];

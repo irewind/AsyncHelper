@@ -459,7 +459,7 @@
 
 -(void)doStuff2
 {
-//    @autoreleasepool {
+    @autoreleasepool {
     
         AHQueueInvocation* queue = [self queue:@[] andThen:^(BOOL success, id<AHInvocationProtocol> invocation) {
             
@@ -469,7 +469,7 @@
         [queue addInvocation:_inv(op1AndThen:)];
         
         [queue invoke];
-//    }
+    }
 }
 
 -(void)doStuff
