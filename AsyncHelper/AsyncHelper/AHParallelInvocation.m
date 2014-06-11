@@ -47,11 +47,6 @@
     return self;
 }
 
--(void)setFinishedBlock:(CompletionBlock)complete
-{
-    finishedBlock = [complete copy];
-}
-
 -(void)prepareInvocations
 {
     __block BOOL successful = YES;

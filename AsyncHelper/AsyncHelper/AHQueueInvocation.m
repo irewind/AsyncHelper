@@ -96,11 +96,6 @@
     }
 }
 
--(void)setFinishedBlock:(CompletionBlock)complete
-{
-    finishedBlock = [complete copy];
-}
-
 -(void)addInvocation:(id<AHInvocationProtocol>)invocation
 {
     [_invocations addObject:invocation];
