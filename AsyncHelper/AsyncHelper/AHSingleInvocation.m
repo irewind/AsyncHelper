@@ -10,7 +10,7 @@
 #import "NSString+Utils.h"
 
 @interface AHSingleInvocation ()
-    @property(strong,nonatomic) NSInvocation* invocation;
+    @property(retain,nonatomic) NSInvocation* invocation;
 @end
 
 @implementation AHSingleInvocation
@@ -110,8 +110,14 @@
 
 -(void)dealloc
 {
+    NSLog(@"dealloc %@",name);
+    
+    [finishedBlock release];
+    [_invocation release];
+    [name release];
+    [result release];
+    
     [super dealloc];
-    NSLog(@"dealloc %@",self.name);
 }
 
 @end

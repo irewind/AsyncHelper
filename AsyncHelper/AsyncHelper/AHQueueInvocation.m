@@ -12,9 +12,9 @@
 
 @interface AHQueueInvocation ()
 
-@property (strong,nonatomic) NSMutableArray* runningInvocations;
-@property (strong,nonatomic) NSMutableArray* preparedInvocations;
-@property (strong,nonatomic) NSMutableArray* invocations;
+@property (retain,nonatomic) NSMutableArray* runningInvocations;
+@property (retain,nonatomic) NSMutableArray* preparedInvocations;
+@property (retain,nonatomic) NSMutableArray* invocations;
 @end
 
 @implementation AHQueueInvocation
@@ -40,12 +40,11 @@
 {
     if (self = [super init])
     {
-        self.runningInvocations = [NSMutableArray array];
-        self.preparedInvocations = [NSMutableArray array];
+        self.runningInvocations = [[NSMutableArray alloc] init];
+        self.preparedInvocations = [[NSMutableArray alloc] init];
         self.invocations = [invocations mutableCopy];
         
-        name = [NSString stringWithFormat:@"%lu_%@",(unsigned long)123456,@"AHQueueInvocation" ];
-//        self.name = [AHNSStringF(@"%d_%@",[self hash], NSStringFromClass([self class])) autorelease];
+        self.name = [NSString stringWithFormat:@"%lu_%@",(unsigned long)[self hash], NSStringFromClass([self class])];
         
         [self setFinishedBlock:complete];
         [self prepareInvocations];
@@ -64,13 +63,13 @@
     {
         successful &= success;
         [bself.runningInvocations removeObject:invocation];
-//        [bself->_invocations removeObject:invocation];
         
         if (bself.runningInvocations.count == 0)
         {
             bself.isRunning = NO;
             if (bself.finishedBlock)
                 bself.finishedBlock (successful,bself);
+            [bself release];
         }
         else
         {
@@ -93,6 +92,7 @@
              }];
             
             [self.preparedInvocations addObject:invocation];
+            [invocation release];
         }
     }
 }
@@ -105,6 +105,7 @@
 -(void)addInvocation:(id<AHInvocationProtocol>)invocation
 {
     [_invocations addObject:invocation];
+    [invocation release];
     
     [self prepareInvocations];
 }
@@ -131,6 +132,7 @@
 
 -(void)invoke
 {
+    [self retain];
     if (self.invocations.count > 0 )
     {
         [self.runningInvocations addObjectsFromArray:self.invocations];
@@ -140,6 +142,7 @@
     else if (self.finishedBlock)
     {
         self.finishedBlock (YES,self);
+        [self release];
     }
 }
 
@@ -155,12 +158,16 @@
 
 -(void)dealloc
 {
-    [super dealloc];
-    
-    [self.invocations release];
-//    [self.preparedInvocations release];
-//    [self.runningInvocations release];
     NSLog(@"dealloc %@",self.name);
+    
+    self.preparedInvocations = nil;
+    self.invocations = nil;
+    self.runningInvocations = nil;
+    [finishedBlock release];
+    [result release];
+    [name release];
+    
+    [super dealloc];
 }
 
 @end

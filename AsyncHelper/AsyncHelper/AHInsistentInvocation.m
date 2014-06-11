@@ -102,8 +102,9 @@
 
 -(void)dealloc
 {
-    [super dealloc];
     NSLog(@"dealloc %@",self.name);
+    
+    [super dealloc];
 }
 
 @end

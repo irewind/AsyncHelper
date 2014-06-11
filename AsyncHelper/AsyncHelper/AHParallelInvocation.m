@@ -146,12 +146,12 @@
 
 -(void)dealloc
 {
-    [super dealloc];
-    
     [self.invocations release];
 //    [self.runningInvocations release];
     
     NSLog(@"dealloc %@",self.name);
+    
+    [super dealloc];
 }
 
 @end

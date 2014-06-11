@@ -459,8 +459,8 @@
 
 -(void)doStuff2
 {
-    @autoreleasepool {
-        
+//    @autoreleasepool {
+    
         AHQueueInvocation* queue = [self queue:@[] andThen:^(BOOL success, id<AHInvocationProtocol> invocation) {
             
             NSLog(@"all done, success: %d",success);
@@ -469,7 +469,7 @@
         [queue addInvocation:_inv(op1AndThen:)];
         
         [queue invoke];
-    }
+//    }
 }
 
 -(void)doStuff
@@ -539,8 +539,8 @@
     [self.window makeKeyAndVisible];
     
 //    [self doStuff];
-    [self doStuff3];
-//    [self doStuff2];
+//    [self doStuff3];
+    [self doStuff2];
 
     
     return YES;
