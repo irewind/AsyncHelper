@@ -497,7 +497,7 @@
 
     [queue addInvocation:_inv(test1AndThen:)];
 
-/*
+
     [queue addInvocation:_inv(test2AndThen:)];
 
     [queue addInvocation:_inv(test3AndThen:)];
@@ -523,7 +523,7 @@
     [queue addInvocation:_inv(test13AndThen:)];
 
     [queue addInvocation:_inv(test14AndThen:)];
-*/
+
     [queue invoke];
         
     }
@@ -538,9 +538,9 @@
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
     
-//    [self doStuff];
+    [self doStuff];
 //    [self doStuff2];
-    [self doStuff3];
+//    [self doStuff3];
     
     return YES;
 }
