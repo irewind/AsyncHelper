@@ -7,7 +7,6 @@
 //
 
 #import "NSObject+AsyncHelper.h"
-#import "NSInvocation+AsyncHelper.h"
 #import "AHInvocationProtocol.h"
 #import "AHSingleInvocation.h"
 #import "AHInsistentInvocation.h"

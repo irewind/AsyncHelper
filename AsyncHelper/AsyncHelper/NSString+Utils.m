@@ -151,6 +151,8 @@ extern NSString* AHNSStringF (NSString *format, ...)
 	va_start(argList, format);
     
     NSString* s = [[NSString alloc] initWithFormat:format arguments:argList];
+    
+    va_end(argList);
     return s;
     
 }

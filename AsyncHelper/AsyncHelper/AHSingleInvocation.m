@@ -64,7 +64,7 @@
 -(void)prepareInvocation
 {
     __block AHSingleInvocation* bself = self;
-    
+
     ResponseBlock completionBlock =
     ^(BOOL success, NSObject* res)
     {
@@ -76,11 +76,13 @@
     
     NSUInteger nrArgs = [[self.invocation methodSignature] numberOfArguments];
     [self.invocation setArgument:&completionBlock atIndex:nrArgs-1];
+    
+    [self.invocation retainArguments];
 }
 
 -(void)setFinishedBlock:(CompletionBlock)complete
 {
-    finishedBlock = complete;
+    finishedBlock = [complete copy];
     
     [self prepareInvocation];
 }
@@ -97,6 +99,12 @@
 -(NSString*)description
 {
     return AHNSStringF(@"%@: name:%@ target:%@(%p) cmd:%@ result:%@ isRunning:%d",NSStringFromClass([self class]),self.name,NSStringFromClass(self.invocation.target),self.invocation.target,NSStringFromSelector(self.invocation.selector),self.result,self.isRunning);
+}
+
+-(void)dealloc
+{
+    NSLog(@"dealloc %@",self.name);
+    self.invocation = nil;
 }
 
 @end

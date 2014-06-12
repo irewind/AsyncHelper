@@ -13,6 +13,7 @@
 @interface AHQueueInvocation ()
 
 @property (strong,nonatomic) NSMutableArray* runningInvocations;
+@property (strong,nonatomic) NSMutableArray* preparedInvocations;
 @property (strong,nonatomic) NSMutableArray* invocations;
 @end
 
@@ -27,6 +28,7 @@
     if (self = [super init])
     {
         self.runningInvocations = [[NSMutableArray alloc] init];
+        self.preparedInvocations = [[NSMutableArray alloc] init];
         self.invocations = [[NSMutableArray alloc] init];
         self.name = AHNSStringF(@"%d_%@",[self hash], NSStringFromClass([self class]));
     }
@@ -38,10 +40,11 @@
     if (self = [super init])
     {
         self.runningInvocations = [[NSMutableArray alloc] init];
+        self.preparedInvocations = [[NSMutableArray alloc] init];
         self.invocations = [invocations mutableCopy];
         self.name = AHNSStringF(@"%d_%@",[self hash], NSStringFromClass([self class]));
         
-        [self setFinishBlock:complete];
+        [self setFinishedBlock:complete];
         [self prepareInvocations];
         
     }
@@ -53,11 +56,12 @@
     __block BOOL successful = YES;
     __block AHQueueInvocation* bself = self;
 
-    CompletionBlock completionBlock =
+    CompletionBlock invocationCompleted =
     ^(BOOL success, id<AHInvocationProtocol> invocation)
     {
         successful &= success;
         [bself.runningInvocations removeObject:invocation];
+//        [bself->_invocations removeObject:invocation];
         
         if (bself.runningInvocations.count == 0)
         {
@@ -73,15 +77,26 @@
     
     for (AHSingleInvocation* invocation in self.invocations)
     {
-        [invocation setFinishedBlock:completionBlock];
+        if (NO == [self.preparedInvocations containsObject:invocation])
+        {
+            ResponseBlock originalBlock = invocation.finishedBlock;
+            
+            [invocation setFinishedBlock:
+             ^(BOOL success, id<AHInvocationProtocol> invocation)
+             {
+                 if (originalBlock)
+                     originalBlock(success,invocation);
+                 invocationCompleted(success,invocation);
+             }];
+            
+            [self.preparedInvocations addObject:invocation];
+        }
     }
 }
 
--(void)setFinishBlock:(CompletionBlock)complete
+-(void)setFinishedBlock:(CompletionBlock)complete
 {
-    finishedBlock = complete;
-    
-//    [self prepareInvocations];
+    finishedBlock = [complete copy];
 }
 
 -(void)addInvocation:(id<AHInvocationProtocol>)invocation
@@ -133,6 +148,11 @@
 -(NSString*)description
 {
     return AHNSStringF(@"%@: name:%@ invocations count:%d result:%@ isRunning:%d",NSStringFromClass([self class]),self.name,self.invocations.count,self.result,self.isRunning);
+}
+
+-(void)dealloc
+{
+    NSLog(@"dealloc %@",self.name);
 }
 
 @end

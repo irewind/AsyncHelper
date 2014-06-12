@@ -14,6 +14,7 @@
 
 #define _inv(x) inv(self,@selector(x))
 #define _inv1(x,y) invf(self,@selector(x),y,nil)
+#define _inv2(x,y,z) invf(self,@selector(x),y,z,nil)
 
 AHSingleInvocation* inv(id target,SEL selector);
 AHSingleInvocation* invf(id target,SEL selector,...);

@@ -49,7 +49,7 @@
 
 -(void)setFinishedBlock:(CompletionBlock)complete
 {
-    finishedBlock = complete;
+    finishedBlock = [complete copy];
 }
 
 -(void)prepareInvocations
@@ -57,11 +57,12 @@
     __block BOOL successful = YES;
     __block AHParallelInvocation* bself = self;
 
-    CompletionBlock completionBlock =
+    CompletionBlock invocationCompleted =
     ^(BOOL success, id<AHInvocationProtocol> invocation)
     {
         successful &= success;
         [bself.runningInvocations removeObject:invocation];
+//        [bself->_invocations removeObject:invocation];
         
         if (bself.runningInvocations.count == 0)
         {
@@ -73,7 +74,15 @@
     
     for (AHSingleInvocation* invocation in self.invocations)
     {
-        [invocation setFinishedBlock:completionBlock];
+        ResponseBlock originalBlock = invocation.finishedBlock;
+        
+        [invocation setFinishedBlock:
+         ^(BOOL success, id<AHInvocationProtocol> invocation)
+         {
+             if (originalBlock)
+                  originalBlock(success,invocation);
+             invocationCompleted(success,invocation);
+         }];
     }
 
 }
@@ -133,6 +142,11 @@
 -(NSString*)description
 {
     return AHNSStringF(@"%@: name:%@ invocations count:%d result:%@ isRunning:%d",NSStringFromClass([self class]),self.name,self.invocations.count,self.result,self.isRunning);
+}
+
+-(void)dealloc
+{
+    NSLog(@"dealloc %@",self.name);
 }
 
 @end
