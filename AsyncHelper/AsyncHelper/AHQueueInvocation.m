@@ -20,6 +20,7 @@
 @implementation AHQueueInvocation
 @synthesize finishedBlock;
 @synthesize isRunning;
+@synthesize wasSuccessful;
 @synthesize result;
 @synthesize name;
 
@@ -65,6 +66,7 @@
         
         if (bself.runningInvocations.count == 0)
         {
+            bself.wasSuccessful = successful;
             bself.isRunning = NO;
             if (bself.finishedBlock)
                 bself.finishedBlock (successful,bself);
@@ -147,7 +149,7 @@
 
 -(NSString*)description
 {
-    return AHNSStringF(@"%@: name:%@ invocations count:%d result:%@ isRunning:%d",NSStringFromClass([self class]),self.name,self.invocations.count,self.result,self.isRunning);
+    return AHNSStringF(@"%@: name:%@ invocations count:%d wasSuccessful:%d result:%@ isRunning:%d",NSStringFromClass([self class]),self.name,self.invocations.count,self.wasSuccessful,self.result,self.isRunning);
 }
 
 -(void)dealloc

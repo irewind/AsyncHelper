@@ -14,6 +14,7 @@
 -(void)invoke;
 @property (assign,nonatomic) BOOL isRunning;
 @property (strong,nonatomic) NSObject* result;
+@property (assign,nonatomic) BOOL wasSuccessful;
 @property (strong,nonatomic) NSString* name;
 @end
 

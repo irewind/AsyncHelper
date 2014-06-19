@@ -20,6 +20,7 @@
 @synthesize isRunning;
 @synthesize finishedBlock;
 @synthesize name;
+@synthesize wasSuccessful;
 @synthesize result;
 
 -(instancetype) initWithInvocation:(id<AHInvocationProtocol>)invocation retryEverySeconds:(NSNumber*)sec  andCompletionBlock:(CompletionBlock)complete
@@ -80,6 +81,7 @@
         else
         {
             bself.isRunning = NO;
+            bself.wasSuccessful = success;            
             bself.result = invocation.result;
             if (bself.finishedBlock)
                 bself.finishedBlock(success,bself);
@@ -97,7 +99,7 @@
 
 -(NSString*)description
 {
-    return AHNSStringF(@"%@: name:%@ retries:%@ interval:%@ result:%@ isRunning:%d",NSStringFromClass([self class]),self.name,self.timesToRetry,self.retryAfterSeconds,self.result,self.isRunning);
+    return AHNSStringF(@"%@: name:%@ retries:%@ interval:%@ wasSuccessful:%d result:%@ isRunning:%d",NSStringFromClass([self class]),self.name,self.timesToRetry,self.retryAfterSeconds,self.wasSuccessful,self.result,self.isRunning);
 }
 
 -(void)dealloc
