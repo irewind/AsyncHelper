@@ -492,60 +492,63 @@
     }
 }
 
+-(void)testInsist
+{
+    @autoreleasepool {
+        
+        AHInsistentInvocation* insist = [self ifFailed:_inv(op3AndThen:) retryEverySeconds:@2 andThen:
+         ^(BOOL success, id<AHInvocationProtocol> invocation)
+        {
+            NSLog(@"all done, success: %d, result: %@",success, invocation.result);
+        }];
+        
+        [insist invoke];
+    }
+}
+
 -(void)testAll
 {
     
-//    [self ifFailed:_inv(op1AndThen:) retryEverySeconds:@2 andThen:
-//     ^(BOOL success)
-//    {
-//        [self op2AndThen:
-//         ^(BOOL success)
-//        {
-//            NSLog(@"OK!!!!");
-//
-//        }];
-//    }];
-
     @autoreleasepool
     {
         
-    AHQueueInvocation* queue = [self queue:@[] andThen:
-    ^(BOOL success, id<AHInvocationProtocol> invocation)
-    {
-        NSLog(@"all done, success: %d",success);
-    }];
-    
-    queue.name = @"main_AHQueueInvocation";
+        AHQueueInvocation* queue = [self queue:@[] andThen:
+        ^(BOOL success, id<AHInvocationProtocol> invocation)
+        {
+            NSLog(@"all done, success: %d",success);
+        }];
+        
+        queue.name = @"main_AHQueueInvocation";
 
-    [queue addInvocation:_inv(test1AndThen:)];
+        [queue addInvocation:_inv(test1AndThen:)];
 
-    [queue addInvocation:_inv(test2AndThen:)];
+        [queue addInvocation:_inv(test2AndThen:)];
 
-    [queue addInvocation:_inv(test3AndThen:)];
+        [queue addInvocation:_inv(test3AndThen:)];
 
-//    [queue addInvocation:_inv(test4AndThen:)];
+        [queue addInvocation:_inv(test4AndThen:)];
 
-//    [queue addInvocation:_inv(test5AndThen:)];
+        [queue addInvocation:_inv(test5AndThen:)];
 
-//    [queue addInvocation:_inv(test6AndThen:)];
+        [queue addInvocation:_inv(test6AndThen:)];
 
-//    [queue addInvocation:_inv(test7AndThen:)];
-    
-//    [queue addInvocation:_inv(test8AndThen:)];
+        [queue addInvocation:_inv(test7AndThen:)];
+        
+        [queue addInvocation:_inv(test8AndThen:)];
 
-    [queue addInvocation:_inv(test9AndThen:)];
+        [queue addInvocation:_inv(test9AndThen:)];
 
-    [queue addInvocation:_inv(test10AndThen:)];
+        [queue addInvocation:_inv(test10AndThen:)];
 
-    [queue addInvocation:_inv(test11AndThen:)];
+        [queue addInvocation:_inv(test11AndThen:)];
 
-    [queue addInvocation:_inv(test12AndThen:)];
+        [queue addInvocation:_inv(test12AndThen:)];
 
-//    [queue addInvocation:_inv(test13AndThen:)];
+        [queue addInvocation:_inv(test13AndThen:)];
 
-    [queue addInvocation:_inv(test14AndThen:)];
+        [queue addInvocation:_inv(test14AndThen:)];
 
-    [queue invoke];
+        [queue invoke];
         
     }
     
@@ -562,6 +565,7 @@
 //    [self testSingle];
 //    [self testQueue];
 //    [self testParallel];
+//    [self testInsist];
     [self testAll];
 
     

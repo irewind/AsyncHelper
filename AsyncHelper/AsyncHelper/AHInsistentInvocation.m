@@ -88,6 +88,7 @@
             bself.result = invocation.result;
             if (bself.finishedBlock)
                 bself.finishedBlock(success,bself);
+            [bself release];
         }
     };
     
@@ -97,6 +98,7 @@
 -(void)invoke
 {
     self.isRunning = YES;
+    [self retain];
     [self.invocation invoke];
 }
 
@@ -108,6 +110,12 @@
 -(void)dealloc
 {
     NSLog(@"dealloc %@ %p",self.name,self);
+    self.invocation = nil;
+    self.retryAfterSeconds = nil;
+    self.timesToRetry = nil;
+    self.name = nil;
+    self.result = nil;
+    self.finishedBlock = nil;
     
     [super dealloc];
 }
