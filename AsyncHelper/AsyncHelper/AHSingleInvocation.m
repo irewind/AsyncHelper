@@ -103,6 +103,7 @@
     {
         [self retain];
         self.isRunning = YES;
+        NSLog(@"invoking %@",self.name);
         [self.invocation invoke];
     }
 }

@@ -88,7 +88,9 @@
              {
                  if (originalBlock)
                      originalBlock(success,invocation);
+                 [bself retain];
                  invocationCompleted(success,invocation);
+                 [bself release];
              }];
             
             [self.preparedInvocations addObject:invocation];

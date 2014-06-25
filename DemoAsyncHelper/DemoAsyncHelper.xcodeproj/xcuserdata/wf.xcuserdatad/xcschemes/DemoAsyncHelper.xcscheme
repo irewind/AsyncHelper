@@ -69,6 +69,11 @@
       </BuildableProductRunnable>
       <AdditionalOptions>
          <AdditionalOption
+            key = "DYLD_INSERT_LIBRARIES"
+            value = "/usr/lib/libgmalloc.dylib"
+            isEnabled = "YES">
+         </AdditionalOption>
+         <AdditionalOption
             key = "OBJC_PRINT_EXCEPTIONS"
             value = "YES"
             isEnabled = "YES">

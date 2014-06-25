@@ -515,6 +515,7 @@
         NSLog(@"all done, success: %d",success);
     }];
     
+    queue.name = @"main_AHQueueInvocation";
 
     [queue addInvocation:_inv(test1AndThen:)];
 
