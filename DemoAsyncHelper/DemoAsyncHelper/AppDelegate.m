@@ -202,11 +202,11 @@
 {
     NSLog(@"begin test5");
     [[self queue:@[
-                  _inv(op1AndThen:),
+//                  _inv(op1AndThen:),
                   [self parallelize:
                        @[
                           [self ifFailed:_inv(op3AndThen:) retryEverySeconds:@(2) andThen:nil]
-                         ,_inv(op2AndThen:)
+//                         ,_inv(op2AndThen:)
                          ] andThen:nil]
                   ]
         andThen:
@@ -518,23 +518,23 @@
             NSLog(@"all done, success: %d",success);
         }];
         
-        queue.name = @"main_AHQueueInvocation";
-
+//        queue.name = @"main_AHQueueInvocation";
+/*
         [queue addInvocation:_inv(test1AndThen:)];
 
         [queue addInvocation:_inv(test2AndThen:)];
 
         [queue addInvocation:_inv(test3AndThen:)];
-
+*/
         [queue addInvocation:_inv(test4AndThen:)];
 
-        [queue addInvocation:_inv(test5AndThen:)];
+        [queue addInvocation:_inv(test5AndThen:)]; //leak!
+/*
+        [queue addInvocation:_inv(test6AndThen:)]; //no leak
 
-        [queue addInvocation:_inv(test6AndThen:)];
-
-        [queue addInvocation:_inv(test7AndThen:)];
+//        [queue addInvocation:_inv(test7AndThen:)]; // leak
         
-        [queue addInvocation:_inv(test8AndThen:)];
+//        [queue addInvocation:_inv(test8AndThen:)]; //leak
 
         [queue addInvocation:_inv(test9AndThen:)];
 
@@ -544,10 +544,10 @@
 
         [queue addInvocation:_inv(test12AndThen:)];
 
-        [queue addInvocation:_inv(test13AndThen:)];
+        [queue addInvocation:_inv(test13AndThen:)]; //leak
 
         [queue addInvocation:_inv(test14AndThen:)];
-
+*/
         [queue invoke];
         
     }

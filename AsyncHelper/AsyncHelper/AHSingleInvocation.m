@@ -34,6 +34,7 @@
     {
         self.invocation = invocation;
         self.name = [NSString stringWithFormat:@"%lu_%@",(unsigned long)[self hash], NSStringFromSelector(invocation.selector)];
+        NSLog(@"alloc %@ %p",self.name,self);
         [self prepareInvocation];
     }
     return self;
@@ -60,6 +61,7 @@
         self.invocation = invocation;
         
         [self prepareInvocation];
+        NSLog(@"alloc %@ %p",self.name,self);        
     }
     return self;
 }

@@ -31,7 +31,7 @@
         self.preparedInvocations = [NSMutableArray array];
         self.invocations = [NSMutableArray array];
         self.name = [NSString stringWithFormat:@"%lu_%@",(unsigned long)[self hash], NSStringFromClass([self class])];
-
+        NSLog(@"alloc %@ %p",self.name,self);
     }
     return self;
 }
@@ -48,7 +48,7 @@
         
         [self setFinishedBlock:complete];
         [self prepareInvocations];
-        
+        NSLog(@"alloc %@ %p",self.name,self);
     }
     return self;
 }
