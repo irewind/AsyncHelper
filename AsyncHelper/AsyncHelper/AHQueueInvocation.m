@@ -154,14 +154,21 @@
 
 -(void)dealloc
 {
-    NSLog(@"dealloc %@",self.name);
+    NSLog(@"dealloc %@ %p",self.name,self);
     
-    [_preparedInvocations release];
-    [_invocations release];
-    [_runningInvocations release];
-    [finishedBlock release];
-    [result release];
-    [name release];
+    self.preparedInvocations = nil;
+    self.invocations = nil;
+    self.runningInvocations = nil;
+    self.name = nil;
+    self.finishedBlock = nil;
+    self.result = nil;
+    
+//    [_preparedInvocations release];
+//    [_invocations release];
+//    [_runningInvocations release];
+//    [finishedBlock release];
+//    [result release];
+//    [name release];
     
     [super dealloc];
 }

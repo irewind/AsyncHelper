@@ -12,6 +12,7 @@
 
 @interface AHParallelInvocation ()
 @property (strong,nonatomic) NSMutableArray* runningInvocations;
+@property (strong,nonatomic) NSMutableArray* preparedInvocations;
 @property (strong,nonatomic) NSMutableArray* invocations;
 @end
 
@@ -27,6 +28,7 @@
     {
         self.runningInvocations = [NSMutableArray array];
         self.invocations = [NSMutableArray array];
+        self.preparedInvocations = [NSMutableArray array];
         self.name = [NSString stringWithFormat:@"%lu_%@",(unsigned long)[self hash], NSStringFromClass([self class])];
         NSLog(@"alloc %@ %p",self.name,self);
     }
@@ -39,6 +41,7 @@
     {
         self.runningInvocations = [NSMutableArray array];
         self.invocations = [[invocations mutableCopy] autorelease];
+        self.preparedInvocations = [NSMutableArray array];        
         self.name = [NSString stringWithFormat:@"%lu_%@",(unsigned long)[self hash], NSStringFromClass([self class])];
         
         [self setFinishedBlock:complete];
@@ -58,7 +61,7 @@
     {
         successful &= success;
         [bself.runningInvocations removeObject:invocation];
-        
+        NSLog(@"%@ remaining invocations: %d",bself.name,bself.runningInvocations.count);
         if (bself.runningInvocations.count == 0)
         {
             bself.isRunning = NO;
@@ -70,15 +73,19 @@
     
     for (AHSingleInvocation* invocation in self.invocations)
     {
-        ResponseBlock originalBlock = invocation.finishedBlock;
-        
-        [invocation setFinishedBlock:
-         ^(BOOL success, id<AHInvocationProtocol> theInvocation)
-         {
-             if (originalBlock)
-                  originalBlock(success,theInvocation);
-             invocationCompleted(success,theInvocation);
-         }];
+        if (NO == [self.preparedInvocations containsObject:invocation])
+        {
+            ResponseBlock originalBlock = invocation.finishedBlock;
+            
+            [invocation setFinishedBlock:
+             ^(BOOL success, id<AHInvocationProtocol> theInvocation)
+             {
+                 if (originalBlock)
+                      originalBlock(success,theInvocation);
+                 invocationCompleted(success,theInvocation);
+             }];
+            [self.preparedInvocations addObject:invocation];
+        }
     }
 
 }
@@ -122,6 +129,10 @@
         for (AHSingleInvocation* invocation in self.invocations)
         {
             [self.runningInvocations addObject:invocation];
+        }
+        
+        for (AHSingleInvocation* invocation in self.invocations)
+        {
             [invocation invoke];
         }
     }
@@ -145,13 +156,19 @@
 
 -(void)dealloc
 {
-    NSLog(@"dealloc %@",self.name);
+    NSLog(@"dealloc %@ %p",self.name,self);
     
-    [_invocations release];
-    [_runningInvocations release];
-    [finishedBlock release];
-    [name release];
-    [result release];
+    self.invocations = nil;
+    self.runningInvocations = nil;
+    self.finishedBlock = nil;
+    self.preparedInvocations = nil;
+    self.name = nil;
+    self.result = nil;
+//    [_invocations release];
+//    [_runningInvocations release];
+//    [finishedBlock release];
+//    [name release];
+//    [result release];
     
     [super dealloc];
 }

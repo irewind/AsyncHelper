@@ -119,7 +119,7 @@
 
 -(void)dealloc
 {
-    NSLog(@"dealloc %@",name);
+    NSLog(@"dealloc %@ %p",self.name,self);
     
     [_internalFinishedBlock release];
     [_invocation release];

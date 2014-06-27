@@ -25,17 +25,18 @@
 -(void)op11AndThen:(void(^)(BOOL success,NSObject* result))complete
 {
     NSLog(@"started op11");
-    dispatch_async(dispatch_get_main_queue(),
-       ^{
-           NSLog(@"op11 done");
-           complete(YES,@(666));
-       });
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(),
+    ^{
+        NSLog(@"op11 done");
+        complete(YES,@(666));
+    });
 }
 
 -(void)op1AndThen:(void(^)(BOOL success,NSObject* result))complete
 {
-    NSLog(@"started op1");    
-    dispatch_async(dispatch_get_main_queue(),
+    NSLog(@"started op1");
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(),
        ^{
            NSLog(@"op1 done");
            complete(YES,nil);
@@ -100,6 +101,30 @@
             if (complete)
                 complete(YES,@"res5");
         });
+}
+
+-(void)op6AndThen:(void(^)(BOOL success,NSObject* result))complete
+{
+    AHParallelInvocation* parallel = [self parallelize:@[] andThen:
+                                      ^(BOOL success, id<AHInvocationProtocol> invocation)
+                                      {
+                                          NSLog(@"finished op6 success: %d, result: %@",success,invocation.result);
+                                          if (complete)
+                                              complete(success,invocation.result);
+                                      }];
+    
+    for (int i = 0; i < 3; i++)
+    {
+        [parallel addInvocation:_inv(op1AndThen:)];
+    }
+    
+    [parallel invoke];
+}
+
+-(void)op7AndThen:(void(^)(BOOL success,NSObject* result))complete
+{
+    if (complete)
+        complete(YES,nil);
 }
 
 -(void)test1AndThen:(ResponseBlock)complete
@@ -452,6 +477,47 @@
 //    [parallel1 invoke];
 }
 
+-(void)test15AndThen:(ResponseBlock)complete
+{
+    /*
+    create parallel with
+	queue of 2 items,
+    
+	inv (
+         create parallel with finish block
+         
+         for x times
+         add inv to parallel
+         
+         invoke parallel
+         )
+    
+    and finish block
+    */
+    
+    [[self parallelize:
+        @[
+//            [self queue:@[
+//                          _inv(op11AndThen:),
+//                          _inv(op11AndThen:),
+//                          _inv(op7AndThen:),
+//                          ]],
+             _inv(op7AndThen:),
+             _inv(op7AndThen:),
+//             _inv(op1AndThen:),
+//             _inv(op11AndThen:),
+//             _inv(op6AndThen:)
+         ]
+    andThen:
+    ^(BOOL success, id<AHInvocationProtocol> invocation)
+    {
+        NSLog(@"finished %@",invocation.name);
+        if (complete)
+            complete(success,invocation.result);
+    }] invoke];
+    
+}
+
 
 -(void)testSingle
 {
@@ -518,23 +584,23 @@
             NSLog(@"all done, success: %d",success);
         }];
         
-//        queue.name = @"main_AHQueueInvocation";
-/*
+        queue.name = @"main_AHQueueInvocation";
+
         [queue addInvocation:_inv(test1AndThen:)];
 
         [queue addInvocation:_inv(test2AndThen:)];
 
         [queue addInvocation:_inv(test3AndThen:)];
-*/
+
         [queue addInvocation:_inv(test4AndThen:)];
 
         [queue addInvocation:_inv(test5AndThen:)]; //leak!
-/*
+
         [queue addInvocation:_inv(test6AndThen:)]; //no leak
 
-//        [queue addInvocation:_inv(test7AndThen:)]; // leak
+        [queue addInvocation:_inv(test7AndThen:)]; // leak
         
-//        [queue addInvocation:_inv(test8AndThen:)]; //leak
+        [queue addInvocation:_inv(test8AndThen:)]; //leak
 
         [queue addInvocation:_inv(test9AndThen:)];
 
@@ -547,12 +613,13 @@
         [queue addInvocation:_inv(test13AndThen:)]; //leak
 
         [queue addInvocation:_inv(test14AndThen:)];
-*/
+
         [queue invoke];
         
     }
     
 }
+
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
@@ -562,12 +629,18 @@
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
     
-//    [self testSingle];
-//    [self testQueue];
-//    [self testParallel];
-//    [self testInsist];
+    [self testSingle];
+    [self testQueue];
+    [self testParallel];
+    [self testInsist];
     [self testAll];
 
+    [self test15AndThen:
+     ^(BOOL success, NSObject *result)
+    {
+        NSLog(@"test15 done %d, results: %@",success,result);
+        NSLog(@"--------15--------");
+    }];
     
     return YES;
 }
