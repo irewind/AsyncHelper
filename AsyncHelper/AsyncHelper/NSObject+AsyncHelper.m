@@ -34,7 +34,7 @@
 {
     AHInsistentInvocation* inv = [[[AHInsistentInvocation alloc] initWithInvocation:invocation retryEverySeconds:sec forTimes:times andCompletionBlock:complete] autorelease];
     
-    [inv invoke];
+//    [inv invoke];
     
     return inv;
 }

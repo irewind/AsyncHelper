@@ -29,6 +29,7 @@ static int ddLogLevel = LOG_LEVEL_ERROR;
 @implementation AHQueueInvocation
 @synthesize finishedBlock;
 @synthesize isRunning;
+@synthesize wasSuccessful;
 @synthesize result;
 @synthesize name;
 
@@ -75,6 +76,7 @@ static int ddLogLevel = LOG_LEVEL_ERROR;
         
         if (bself.runningInvocations.count == 0)
         {
+            bself.wasSuccessful = successful;
             bself.isRunning = NO;
             if (bself.finishedBlock)
                 bself.finishedBlock (successful,bself);
@@ -160,7 +162,7 @@ static int ddLogLevel = LOG_LEVEL_ERROR;
 
 -(NSString*)description
 {
-    return [NSString stringWithFormat:@"%@: name:%@ invocations count:%lu result:%@ isRunning:%d",NSStringFromClass([self class]),self.name,(unsigned long)self.invocations.count,self.result,self.isRunning];
+    return AHNSStringF(@"%@: name:%@ invocations count:%d wasSuccessful:%d result:%@ isRunning:%d",NSStringFromClass([self class]),self.name,self.invocations.count,self.wasSuccessful,self.result,self.isRunning);
 }
 
 -(void)dealloc

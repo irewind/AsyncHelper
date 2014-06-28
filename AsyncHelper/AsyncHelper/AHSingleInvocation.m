@@ -23,6 +23,7 @@ static int ddLogLevel = LOG_LEVEL_ERROR;
 
 @implementation AHSingleInvocation
 @synthesize isRunning;
+@synthesize wasSuccessful;
 @synthesize result;
 @synthesize name;
 
@@ -81,7 +82,8 @@ static int ddLogLevel = LOG_LEVEL_ERROR;
     ^(BOOL success, NSObject* res)
     {
         bself.isRunning = NO;
-        bself.result = res == nil?res : @{bself.name:res};
+        bself.wasSuccessful = success;
+        bself.result = res == nil?res : @{name:res};
         if (bself.finishedBlock)
             bself.finishedBlock(success,bself);
         [bself release];
@@ -118,8 +120,8 @@ static int ddLogLevel = LOG_LEVEL_ERROR;
 }
 
 -(NSString*)description
-{    
-    return [NSString stringWithFormat:@"%@: name:%@ target:%@(%p) cmd:%@ result:%@ isRunning:%d",NSStringFromClass([self class]),self.name,NSStringFromClass(self.invocation.target),self.invocation.target,NSStringFromSelector(self.invocation.selector),self.result,self.isRunning ];
+{
+    return AHNSStringF(@"%@: name:%@ target:%@(%p) cmd:%@ wasSuccessful:%d result:%@ isRunning:%d",NSStringFromClass([self class]),self.name,NSStringFromClass(self.invocation.target),self.invocation.target,NSStringFromSelector(self.invocation.selector),self.wasSuccessful,self.result,self.isRunning);
 }
 
 -(void)dealloc

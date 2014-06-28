@@ -13,8 +13,9 @@
 @property (copy,nonatomic) void(^finishedBlock)(BOOL success, id<AHInvocationProtocol>);
 -(void)invoke;
 @property (assign,nonatomic) BOOL isRunning;
-@property (retain,nonatomic) NSObject* result;
-@property (retain,nonatomic) NSString* name;
+@property (strong,nonatomic) NSObject* result;
+@property (assign,nonatomic) BOOL wasSuccessful;
+@property (strong,nonatomic) NSString* name;
 @end
 
 typedef void (^ResponseBlock)(BOOL success, NSObject* result);

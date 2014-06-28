@@ -28,6 +28,7 @@
 @implementation AHInsistentInvocation
 @synthesize isRunning;
 @synthesize name;
+@synthesize wasSuccessful;
 @synthesize result;
 
 -(instancetype) initWithInvocation:(id<AHInvocationProtocol>)invocation retryEverySeconds:(NSNumber*)sec  andCompletionBlock:(CompletionBlock)complete
@@ -92,6 +93,7 @@
         else
         {
             bself.isRunning = NO;
+            bself.wasSuccessful = success;            
             bself.result = invocation.result;
             if (bself.internalFinishedBlock)
                 bself.internalFinishedBlock(success,bself);
@@ -125,7 +127,7 @@
 
 -(NSString*)description
 {
-    return [NSString stringWithFormat:@"%@: name:%@ retries:%@ interval:%@ result:%@ isRunning:%d",NSStringFromClass([self class]),self.name,self.timesToRetry,self.retryAfterSeconds,self.result,self.isRunning];
+    return AHNSStringF(@"%@: name:%@ retries:%@ interval:%@ wasSuccessful:%d result:%@ isRunning:%d",NSStringFromClass([self class]),self.name,self.timesToRetry,self.retryAfterSeconds,self.wasSuccessful,self.result,self.isRunning);
 }
 
 -(void)dealloc
