@@ -10,6 +10,14 @@
 #import "AHSingleInvocation.h"
 #import "NSString+Utils.h"
 
+#import "DDLog.h"
+
+#ifdef DEMO_ASYNC
+static int ddLogLevel = LOG_LEVEL_VERBOSE;
+#else
+static int ddLogLevel = LOG_LEVEL_ERROR;
+#endif
+
 @interface AHParallelInvocation ()
 @property (strong,nonatomic) NSMutableArray* runningInvocations;
 @property (strong,nonatomic) NSMutableArray* preparedInvocations;
@@ -30,7 +38,7 @@
         self.invocations = [NSMutableArray array];
         self.preparedInvocations = [NSMutableArray array];
         self.name = [NSString stringWithFormat:@"%lu_%@",(unsigned long)[self hash], NSStringFromClass([self class])];
-        NSLog(@"alloc %@ %p",self.name,self);
+        DDLogVerbose(@"alloc %@ %p",self.name,self);
     }
     return self;
 }
@@ -46,7 +54,7 @@
         
         [self setFinishedBlock:complete];
         [self prepareInvocations];
-        NSLog(@"alloc %@ %p",self.name,self);
+        DDLogVerbose(@"alloc %@ %p",self.name,self);
     }
     return self;
 }
@@ -61,7 +69,7 @@
     {
         successful &= success;
         [bself.runningInvocations removeObject:invocation];
-        NSLog(@"%@ remaining invocations: %d",bself.name,bself.runningInvocations.count);
+        DDLogVerbose(@"%@ remaining invocations: %lu",bself.name,(unsigned long)bself.runningInvocations.count);
         if (bself.runningInvocations.count == 0)
         {
             bself.isRunning = NO;
@@ -123,7 +131,10 @@
 
 -(void)invoke
 {
+    DDLogVerbose(@"invoking %@",self.name);
+    
     [self retain];
+    
     if (self.invocations.count > 0)
     {
         for (AHSingleInvocation* invocation in self.invocations)
@@ -156,7 +167,7 @@
 
 -(void)dealloc
 {
-    NSLog(@"dealloc %@ %p",self.name,self);
+    DDLogVerbose(@"dealloc %@ %p",self.name,self);
     
     self.invocations = nil;
     self.runningInvocations = nil;

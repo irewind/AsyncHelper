@@ -10,6 +10,15 @@
 #import "AHSingleInvocation.h"
 #import "NSString+Utils.h"
 
+#import "DDLog.h"
+
+#ifdef DEMO_ASYNC
+static int ddLogLevel = LOG_LEVEL_VERBOSE;
+#else
+static int ddLogLevel = LOG_LEVEL_ERROR;
+#endif
+
+
 @interface AHQueueInvocation ()
 
 @property (retain,nonatomic) NSMutableArray* runningInvocations;
@@ -31,7 +40,7 @@
         self.preparedInvocations = [NSMutableArray array];
         self.invocations = [NSMutableArray array];
         self.name = [NSString stringWithFormat:@"%lu_%@",(unsigned long)[self hash], NSStringFromClass([self class])];
-//        NSLog(@"alloc %@ %p",self.name,self);
+        DDLogVerbose(@"alloc %@ %p",self.name,self);
     }
     return self;
 }
@@ -48,7 +57,7 @@
         
         [self setFinishedBlock:complete];
         [self prepareInvocations];
-//        NSLog(@"alloc %@ %p",self.name,self);
+        DDLogVerbose(@"alloc %@ %p",self.name,self);
     }
     return self;
 }
@@ -127,6 +136,8 @@
 
 -(void)invoke
 {
+    DDLogVerbose(@"invoking %@",self.name);
+    
     [self retain];
     if (self.invocations.count > 0 )
     {
@@ -154,7 +165,7 @@
 
 -(void)dealloc
 {
-//    NSLog(@"dealloc %@ %p",self.name,self);
+    DDLogVerbose(@"dealloc %@ %p",self.name,self);
     
     self.preparedInvocations = nil;
     self.invocations = nil;

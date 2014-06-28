@@ -497,21 +497,23 @@
     
     [[self parallelize:
         @[
-//            [self queue:@[
-//                          _inv(op11AndThen:),
-//                          _inv(op11AndThen:),
-//                          _inv(op7AndThen:),
-//                          ]],
+            [self queue:@[
+                          _inv(op11AndThen:),
+                          _inv(op11AndThen:),
+                          _inv(op7AndThen:),
+                          ]],
              _inv(op7AndThen:),
              _inv(op7AndThen:),
-//             _inv(op1AndThen:),
-//             _inv(op11AndThen:),
-//             _inv(op6AndThen:)
+             _inv(op1AndThen:),
+             _inv(op11AndThen:),
+             _inv(op6AndThen:)
          ]
     andThen:
     ^(BOOL success, id<AHInvocationProtocol> invocation)
     {
-        NSLog(@"finished %@",invocation.name);
+        NSLog(@"test15 done %d, results: %@",success,invocation.result);
+        NSLog(@"--------15--------");
+
         if (complete)
             complete(success,invocation.result);
     }] invoke];
@@ -613,6 +615,8 @@
         [queue addInvocation:_inv(test13AndThen:)]; //leak
 
         [queue addInvocation:_inv(test14AndThen:)];
+        
+        [queue addInvocation:_inv(test15AndThen:)];
 
         [queue invoke];
         
@@ -634,13 +638,6 @@
     [self testParallel];
     [self testInsist];
     [self testAll];
-
-    [self test15AndThen:
-     ^(BOOL success, NSObject *result)
-    {
-        NSLog(@"test15 done %d, results: %@",success,result);
-        NSLog(@"--------15--------");
-    }];
     
     return YES;
 }

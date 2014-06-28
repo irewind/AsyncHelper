@@ -8,7 +8,14 @@
 
 #import "AHInsistentInvocation.h"
 #import "NSString+Utils.h"
+
 #import "DDLog.h"
+
+#ifdef DEMO_ASYNC
+    static int ddLogLevel = LOG_LEVEL_VERBOSE;
+#else
+    static int ddLogLevel = LOG_LEVEL_ERROR;
+#endif
 
 @interface AHInsistentInvocation ()
 @property (strong,nonatomic) id<AHInvocationProtocol> invocation;
@@ -31,7 +38,7 @@
         self.retryAfterSeconds = sec;
         self.name = [NSString stringWithFormat:@"%lu_%@",(unsigned long)[self hash], NSStringFromClass([self class])];
         
-        NSLog(@"alloc %@ %p",self.name,self);
+        DDLogVerbose(@"alloc %@ %p",self.name,self);
         
         [self setFinishedBlock:complete];
         
@@ -46,7 +53,8 @@
         self.invocation = invocation;
         self.retryAfterSeconds = sec;
         self.name = [NSString stringWithFormat:@"%lu_%@",(unsigned long)[self hash], NSStringFromClass([self class])];
-        NSLog(@"alloc %@ %p",self.name,self);
+        
+        DDLogVerbose(@"alloc %@ %p",self.name,self);
         
         self.timesToRetry = times;
         
@@ -108,6 +116,8 @@
 
 -(void)invoke
 {
+    DDLogVerbose(@"invoking %@",self.name);
+    
     self.isRunning = YES;
     [self retain];
     [self.invocation invoke];
@@ -120,7 +130,7 @@
 
 -(void)dealloc
 {
-    NSLog(@"dealloc %@ %p",self.name,self);
+    DDLogVerbose(@"dealloc %@ %p",self.name,self);
     
     self.invocation = nil;
     self.retryAfterSeconds = nil;
