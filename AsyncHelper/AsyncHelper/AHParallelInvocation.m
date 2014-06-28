@@ -164,11 +164,6 @@
     self.preparedInvocations = nil;
     self.name = nil;
     self.result = nil;
-//    [_invocations release];
-//    [_runningInvocations release];
-//    [finishedBlock release];
-//    [name release];
-//    [result release];
     
     [super dealloc];
 }

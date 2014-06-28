@@ -12,6 +12,8 @@
 	<dict>
 		<key>C78A9E97-B0AF-4243-8986-C6A5111F8058</key>
 		<string>https://bitbucket.org/wfettich/asynchelper.git</string>
+		<key>E03CE485-EA6E-43B1-BD7E-59996D0684FE</key>
+		<string>https://github.com/irewind/CocoaLumberjack</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>DemoAsyncHelper/DemoAsyncHelper.xcodeproj/project.xcworkspace</string>
@@ -19,6 +21,8 @@
 	<dict>
 		<key>C78A9E97-B0AF-4243-8986-C6A5111F8058</key>
 		<string>../../..</string>
+		<key>E03CE485-EA6E-43B1-BD7E-59996D0684FE</key>
+		<string>../../CocoaLumberjack</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>https://bitbucket.org/wfettich/asynchelper.git</string>
@@ -35,6 +39,14 @@
 			<string>C78A9E97-B0AF-4243-8986-C6A5111F8058</string>
 			<key>IDESourceControlWCCName</key>
 			<string>AsyncHelper</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>E03CE485-EA6E-43B1-BD7E-59996D0684FE</string>
+			<key>IDESourceControlWCCName</key>
+			<string>CocoaLumberjack</string>
 		</dict>
 	</array>
 </dict>

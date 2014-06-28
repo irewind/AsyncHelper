@@ -8,6 +8,7 @@
 
 #import "AHInsistentInvocation.h"
 #import "NSString+Utils.h"
+#import "DDLog.h"
 
 @interface AHInsistentInvocation ()
 @property (strong,nonatomic) id<AHInvocationProtocol> invocation;
@@ -19,7 +20,6 @@
 
 @implementation AHInsistentInvocation
 @synthesize isRunning;
-//@synthesize finishedBlock;
 @synthesize name;
 @synthesize result;
 
@@ -73,13 +73,13 @@
             double delayInSeconds = bself.retryAfterSeconds.doubleValue;
             dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
             dispatch_after(popTime, dispatch_get_main_queue(),
-                           ^(void)
-                           {
-                               if (bself.timesToRetry != nil && bself.remainingRetries!=0)
-                                   bself.remainingRetries--;
-                               
-                               [bself.invocation invoke];
-                           });
+               ^(void)
+               {
+                   if (bself.timesToRetry != nil && bself.remainingRetries!=0)
+                       bself.remainingRetries--;
+                   
+                   [bself.invocation invoke];
+               });
         }
         else
         {
@@ -121,6 +121,7 @@
 -(void)dealloc
 {
     NSLog(@"dealloc %@ %p",self.name,self);
+    
     self.invocation = nil;
     self.retryAfterSeconds = nil;
     self.timesToRetry = nil;
