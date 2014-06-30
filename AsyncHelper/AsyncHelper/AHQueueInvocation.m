@@ -162,7 +162,7 @@ static int ddLogLevel = LOG_LEVEL_ERROR;
 
 -(NSString*)description
 {
-    return AHNSStringF(@"%@: name:%@ invocations count:%d wasSuccessful:%d result:%@ isRunning:%d",NSStringFromClass([self class]),self.name,self.invocations.count,self.wasSuccessful,self.result,self.isRunning);
+    return [NSString stringWithFormat:@"%@: name:%@ invocations count:%lu wasSuccessful:%d result:%@ isRunning:%d",NSStringFromClass([self class]),self.name,(unsigned long)self.invocations.count,self.wasSuccessful,self.result,self.isRunning];
 }
 
 -(void)dealloc

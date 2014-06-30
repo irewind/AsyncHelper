@@ -11,7 +11,7 @@
 
 #import "DDLog.h"
 
-#ifdef DEMO_ASYNC
+#ifdef DEBUG
     static int ddLogLevel = LOG_LEVEL_VERBOSE;
 #else
     static int ddLogLevel = LOG_LEVEL_ERROR;
@@ -127,7 +127,7 @@
 
 -(NSString*)description
 {
-    return AHNSStringF(@"%@: name:%@ retries:%@ interval:%@ wasSuccessful:%d result:%@ isRunning:%d",NSStringFromClass([self class]),self.name,self.timesToRetry,self.retryAfterSeconds,self.wasSuccessful,self.result,self.isRunning);
+    return [NSString stringWithFormat:@"%@: name:%@ retries:%@ interval:%@ wasSuccessful:%d result:%@ isRunning:%d",NSStringFromClass([self class]),self.name,self.timesToRetry,self.retryAfterSeconds,self.wasSuccessful,self.result,self.isRunning];
 }
 
 -(void)dealloc
