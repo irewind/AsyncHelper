@@ -19,13 +19,14 @@
 
 @interface AHInsistentInvocation ()
 @property (strong,nonatomic) id<AHInvocationProtocol> invocation;
-@property (copy, nonatomic) CompletionBlock internalFinishedBlock;
+//@property (copy, nonatomic) CompletionBlock internalFinishedBlock;
 @property (strong,nonatomic) NSNumber* retryAfterSeconds;
 @property (strong,nonatomic) NSNumber* timesToRetry;
 @property (assign,nonatomic) int remainingRetries;
 @end
 
 @implementation AHInsistentInvocation
+@synthesize finishedBlock;
 @synthesize isRunning;
 @synthesize name;
 @synthesize wasSuccessful;
@@ -42,6 +43,8 @@
         DDLogVerbose(@"alloc %@ %p",self.name,self);
         
         [self setFinishedBlock:complete];
+        
+        [self prepareInvocation];
         
     }
     return self;
@@ -61,6 +64,8 @@
         
         [self setFinishedBlock:complete];
         
+        [self prepareInvocation];
+        
     }
     return self;
 }
@@ -72,6 +77,17 @@
     
     __block AHInsistentInvocation* bself = self;
     
+    __block ResponseBlock originalBlock = self.invocation.finishedBlock;
+    
+    void (^invokeBlock)()  =
+    ^(void)
+    {
+        if (bself.timesToRetry != nil && bself.remainingRetries!=0)
+            bself.remainingRetries--;
+        
+        [bself.invocation invoke];
+    };
+    
     CompletionBlock completionBlock =
     ^(BOOL success, id<AHInvocationProtocol> invocation)
     {
@@ -81,39 +97,22 @@
         {
             double delayInSeconds = bself.retryAfterSeconds.doubleValue;
             dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-            dispatch_after(popTime, dispatch_get_main_queue(),
-               ^(void)
-               {
-                   if (bself.timesToRetry != nil && bself.remainingRetries!=0)
-                       bself.remainingRetries--;
-                   
-                   [bself.invocation invoke];
-               });
+            dispatch_after(popTime, dispatch_get_main_queue(),invokeBlock);
         }
         else
         {
             bself.isRunning = NO;
             bself.wasSuccessful = success;            
             bself.result = invocation.result;
-            if (bself.internalFinishedBlock)
-                bself.internalFinishedBlock(success,bself);
+            if (originalBlock)
+                originalBlock(success,invocation);
+            if (bself.finishedBlock)
+                bself.finishedBlock(success,bself);
             [bself release];
         }
     };
     
     [self.invocation setFinishedBlock:completionBlock];
-}
-
--(void)setFinishedBlock:(CompletionBlock)complete
-{
-    [self setInternalFinishedBlock:complete];
-    
-    [self prepareInvocation];
-}
-
--(CompletionBlock)finishedBlock
-{
-    return self.internalFinishedBlock;
 }
 
 -(void)invoke
@@ -139,7 +138,8 @@
     self.timesToRetry = nil;
     self.name = nil;
     self.result = nil;
-    self.internalFinishedBlock = nil;
+    
+    [self setFinishedBlock:nil];
     
     [super dealloc];
 }

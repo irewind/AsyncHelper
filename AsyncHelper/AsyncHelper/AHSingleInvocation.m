@@ -18,11 +18,11 @@ static int ddLogLevel = LOG_LEVEL_ERROR;
 
 @interface AHSingleInvocation ()
     @property(retain,nonatomic) NSInvocation* invocation;
-    @property(copy, nonatomic) CompletionBlock internalFinishedBlock;
 @end
 
 @implementation AHSingleInvocation
 @synthesize isRunning;
+@synthesize finishedBlock;
 @synthesize wasSuccessful;
 @synthesize result;
 @synthesize name;
@@ -76,6 +76,8 @@ static int ddLogLevel = LOG_LEVEL_ERROR;
 
 -(void)prepareInvocation
 {
+    DDLogVerbose(@"prepare %@",self.name);
+    
     __block AHSingleInvocation* bself = self;
 
     ResponseBlock completionBlock =
@@ -83,7 +85,7 @@ static int ddLogLevel = LOG_LEVEL_ERROR;
     {
         bself.isRunning = NO;
         bself.wasSuccessful = success;
-        bself.result = res == nil?res : @{name:res};
+        bself.result = res == nil?res : @{bself.name:res};
         if (bself.finishedBlock)
             bself.finishedBlock(success,bself);
         [bself release];
@@ -94,18 +96,6 @@ static int ddLogLevel = LOG_LEVEL_ERROR;
     [self.invocation setArgument:&completionBlock atIndex:nrArgs-1];
     
     [self.invocation retainArguments];
-}
-
--(void)setFinishedBlock:(CompletionBlock)complete
-{
-    [self setInternalFinishedBlock:complete];
-    
-    [self prepareInvocation];
-}
-
--(CompletionBlock)finishedBlock
-{
-    return self.internalFinishedBlock;
 }
 
 -(void)invoke
@@ -128,7 +118,7 @@ static int ddLogLevel = LOG_LEVEL_ERROR;
 {
     DDLogVerbose(@"dealloc %@ %p",self.name,self);
     
-    self.internalFinishedBlock = nil;
+    [self setFinishedBlock:nil];
     self.invocation = nil;
     self.name = nil;
     self.result = nil;

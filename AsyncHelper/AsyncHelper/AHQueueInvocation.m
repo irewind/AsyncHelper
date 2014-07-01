@@ -12,7 +12,7 @@
 
 #import "DDLog.h"
 
-#ifdef DEMO_ASYNC
+#ifdef DEBUG
 static int ddLogLevel = LOG_LEVEL_VERBOSE;
 #else
 static int ddLogLevel = LOG_LEVEL_ERROR;
@@ -88,13 +88,13 @@ static int ddLogLevel = LOG_LEVEL_ERROR;
         }
     };
     
-    for (AHSingleInvocation* invocation in self.invocations)
+    for (AHSingleInvocation* inv in self.invocations)
     {
-        if (NO == [self.preparedInvocations containsObject:invocation])
+        if (NO == [self.preparedInvocations containsObject:inv])
         {
-            ResponseBlock originalBlock = invocation.finishedBlock;
+            ResponseBlock originalBlock = inv.finishedBlock;
             
-            [invocation setFinishedBlock:
+            [inv setFinishedBlock:
              ^(BOOL success, id<AHInvocationProtocol> invocation)
              {
                  if (originalBlock)
@@ -104,7 +104,7 @@ static int ddLogLevel = LOG_LEVEL_ERROR;
                  [bself release];
              }];
             
-            [self.preparedInvocations addObject:invocation];
+            [self.preparedInvocations addObject:inv];
         }
     }
 }
@@ -173,7 +173,7 @@ static int ddLogLevel = LOG_LEVEL_ERROR;
     self.invocations = nil;
     self.runningInvocations = nil;
     self.name = nil;
-    self.finishedBlock = nil;
+    [self setFinishedBlock:nil];
     self.result = nil;
         
     [super dealloc];

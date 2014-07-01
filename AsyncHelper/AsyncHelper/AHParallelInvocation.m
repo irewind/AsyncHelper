@@ -173,7 +173,7 @@ static int ddLogLevel = LOG_LEVEL_ERROR;
     
     self.invocations = nil;
     self.runningInvocations = nil;
-    self.finishedBlock = nil;
+    [self setFinishedBlock:nil];
     self.preparedInvocations = nil;
     self.name = nil;
     self.result = nil;

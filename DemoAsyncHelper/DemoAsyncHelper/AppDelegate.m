@@ -9,6 +9,9 @@
 #import "AppDelegate.h"
 #import <NSObject+AsyncHelper.h>
 #import "NSString+Utils.h"
+#import "DDLogNSLogger.h"
+#import "DDLog.h"
+
 
 @implementation AppDelegate
 
@@ -127,6 +130,26 @@
         complete(YES,nil);
 }
 
+-(void)test16AndThen:(ResponseBlock)complete
+{
+    [[self queue:@[
+                  _inv(op1AndThen:),
+                  [self parallelize:@[
+                                      _inv(op1AndThen:)
+                                      ]],
+                  [self queue:@[
+                                _inv(op1AndThen:)
+                                ]],
+                 ]
+    andThen:^(BOOL success, id<AHInvocationProtocol> invocation) {
+      
+        if (complete)
+            complete(success,invocation.result);
+    }] invoke];
+    
+}
+
+
 -(void)test1AndThen:(ResponseBlock)complete
 {
     NSLog(@"begin test1");
@@ -176,15 +199,15 @@
               if (complete)
                   complete (success,nil);
               
-              
           }] invoke];
-         
+    
      }] invoke]
     ;
 }
 
 -(void)test3AndThen:(ResponseBlock)complete
 {
+
     NSLog(@"begin test3");
     [[self queue:@[
                   _inv(op1AndThen:),
@@ -523,9 +546,12 @@
 
 -(void)testSingle
 {
+    @autoreleasepool {
+        
        AHSingleInvocation* op =  _inv(op1AndThen:);
         
         [op invoke];
+    }
 }
 
 -(void)testQueue
@@ -534,13 +560,23 @@
     
         AHQueueInvocation* queue = [self queue:@[] andThen:^(BOOL success, id<AHInvocationProtocol> invocation) {
             
-            NSLog(@"all done, success: %d",success);
+            NSLog(@"queue done, success: %d",success);
         }];
 
         [queue addInvocation:_inv(op1AndThen:)];
         [queue addInvocation:_inv(op1AndThen:)];
         
         [queue invoke];
+        
+        AHQueueInvocation* queue2 = [self queue:@[
+                                                  _inv(op1AndThen:),
+                                                  _inv(op1AndThen:)
+                                                  ] andThen:^(BOOL success, id<AHInvocationProtocol> invocation) {
+            
+            NSLog(@"queue2 done, success: %d",success);
+        }];
+        
+        [queue2 invoke];
     }
 }
 
@@ -557,6 +593,17 @@
         [parallel addInvocation:_inv(op1AndThen:)];
         
         [parallel invoke];
+        
+        AHParallelInvocation* parallel2 = [self parallelize:@[
+                                                  _inv(op1AndThen:),
+                                                  _inv(op1AndThen:)
+                                                  ] andThen:^(BOOL success, id<AHInvocationProtocol> invocation) {
+                                                      
+                                                      NSLog(@"parallel2 done, success: %d",success);
+                                                  }];
+        
+        [parallel2 invoke];
+
     }
 }
 
@@ -588,35 +635,43 @@
         
         queue.name = @"main_AHQueueInvocation";
 
-        [queue addInvocation:_inv(test1AndThen:)];
+          [queue addInvocation:_inv(test16AndThen:)]; //leak
+        
+//        [queue addInvocation:_inv(test1AndThen:)]; //no leak
 
-        [queue addInvocation:_inv(test2AndThen:)];
+//        [queue addInvocation:_inv(test2AndThen:)]; //no leak
 
-        [queue addInvocation:_inv(test3AndThen:)];
+//        [queue addInvocation:_inv(test3AndThen:)]; //no leak
 
+
+/*
         [queue addInvocation:_inv(test4AndThen:)];
 
         [queue addInvocation:_inv(test5AndThen:)]; //leak!
+*/
 
-        [queue addInvocation:_inv(test6AndThen:)]; //no leak
-
+//        [queue addInvocation:_inv(test6AndThen:)]; //no leak
+        
+/*
         [queue addInvocation:_inv(test7AndThen:)]; // leak
         
         [queue addInvocation:_inv(test8AndThen:)]; //leak
-
-        [queue addInvocation:_inv(test9AndThen:)];
-
-        [queue addInvocation:_inv(test10AndThen:)];
-
-        [queue addInvocation:_inv(test11AndThen:)];
-
-        [queue addInvocation:_inv(test12AndThen:)];
-
-        [queue addInvocation:_inv(test13AndThen:)]; //leak
-
-        [queue addInvocation:_inv(test14AndThen:)];
+ */
         
-        [queue addInvocation:_inv(test15AndThen:)];
+//        [queue addInvocation:_inv(test9AndThen:)]; //no leak
+
+//        [queue addInvocation:_inv(test10AndThen:)]; //no leak
+
+//        [queue addInvocation:_inv(test11AndThen:)]; //no leak
+
+//        [queue addInvocation:_inv(test12AndThen:)]; //no leak
+/*
+        [queue addInvocation:_inv(test13AndThen:)]; //leak
+*/
+
+//        [queue addInvocation:_inv(test14AndThen:)]; //no leak
+        
+//        [queue addInvocation:_inv(test15AndThen:)]; //no leak
 
         [queue invoke];
         
@@ -633,10 +688,12 @@
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
     
-    [self testSingle];
-    [self testQueue];
-    [self testParallel];
-    [self testInsist];
+    [DDLog addLogger:[DDLogNSLogger sharedInstance]];
+    
+//    [self testSingle];
+//    [self testQueue];
+//    [self testParallel];
+//    [self testInsist];
     [self testAll];
     
     return YES;
