@@ -8,6 +8,7 @@
 
 #import "AppDelegate.h"
 #import <NSObject+AsyncHelper.h>
+#import <AHLogLevel.h>
 #import "NSString+Utils.h"
 #import "DDLogNSLogger.h"
 #import "DDLog.h"
@@ -623,10 +624,8 @@
 
 -(void)testAll
 {
-    
     @autoreleasepool
     {
-        
         AHQueueInvocation* queue = [self queue:@[] andThen:
         ^(BOOL success, id<AHInvocationProtocol> invocation)
         {
@@ -687,8 +686,10 @@
     // Override point for customization after application launch.
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
-    
+
+    ddLogLevel = LOG_LEVEL_VERBOSE;
     [DDLog addLogger:[DDLogNSLogger sharedInstance]];
+
     
 //    [self testSingle];
 //    [self testQueue];

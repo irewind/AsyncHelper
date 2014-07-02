@@ -12,11 +12,11 @@
 
 #import "DDLog.h"
 
-#ifdef DEMO_ASYNC
-static int ddLogLevel = LOG_LEVEL_VERBOSE;
-#else
-static int ddLogLevel = LOG_LEVEL_ERROR;
-#endif
+//#ifdef DEMO_ASYNC
+//static int ddLogLevel = LOG_LEVEL_VERBOSE;
+//#else
+//static int ddLogLevel = LOG_LEVEL_ERROR;
+//#endif
 
 @interface AHParallelInvocation ()
 @property (strong,nonatomic) NSMutableArray* runningInvocations;

@@ -10,11 +10,11 @@
 #import "NSString+Utils.h"
 #import "DDLog.h"
 
-#ifdef DEBUG
-static int ddLogLevel = LOG_LEVEL_VERBOSE;
-#else
-static int ddLogLevel = LOG_LEVEL_ERROR;
-#endif
+//#ifdef DEBUG
+//static int ddLogLevel = LOG_LEVEL_VERBOSE;
+//#else
+//static int ddLogLevel = LOG_LEVEL_ERROR;
+//#endif
 
 @interface AHSingleInvocation ()
     @property(retain,nonatomic) NSInvocation* invocation;

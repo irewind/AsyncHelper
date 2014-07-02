@@ -11,6 +11,7 @@
 #import "AHParallelInvocation.h"
 #import "AHQueueInvocation.h"
 #import "AHInsistentInvocation.h"
+#import "DDLog.h"
 
 #define _inv(x) inv(self,@selector(x))
 #define _inv1(x,y) invf(self,@selector(x),y,nil)
