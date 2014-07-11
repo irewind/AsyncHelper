@@ -92,15 +92,18 @@
     {
         if (NO == [self.preparedInvocations containsObject:inv])
         {
-            ResponseBlock originalBlock = inv.finishedBlock;
+            __block ResponseBlock originalBlock = inv.finishedBlock;
             
             [inv setFinishedBlock:
              ^(BOOL success, id<AHInvocationProtocol> invocation)
              {
                  if (originalBlock)
+                 {
                      originalBlock(success,invocation);
+                 }
                  [bself retain];
                  invocationCompleted(success,invocation);
+                 [invocationCompleted release];
                  [bself release];
              }];
             

@@ -85,7 +85,7 @@
     {
         if (NO == [self.preparedInvocations containsObject:invocation])
         {
-            ResponseBlock originalBlock = invocation.finishedBlock;
+            __block ResponseBlock originalBlock = invocation.finishedBlock;
             
             [invocation setFinishedBlock:
              ^(BOOL success, id<AHInvocationProtocol> theInvocation)
@@ -93,6 +93,7 @@
                  if (originalBlock)
                       originalBlock(success,theInvocation);
                  invocationCompleted(success,theInvocation);
+                 [invocationCompleted release];
              }];
             [self.preparedInvocations addObject:invocation];
         }
