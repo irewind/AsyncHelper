@@ -76,7 +76,10 @@
             bself.wasSuccessful = successful;
             bself.isRunning = NO;
             if (bself.finishedBlock)
+            {
                 bself.finishedBlock (successful,bself);
+                [bself setFinishedBlock:nil];
+            }
             [bself release];
         }
     };
@@ -91,7 +94,10 @@
              ^(BOOL success, id<AHInvocationProtocol> theInvocation)
              {
                  if (originalBlock)
+                 {
                       originalBlock(success,theInvocation);
+                      [originalBlock release];
+                 }
                  invocationCompleted(success,theInvocation);
                  [invocationCompleted release];
              }];

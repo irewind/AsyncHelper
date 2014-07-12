@@ -79,7 +79,10 @@
             bself.wasSuccessful = successful;
             bself.isRunning = NO;
             if (bself.finishedBlock)
+            {
                 bself.finishedBlock (successful,bself);
+                [bself setFinishedBlock:nil];
+            }
             [bself release];
         }
         else
@@ -94,20 +97,24 @@
         {
             __block ResponseBlock originalBlock = inv.finishedBlock;
             
-            [inv setFinishedBlock:
+            __block CompletionBlock b =
              ^(BOOL success, id<AHInvocationProtocol> invocation)
              {
                  if (originalBlock)
                  {
                      originalBlock(success,invocation);
+                     [originalBlock release];
                  }
                  [bself retain];
                  invocationCompleted(success,invocation);
                  [invocationCompleted release];
                  [bself release];
-             }];
+                 [invocation setFinishedBlock:nil];
+             };
             
-            [self.preparedInvocations addObject:inv];
+            [inv setFinishedBlock:b];
+            
+            [bself.preparedInvocations addObject:inv];
         }
     }
 }

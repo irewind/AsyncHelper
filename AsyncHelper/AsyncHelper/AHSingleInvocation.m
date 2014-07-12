@@ -80,20 +80,24 @@
     
     __block AHSingleInvocation* bself = self;
 
-    ResponseBlock completionBlock =
+    __block ResponseBlock completionBlock =
     ^(BOOL success, NSObject* res)
     {
         bself.isRunning = NO;
         bself.wasSuccessful = success;
         bself.result = res == nil?res : @{bself.name:res};
         if (bself.finishedBlock)
+        {
             bself.finishedBlock(success,bself);
+            [bself setFinishedBlock:nil];
+        }
         [bself release];
     };
     
     NSUInteger nrArgs = [[self.invocation methodSignature] numberOfArguments];
     
     [self.invocation setArgument:&completionBlock atIndex:nrArgs-1];
+    [completionBlock release];
     
     [self.invocation retainArguments];
 }
