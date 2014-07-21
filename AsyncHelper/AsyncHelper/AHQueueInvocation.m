@@ -102,7 +102,7 @@
                  [bself retain];
                  invocationCompleted(success,invocation);
                  [bself release];
-             }];
+             }];    
             
             [self.preparedInvocations addObject:inv];
         }

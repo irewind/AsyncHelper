@@ -41,6 +41,8 @@
     {
         self.invocation = invocation;
         self.name = [NSString stringWithFormat:@"%lu_%@",(unsigned long)[self hash], NSStringFromSelector(invocation.selector)];
+        [invocation retainArguments];
+        
         DDLogVerbose(@"alloc %@ %p",self.name,self);
         [self prepareInvocation];
     }
@@ -67,9 +69,12 @@
             index++;
         }
         
+        [invocation retainArguments];
+        
         self.invocation = invocation;
         
         [self prepareInvocation];
+        
     }
     return self;
 }
@@ -95,8 +100,6 @@
     
     [self.invocation setArgument:&completionBlock atIndex:nrArgs-1];
     
-    [self.invocation retainArguments];
-    
     [completionBlock release];
 }
 
@@ -121,9 +124,9 @@
     DDLogVerbose(@"dealloc %@ %p",self.name,self);
     
     [self.finishedBlock release];
-    [self.finishedBlock release];
     
     self.invocation = nil;
+    
     self.name = nil;
     self.result = nil;
     

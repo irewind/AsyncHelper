@@ -93,7 +93,7 @@
                  if (originalBlock)
                       originalBlock(success,theInvocation);
                  invocationCompleted(success,theInvocation);
-             }];
+             }];            
             [self.preparedInvocations addObject:invocation];
         }
     }
