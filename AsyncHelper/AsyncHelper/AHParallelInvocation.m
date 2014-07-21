@@ -62,21 +62,21 @@
 
 -(void)prepareInvocations
 {
-    __block BOOL successful = YES;
+//    __block BOOL successful = YES;
     __block AHParallelInvocation* bself = self;
 
     CompletionBlock invocationCompleted =
     ^(BOOL success, id<AHInvocationProtocol> invocation)
     {
-        successful &= success;
+        bself.wasSuccessful &= success;
         [bself.runningInvocations removeObject:invocation];
         DDLogVerbose(@"%@ remaining invocations: %lu",bself.name,(unsigned long)bself.runningInvocations.count);
         if (bself.runningInvocations.count == 0)
         {
-            bself.wasSuccessful = successful;
+//            bself.wasSuccessful = successful;
             bself.isRunning = NO;
             if (bself.finishedBlock)
-                bself.finishedBlock (successful,bself);
+                bself.finishedBlock (bself.wasSuccessful,bself);
             [bself release];
         }
     };
@@ -87,13 +87,20 @@
         {
             ResponseBlock originalBlock = invocation.finishedBlock;
             
-            [invocation setFinishedBlock:
-             ^(BOOL success, id<AHInvocationProtocol> theInvocation)
-             {
-                 if (originalBlock)
-                      originalBlock(success,theInvocation);
-                 invocationCompleted(success,theInvocation);
-             }];            
+            CompletionBlock b =  ^(BOOL success, id<AHInvocationProtocol> theInvocation)
+            {
+                if (originalBlock)
+                {
+                    originalBlock(success,theInvocation);
+                    [originalBlock release];
+                }
+                invocationCompleted(success,theInvocation);
+            };
+            
+            [invocation setFinishedBlock:b];
+            
+            [b release];
+            
             [self.preparedInvocations addObject:invocation];
         }
     }
