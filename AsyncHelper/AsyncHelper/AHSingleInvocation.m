@@ -96,6 +96,8 @@
     [self.invocation setArgument:&completionBlock atIndex:nrArgs-1];
     
     [self.invocation retainArguments];
+    
+    [completionBlock release];
 }
 
 -(void)invoke
@@ -118,7 +120,9 @@
 {
     DDLogVerbose(@"dealloc %@ %p",self.name,self);
     
-    [self setFinishedBlock:nil];
+    [self.finishedBlock release];
+    [self.finishedBlock release];
+    
     self.invocation = nil;
     self.name = nil;
     self.result = nil;

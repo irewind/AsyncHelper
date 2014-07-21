@@ -7,7 +7,7 @@
 //
 
 #import "AHQueueInvocation.h"
-#import "AHSingleInvocation.h"
+//#import "AHSingleInvocation.h"
 #import "NSString+Utils.h"
 
 #import "DDLog.h"
@@ -88,7 +88,7 @@
         }
     };
     
-    for (AHSingleInvocation* inv in self.invocations)
+    for (id<AHInvocationProtocol> inv in self.invocations)
     {
         if (NO == [self.preparedInvocations containsObject:inv])
         {

@@ -7,7 +7,7 @@
 //
 
 #import "AHParallelInvocation.h"
-#import "AHSingleInvocation.h"
+//#import "AHSingleInvocation.h"
 #import "NSString+Utils.h"
 
 #import "DDLog.h"
@@ -81,7 +81,7 @@
         }
     };
     
-    for (AHSingleInvocation* invocation in self.invocations)
+    for (id<AHInvocationProtocol> invocation in self.invocations)
     {
         if (NO == [self.preparedInvocations containsObject:invocation])
         {
@@ -139,12 +139,12 @@
     
     if (self.invocations.count > 0)
     {
-        for (AHSingleInvocation* invocation in self.invocations)
+        for (id<AHInvocationProtocol>invocation in self.invocations)
         {
             [self.runningInvocations addObject:invocation];
         }
         
-        for (AHSingleInvocation* invocation in self.invocations)
+        for (id<AHInvocationProtocol> invocation in self.invocations)
         {
             [invocation invoke];
         }
