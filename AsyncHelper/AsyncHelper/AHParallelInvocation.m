@@ -7,7 +7,7 @@
 //
 
 #import "AHParallelInvocation.h"
-#import "AHSingleInvocation.h"
+//#import "AHSingleInvocation.h"
 #import "NSString+Utils.h"
 
 #import "DDLog.h"
@@ -62,45 +62,45 @@
 
 -(void)prepareInvocations
 {
-    __block BOOL successful = YES;
+//    __block BOOL successful = YES;
     __block AHParallelInvocation* bself = self;
 
     CompletionBlock invocationCompleted =
     ^(BOOL success, id<AHInvocationProtocol> invocation)
     {
-        successful &= success;
+        bself.wasSuccessful &= success;
         [bself.runningInvocations removeObject:invocation];
         DDLogVerbose(@"%@ remaining invocations: %lu",bself.name,(unsigned long)bself.runningInvocations.count);
         if (bself.runningInvocations.count == 0)
         {
-            bself.wasSuccessful = successful;
+//            bself.wasSuccessful = successful;
             bself.isRunning = NO;
             if (bself.finishedBlock)
-            {
-                bself.finishedBlock (successful,bself);
-                [bself setFinishedBlock:nil];
-            }
+                bself.finishedBlock (bself.wasSuccessful,bself);
             [bself release];
         }
     };
     
-    for (AHSingleInvocation* invocation in self.invocations)
+    for (id<AHInvocationProtocol> invocation in self.invocations)
     {
         if (NO == [self.preparedInvocations containsObject:invocation])
         {
-            __block ResponseBlock originalBlock = invocation.finishedBlock;
+            ResponseBlock originalBlock = invocation.finishedBlock;
             
-            [invocation setFinishedBlock:
-             ^(BOOL success, id<AHInvocationProtocol> theInvocation)
-             {
-                 if (originalBlock)
-                 {
-                      originalBlock(success,theInvocation);
-                      [originalBlock release];
-                 }
-                 invocationCompleted(success,theInvocation);
-                 [invocationCompleted release];
-             }];
+            CompletionBlock b =  ^(BOOL success, id<AHInvocationProtocol> theInvocation)
+            {
+                if (originalBlock)
+                {
+                    originalBlock(success,theInvocation);
+                    [originalBlock release];
+                }
+                invocationCompleted(success,theInvocation);
+            };
+            
+            [invocation setFinishedBlock:b];
+            
+            [b release];
+            
             [self.preparedInvocations addObject:invocation];
         }
     }
@@ -146,12 +146,12 @@
     
     if (self.invocations.count > 0)
     {
-        for (AHSingleInvocation* invocation in self.invocations)
+        for (id<AHInvocationProtocol>invocation in self.invocations)
         {
             [self.runningInvocations addObject:invocation];
         }
         
-        for (AHSingleInvocation* invocation in self.invocations)
+        for (id<AHInvocationProtocol> invocation in self.invocations)
         {
             [invocation invoke];
         }

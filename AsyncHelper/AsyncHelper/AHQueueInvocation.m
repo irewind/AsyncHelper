@@ -7,7 +7,7 @@
 //
 
 #import "AHQueueInvocation.h"
-#import "AHSingleInvocation.h"
+//#import "AHSingleInvocation.h"
 #import "NSString+Utils.h"
 
 #import "DDLog.h"
@@ -65,24 +65,21 @@
 
 -(void)prepareInvocations
 {
-    __block BOOL successful = YES;
+//    __block BOOL successful = YES;
     __block AHQueueInvocation* bself = self;
 
     CompletionBlock invocationCompleted =
     ^(BOOL success, id<AHInvocationProtocol> invocation)
     {
-        successful &= success;
+        bself.wasSuccessful &= success;
         [bself.runningInvocations removeObject:invocation];
         
         if (bself.runningInvocations.count == 0)
         {
-            bself.wasSuccessful = successful;
+//            bself.wasSuccessful = successful;
             bself.isRunning = NO;
             if (bself.finishedBlock)
-            {
-                bself.finishedBlock (successful,bself);
-                [bself setFinishedBlock:nil];
-            }
+                bself.finishedBlock (bself.wasSuccessful,bself);
             [bself release];
         }
         else
@@ -91,30 +88,30 @@
         }
     };
     
-    for (AHSingleInvocation* inv in self.invocations)
+    for (id<AHInvocationProtocol> inv in self.invocations)
     {
         if (NO == [self.preparedInvocations containsObject:inv])
         {
-            __block ResponseBlock originalBlock = inv.finishedBlock;
+            ResponseBlock originalBlock = inv.finishedBlock;
             
-            __block CompletionBlock b =
-             ^(BOOL success, id<AHInvocationProtocol> invocation)
-             {
-                 if (originalBlock)
-                 {
-                     originalBlock(success,invocation);
-                     [originalBlock release];
-                 }
-                 [bself retain];
-                 invocationCompleted(success,invocation);
-                 [invocationCompleted release];
-                 [bself release];
-                 [invocation setFinishedBlock:nil];
-             };
+            CompletionBlock b =
+            ^(BOOL success, id<AHInvocationProtocol> invocation)
+            {
+                if (originalBlock)
+                {
+                    originalBlock(success,invocation);
+                    [originalBlock release];
+                }
+                [bself retain];
+                invocationCompleted(success,invocation);
+                [bself release];
+            };
             
             [inv setFinishedBlock:b];
             
-            [bself.preparedInvocations addObject:inv];
+            [b release];
+            
+            [self.preparedInvocations addObject:inv];
         }
     }
 }
