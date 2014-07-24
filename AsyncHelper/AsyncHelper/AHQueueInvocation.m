@@ -24,6 +24,7 @@
 @property (retain,nonatomic) NSMutableArray* runningInvocations;
 @property (retain,nonatomic) NSMutableArray* preparedInvocations;
 @property (retain,nonatomic) NSMutableArray* invocations;
+@property (copy, nonatomic) CompletionBlock invocationCompletedBlock;
 @end
 
 @implementation AHQueueInvocation
@@ -42,6 +43,34 @@
         self.invocations = [NSMutableArray array];
         self.name = [NSString stringWithFormat:@"%lu_%@",(unsigned long)[self hash], NSStringFromClass([self class])];
         DDLogVerbose(@"alloc %@ %p",self.name,self);
+        
+        __block AHQueueInvocation* bself = self;
+        
+        CompletionBlock invocationCompleted =
+        ^(BOOL success, id<AHInvocationProtocol> invocation)
+        {
+            bself.wasSuccessful &= success;
+            [bself.runningInvocations removeObject:invocation];
+            
+            if (bself.runningInvocations.count == 0)
+            {
+                //            bself.wasSuccessful = successful;
+                bself.isRunning = NO;
+                if (bself.finishedBlock)
+                    bself.finishedBlock (bself.wasSuccessful,bself);
+                [bself release];
+            }
+            else
+            {
+                [bself.runningInvocations[0] invoke];
+            }
+        };
+        
+        if (self.invocationCompletedBlock == nil)
+            self.invocationCompletedBlock = invocationCompleted;
+        
+        [invocationCompleted release];
+        
     }
     return self;
 }
@@ -59,57 +88,65 @@
         [self setFinishedBlock:complete];
         [self prepareInvocations];
         DDLogVerbose(@"alloc %@ %p",self.name,self);
+        
+        __block AHQueueInvocation* bself = self;
+        
+        CompletionBlock invocationCompleted =
+        ^(BOOL success, id<AHInvocationProtocol> invocation)
+        {
+            bself.wasSuccessful &= success;
+            [bself.runningInvocations removeObject:invocation];
+            
+            if (bself.runningInvocations.count == 0)
+            {
+                //            bself.wasSuccessful = successful;
+                bself.isRunning = NO;
+                if (bself.finishedBlock)
+                    bself.finishedBlock (bself.wasSuccessful,bself);
+                [bself release];
+            }
+            else
+            {
+                [bself.runningInvocations[0] invoke];
+            }
+        };
+        
+        if (self.invocationCompletedBlock == nil)
+            self.invocationCompletedBlock = invocationCompleted;
+        
+        [invocationCompleted release];
     }
     return self;
 }
 
 -(void)prepareInvocations
 {
-//    __block BOOL successful = YES;
     __block AHQueueInvocation* bself = self;
-
-    CompletionBlock invocationCompleted =
-    ^(BOOL success, id<AHInvocationProtocol> invocation)
-    {
-        bself.wasSuccessful &= success;
-        [bself.runningInvocations removeObject:invocation];
-        
-        if (bself.runningInvocations.count == 0)
-        {
-//            bself.wasSuccessful = successful;
-            bself.isRunning = NO;
-            if (bself.finishedBlock)
-                bself.finishedBlock (bself.wasSuccessful,bself);
-            [bself release];
-        }
-        else
-        {
-            [bself.runningInvocations[0] invoke];
-        }
-    };
     
     for (id<AHInvocationProtocol> inv in self.invocations)
     {
         if (NO == [self.preparedInvocations containsObject:inv])
         {
-            ResponseBlock originalBlock = inv.finishedBlock;
+            ResponseBlock originalBlock = [[inv.finishedBlock copy] autorelease];
             
-            CompletionBlock b =
-            ^(BOOL success, id<AHInvocationProtocol> invocation)
+            __block CompletionBlock b =
+            [^(BOOL success, id<AHInvocationProtocol> invocation)
             {
                 if (originalBlock)
                 {
                     originalBlock(success,invocation);
                     [originalBlock release];
                 }
-                [bself retain];
-                invocationCompleted(success,invocation);
-                [bself release];
-            };
+//                [bself retain];
+                bself.invocationCompletedBlock(success,invocation);
+//                [invocationCompleted release];
+                [invocation setFinishedBlock:nil];
+//                [bself release];
+                
+                [b release];
+            } copy];
             
             [inv setFinishedBlock:b];
-            
-            [b release];
             
             [self.preparedInvocations addObject:inv];
         }
@@ -176,6 +213,7 @@
 {
     DDLogVerbose(@"dealloc %@ %p",self.name,self);
     
+    self.invocationCompletedBlock = nil;
     self.preparedInvocations = nil;
     self.invocations = nil;
     self.runningInvocations = nil;
