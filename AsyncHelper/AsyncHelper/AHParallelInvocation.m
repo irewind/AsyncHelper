@@ -39,6 +39,8 @@
         self.invocations = [NSMutableArray array];
         self.preparedInvocations = [NSMutableArray array];
         self.name = [NSString stringWithFormat:@"%lu_%@",(unsigned long)[self hash], NSStringFromClass([self class])];
+        
+        self.wasSuccessful = YES;
         DDLogVerbose(@"alloc %@ %p",self.name,self);
     }
     return self;
@@ -55,6 +57,8 @@
         
         [self setFinishedBlock:complete];
         [self prepareInvocations];
+        
+        self.wasSuccessful = YES;
         DDLogVerbose(@"alloc %@ %p",self.name,self);
     }
     return self;
