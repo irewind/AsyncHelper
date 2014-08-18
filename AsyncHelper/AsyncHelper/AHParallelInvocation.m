@@ -41,7 +41,7 @@
         self.name = [NSString stringWithFormat:@"%lu_%@",(unsigned long)[self hash], NSStringFromClass([self class])];
         
         self.wasSuccessful = YES;
-        DDLogVerbose(@"alloc %@ %p",self.name,self);
+        DDLogVerbose(@"[%@] alloc %@ %p",_classStr,self.name,self);
     }
     return self;
 }
@@ -59,7 +59,7 @@
         [self prepareInvocations];
         
         self.wasSuccessful = YES;
-        DDLogVerbose(@"alloc %@ %p",self.name,self);
+        DDLogVerbose(@"[%@] alloc %@ %p",_classStr,self.name,self);
     }
     return self;
 }
@@ -144,7 +144,7 @@
 
 -(void)invoke
 {
-    DDLogVerbose(@"invoking %@",self.name);
+    DDLogVerbose(@"[%@] invoking %@",_classStr,self.name);
     
     [self retain];
     
@@ -180,7 +180,7 @@
 
 -(void)dealloc
 {
-    DDLogVerbose(@"dealloc %@ %p",self.name,self);
+    DDLogVerbose(@"[%@] dealloc %@ %p",_classStr,self.name,self);
     
     self.invocations = nil;
     self.runningInvocations = nil;

@@ -40,7 +40,7 @@
         self.retryAfterSeconds = sec;
         self.name = [NSString stringWithFormat:@"%lu_%@",(unsigned long)[self hash], NSStringFromClass([self class])];
         
-        DDLogVerbose(@"alloc %@ %p",self.name,self);
+        DDLogVerbose(@"[%@] alloc %@ %p",_classStr,self.name,self);
         
         [self setFinishedBlock:complete];
         
@@ -58,7 +58,7 @@
         self.retryAfterSeconds = sec;
         self.name = [NSString stringWithFormat:@"%lu_%@",(unsigned long)[self hash], NSStringFromClass([self class])];
         
-        DDLogVerbose(@"alloc %@ %p",self.name,self);
+        DDLogVerbose(@"[%@] alloc %@ %p",_classStr,self.name,self);
         
         self.timesToRetry = times;
         
@@ -91,6 +91,9 @@
     CompletionBlock completionBlock =
     ^(BOOL success, id<AHInvocationProtocol> invocation)
     {
+        
+        DDLogVerbose(@"[%@] completionBlock %@",_classStr,self.name);
+        
         if (
             success == NO && (bself.timesToRetry == nil || (bself.timesToRetry != nil && bself.remainingRetries>0))
             )
@@ -105,7 +108,10 @@
             bself.wasSuccessful = success;            
             bself.result = invocation.result;
             if (originalBlock)
+            {
+                DDLogVerbose(@"[%@] originalBlock %@",_classStr,self.name);
                 originalBlock(success,invocation);
+            }
             if (bself.finishedBlock)
                 bself.finishedBlock(success,bself);
             [bself release];
@@ -117,7 +123,7 @@
 
 -(void)invoke
 {
-    DDLogVerbose(@"invoking %@",self.name);
+    DDLogVerbose(@"[%@] invoking %@",_classStr,self.name);
     
     self.isRunning = YES;
     [self retain];
@@ -131,7 +137,7 @@
 
 -(void)dealloc
 {
-    DDLogVerbose(@"dealloc %@ %p",self.name,self);
+    DDLogVerbose(@"[%@] dealloc %@ %p",_classStr,self.name,self);
     
     self.invocation = nil;
     self.retryAfterSeconds = nil;

@@ -61,7 +61,7 @@
 
 -(void)op3AndThen:(void(^)(BOOL success,NSObject* result))complete
 {
-    static int n = 3;
+    static int n = 100;
     NSLog(@"started op3, remaining %d",n);
     
     dispatch_async(dispatch_get_main_queue(),
@@ -72,7 +72,7 @@
        complete(ok,@"res3");
        if (ok)
        {
-           n=3;
+           n=100;
        }
     });
 }
@@ -694,8 +694,8 @@
 //    [self testSingle];
 //    [self testQueue];
 //    [self testParallel];
-//    [self testInsist];
-    [self testAll];
+    [self testInsist];
+//    [self testAll];
     
     return YES;
 }
