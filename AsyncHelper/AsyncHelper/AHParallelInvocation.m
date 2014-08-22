@@ -76,7 +76,7 @@
     
     for (AHSingleInvocation* invocation in self.invocations)
     {
-        ResponseBlock originalBlock = invocation.finishedBlock;
+        ResponseBlock originalBlock = [invocation.finishedBlock copy];
         
         [invocation setFinishedBlock:
          ^(BOOL success, id<AHInvocationProtocol> invocation)
