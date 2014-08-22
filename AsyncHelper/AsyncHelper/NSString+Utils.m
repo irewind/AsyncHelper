@@ -145,17 +145,17 @@
 }
 
 
-extern NSString* AHNSStringF (NSString *format, ...)
-{
-    va_list argList;
-	va_start(argList, format);
-    
-    NSString* s = [[NSString alloc] initWithFormat:format arguments:argList];
-    
-    va_end(argList);
-    return s;
-    
-}
+//extern NSString* AHNSStringF (NSString *format, ...)
+//{
+//    va_list argList;
+//	va_start(argList, format);
+//    
+//    NSString* s = [[[NSString alloc] initWithFormat:format arguments:argList] autorelease];
+//    
+//    va_end(argList);
+//    return s;
+//    
+//}
 
 -(NSString*)trim {
 	return [self stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];

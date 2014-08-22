@@ -7,11 +7,20 @@
 //
 
 #import "AHParallelInvocation.h"
-#import "AHSingleInvocation.h"
+//#import "AHSingleInvocation.h"
 #import "NSString+Utils.h"
+
+#import "DDLog.h"
+
+//#ifdef DEMO_ASYNC
+//static int ddLogLevel = LOG_LEVEL_VERBOSE;
+//#else
+//static int ddLogLevel = LOG_LEVEL_ERROR;
+//#endif
 
 @interface AHParallelInvocation ()
 @property (strong,nonatomic) NSMutableArray* runningInvocations;
+@property (strong,nonatomic) NSMutableArray* preparedInvocations;
 @property (strong,nonatomic) NSMutableArray* invocations;
 @end
 
@@ -26,9 +35,13 @@
 {
     if (self = [super init])
     {
-        self.runningInvocations = [[NSMutableArray alloc] init];
-        self.invocations = [[NSMutableArray alloc] init];
-        self.name = AHNSStringF(@"%d_%@",[self hash], NSStringFromClass([self class]));
+        self.runningInvocations = [NSMutableArray array];
+        self.invocations = [NSMutableArray array];
+        self.preparedInvocations = [NSMutableArray array];
+        self.name = [NSString stringWithFormat:@"%lu_%@",(unsigned long)[self hash], NSStringFromClass([self class])];
+        
+        self.wasSuccessful = YES;
+        DDLogVerbose(@"[%@] alloc %@ %p",_classStr,self.name,self);
     }
     return self;
 }
@@ -37,54 +50,63 @@
 {
     if (self = [super init])
     {
-        self.runningInvocations = [[NSMutableArray alloc] init];
-        self.invocations = [invocations mutableCopy];
-        self.name = AHNSStringF(@"%d_%@",[self hash], NSStringFromClass([self class]));
+        self.runningInvocations = [NSMutableArray array];
+        self.invocations = [[invocations mutableCopy] autorelease];
+        self.preparedInvocations = [NSMutableArray array];        
+        self.name = [NSString stringWithFormat:@"%lu_%@",(unsigned long)[self hash], NSStringFromClass([self class])];
         
         [self setFinishedBlock:complete];
         [self prepareInvocations];
         
+        self.wasSuccessful = YES;
+        DDLogVerbose(@"[%@] alloc %@ %p",_classStr,self.name,self);
     }
     return self;
 }
 
--(void)setFinishedBlock:(CompletionBlock)complete
-{
-    finishedBlock = [complete copy];
-}
-
 -(void)prepareInvocations
 {
-    __block BOOL successful = YES;
+//    __block BOOL successful = YES;
     __block AHParallelInvocation* bself = self;
 
     CompletionBlock invocationCompleted =
     ^(BOOL success, id<AHInvocationProtocol> invocation)
     {
-        successful &= success;
+        bself.wasSuccessful &= success;
         [bself.runningInvocations removeObject:invocation];
-//        [bself->_invocations removeObject:invocation];
-        
+        DDLogVerbose(@"%@ remaining invocations: %lu",bself.name,(unsigned long)bself.runningInvocations.count);
         if (bself.runningInvocations.count == 0)
         {
-            bself.wasSuccessful = successful;
+//            bself.wasSuccessful = successful;
             bself.isRunning = NO;
             if (bself.finishedBlock)
-                bself.finishedBlock (successful,bself);
+                bself.finishedBlock (bself.wasSuccessful,bself);
+            [bself release];
         }
     };
     
-    for (AHSingleInvocation* invocation in self.invocations)
+    for (id<AHInvocationProtocol> invocation in self.invocations)
     {
-        ResponseBlock originalBlock = [invocation.finishedBlock copy];
-        
-        [invocation setFinishedBlock:
-         ^(BOOL success, id<AHInvocationProtocol> invocation)
-         {
-             if (originalBlock)
-                  originalBlock(success,invocation);
-             invocationCompleted(success,invocation);
-         }];
+        if (NO == [self.preparedInvocations containsObject:invocation])
+        {
+            ResponseBlock originalBlock = [invocation.finishedBlock copy];
+            
+            CompletionBlock b =  ^(BOOL success, id<AHInvocationProtocol> theInvocation)
+            {
+                if (originalBlock)
+                {
+                    originalBlock(success,theInvocation);
+                    [originalBlock release];
+                }
+                invocationCompleted(success,theInvocation);
+            };
+            
+            [invocation setFinishedBlock:b];
+            
+            [b release];
+            
+            [self.preparedInvocations addObject:invocation];
+        }
     }
 
 }
@@ -122,17 +144,27 @@
 
 -(void)invoke
 {
+    DDLogVerbose(@"[%@] invoking %@",_classStr,self.name);
+    
+    [self retain];
+    
     if (self.invocations.count > 0)
     {
-        for (AHSingleInvocation* invocation in self.invocations)
+        for (id<AHInvocationProtocol>invocation in self.invocations)
         {
             [self.runningInvocations addObject:invocation];
+        }
+        
+        for (id<AHInvocationProtocol> invocation in self.invocations)
+        {
             [invocation invoke];
         }
     }
-    else if (self.finishedBlock)
+    else
     {
-        self.finishedBlock (YES,self);
+        if (self.finishedBlock)
+            self.finishedBlock (YES,self);
+        [self release];
     }
 }
 
@@ -143,12 +175,21 @@
 
 -(NSString*)description
 {
-    return AHNSStringF(@"%@: name:%@ invocations count:%d wasSuccessful:%d result:%@ isRunning:%d",NSStringFromClass([self class]),self.name,self.invocations.count,self.wasSuccessful,self.result,self.isRunning);
+    return [NSString stringWithFormat:@"%@: name:%@ invocations count:%lu wasSuccessful:%d result:%@ isRunning:%d",NSStringFromClass([self class]),self.name,(unsigned long)self.invocations.count,self.wasSuccessful,self.result,self.isRunning];
 }
 
 -(void)dealloc
 {
-    NSLog(@"dealloc %@",self.name);
+    DDLogVerbose(@"[%@] dealloc %@ %p",_classStr,self.name,self);
+    
+    self.invocations = nil;
+    self.runningInvocations = nil;
+    [self setFinishedBlock:nil];
+    self.preparedInvocations = nil;
+    self.name = nil;
+    self.result = nil;
+    
+    [super dealloc];
 }
 
 @end

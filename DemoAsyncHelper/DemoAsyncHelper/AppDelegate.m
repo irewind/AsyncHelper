@@ -8,13 +8,17 @@
 
 #import "AppDelegate.h"
 #import <NSObject+AsyncHelper.h>
+#import <AHLogLevel.h>
 #import "NSString+Utils.h"
+#import "DDLogNSLogger.h"
+#import "DDLog.h"
+
 
 @implementation AppDelegate
 
 #define _classStr NSStringFromClass([self class])
 #define _selStr NSStringFromSelector(_cmd)
-#define _a(x) /*NSAssert(x,@"[%@] %@ ASSERT FAILED!",_classStr,_selStr);*/ if (NO == (x)) { [AppDelegate breakPoint]; NSString* assertMsg = AHNSStringF(@"[%@] %@ ASSERT FAILED! %s",_classStr,_selStr,#x); NSLog(@"%@",assertMsg);}
+#define _a(x) /*NSAssert(x,@"[%@] %@ ASSERT FAILED!",_classStr,_selStr);*/ if (NO == (x)) { [AppDelegate breakPoint]; NSString* assertMsg = [NSString stringWithFormat:@"[%@] %@ ASSERT FAILED! %s",_classStr,_selStr,#x]; NSLog(@"%@",assertMsg);}
 
 +(void)breakPoint
 {
@@ -25,17 +29,18 @@
 -(void)op11AndThen:(void(^)(BOOL success,NSObject* result))complete
 {
     NSLog(@"started op11");
-    dispatch_async(dispatch_get_main_queue(),
-       ^{
-           NSLog(@"op11 done");
-           complete(YES,@(666));
-       });
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(),
+    ^{
+        NSLog(@"op11 done");
+        complete(YES,@(666));
+    });
 }
 
 -(void)op1AndThen:(void(^)(BOOL success,NSObject* result))complete
 {
-    NSLog(@"started op1");    
-    dispatch_async(dispatch_get_main_queue(),
+    NSLog(@"started op1");
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(),
        ^{
            NSLog(@"op1 done");
            complete(YES,nil);
@@ -102,6 +107,50 @@
         });
 }
 
+-(void)op6AndThen:(void(^)(BOOL success,NSObject* result))complete
+{
+    AHParallelInvocation* parallel = [self parallelize:@[] andThen:
+                                      ^(BOOL success, id<AHInvocationProtocol> invocation)
+                                      {
+                                          NSLog(@"finished op6 success: %d, result: %@",success,invocation.result);
+                                          if (complete)
+                                              complete(success,invocation.result);
+                                      }];
+    
+    for (int i = 0; i < 3; i++)
+    {
+        [parallel addInvocation:_inv(op1AndThen:)];
+    }
+    
+    [parallel invoke];
+}
+
+-(void)op7AndThen:(void(^)(BOOL success,NSObject* result))complete
+{
+    if (complete)
+        complete(YES,nil);
+}
+
+-(void)test16AndThen:(ResponseBlock)complete
+{
+    [[self queue:@[
+                  _inv(op1AndThen:),
+                  [self parallelize:@[
+                                      _inv(op1AndThen:)
+                                      ]],
+                  [self queue:@[
+                                _inv(op1AndThen:)
+                                ]],
+                 ]
+    andThen:^(BOOL success, id<AHInvocationProtocol> invocation) {
+      
+        if (complete)
+            complete(success,invocation.result);
+    }] invoke];
+    
+}
+
+
 -(void)test1AndThen:(ResponseBlock)complete
 {
     NSLog(@"begin test1");
@@ -151,15 +200,15 @@
               if (complete)
                   complete (success,nil);
               
-              
           }] invoke];
-         
+    
      }] invoke]
     ;
 }
 
 -(void)test3AndThen:(ResponseBlock)complete
 {
+
     NSLog(@"begin test3");
     [[self queue:@[
                   _inv(op1AndThen:),
@@ -202,11 +251,11 @@
 {
     NSLog(@"begin test5");
     [[self queue:@[
-                  _inv(op1AndThen:),
+//                  _inv(op1AndThen:),
                   [self parallelize:
                        @[
                           [self ifFailed:_inv(op3AndThen:) retryEverySeconds:@(2) andThen:nil]
-                         ,_inv(op2AndThen:)
+//                         ,_inv(op2AndThen:)
                          ] andThen:nil]
                   ]
         andThen:
@@ -447,88 +496,187 @@
     
     
     [queue invoke];
+//    [parallel1 addInvocation:invf(self, @selector(op11AndThen:),nil)];
+    
+//    [parallel1 invoke];
 }
 
-
--(void)doStuff3
+-(void)test15AndThen:(ResponseBlock)complete
 {
-       AHSingleInvocation* op =  _inv(op1AndThen:);
-        
-        [op invoke];
+    /*
+    create parallel with
+	queue of 2 items,
+    
+	inv (
+         create parallel with finish block
+         
+         for x times
+         add inv to parallel
+         
+         invoke parallel
+         )
+    
+    and finish block
+    */
+    
+    [[self parallelize:
+        @[
+            [self queue:@[
+                          _inv(op11AndThen:),
+                          _inv(op11AndThen:),
+                          _inv(op7AndThen:),
+                          ]],
+             _inv(op7AndThen:),
+             _inv(op7AndThen:),
+             _inv(op1AndThen:),
+             _inv(op11AndThen:),
+             _inv(op6AndThen:)
+         ]
+    andThen:
+    ^(BOOL success, id<AHInvocationProtocol> invocation)
+    {
+        NSLog(@"test15 done %d, results: %@",success,invocation.result);
+        NSLog(@"--------15--------");
+
+        if (complete)
+            complete(success,invocation.result);
+    }] invoke];
+    
 }
 
--(void)doStuff2
+
+-(void)testSingle
 {
     @autoreleasepool {
         
+       AHSingleInvocation* op =  _inv(op1AndThen:);
+        
+        [op invoke];
+    }
+}
+
+-(void)testQueue
+{
+    @autoreleasepool {
+    
         AHQueueInvocation* queue = [self queue:@[] andThen:^(BOOL success, id<AHInvocationProtocol> invocation) {
             
-            NSLog(@"all done, success: %d",success);
+            NSLog(@"queue done, success: %d",success);
         }];
 
         [queue addInvocation:_inv(op1AndThen:)];
+        [queue addInvocation:_inv(op1AndThen:)];
         
         [queue invoke];
+        
+        AHQueueInvocation* queue2 = [self queue:@[
+                                                  _inv(op1AndThen:),
+                                                  _inv(op1AndThen:)
+                                                  ] andThen:^(BOOL success, id<AHInvocationProtocol> invocation) {
+            
+            NSLog(@"queue2 done, success: %d",success);
+        }];
+        
+        [queue2 invoke];
     }
 }
 
--(void)doStuff
+-(void)testParallel
 {
-    
-//    [self ifFailed:_inv(op1AndThen:) retryEverySeconds:@2 andThen:
-//     ^(BOOL success)
-//    {
-//        [self op2AndThen:
-//         ^(BOOL success)
-//        {
-//            NSLog(@"OK!!!!");
-//
-//        }];
-//    }];
+    @autoreleasepool {
+        
+        AHParallelInvocation* parallel = [self parallelize:@[] andThen:^(BOOL success, id<AHInvocationProtocol> invocation) {
+            
+            NSLog(@"all done, success: %d",success);
+        }];
+        
+        [parallel addInvocation:_inv(op1AndThen:)];
+        [parallel addInvocation:_inv(op1AndThen:)];
+        
+        [parallel invoke];
+        
+        AHParallelInvocation* parallel2 = [self parallelize:@[
+                                                  _inv(op1AndThen:),
+                                                  _inv(op1AndThen:)
+                                                  ] andThen:^(BOOL success, id<AHInvocationProtocol> invocation) {
+                                                      
+                                                      NSLog(@"parallel2 done, success: %d",success);
+                                                  }];
+        
+        [parallel2 invoke];
 
+    }
+}
+
+-(void)testInsist
+{
+    @autoreleasepool {
+        
+        AHInsistentInvocation* insist = [self ifFailed:_inv(op3AndThen:) retryEverySeconds:@2 andThen:
+         ^(BOOL success, id<AHInvocationProtocol> invocation)
+        {
+            NSLog(@"all done, success: %d, result: %@",success, invocation.result);
+        }];
+        
+        [insist invoke];
+    }
+}
+
+-(void)testAll
+{
     @autoreleasepool
     {
+        AHQueueInvocation* queue = [self queue:@[] andThen:
+        ^(BOOL success, id<AHInvocationProtocol> invocation)
+        {
+            NSLog(@"all done, success: %d",success);
+        }];
         
-    AHQueueInvocation* queue = [self queue:@[] andThen:^(BOOL success, id<AHInvocationProtocol> invocation) {
-    
-        NSLog(@"all done, success: %d",success);
-    }];
-    
+        queue.name = @"main_AHQueueInvocation";
 
-    [queue addInvocation:_inv(test1AndThen:)];
+          [queue addInvocation:_inv(test16AndThen:)]; //leak
+        
+        [queue addInvocation:_inv(test1AndThen:)]; //no leak
+
+        [queue addInvocation:_inv(test2AndThen:)]; //no leak
+
+        [queue addInvocation:_inv(test3AndThen:)]; //no leak
 
 
-    [queue addInvocation:_inv(test2AndThen:)];
 
-    [queue addInvocation:_inv(test3AndThen:)];
+        [queue addInvocation:_inv(test4AndThen:)];
 
-    [queue addInvocation:_inv(test4AndThen:)];
+        [queue addInvocation:_inv(test5AndThen:)]; //leak!
 
-    [queue addInvocation:_inv(test5AndThen:)];
 
-    [queue addInvocation:_inv(test6AndThen:)];
+        [queue addInvocation:_inv(test6AndThen:)]; //no leak
+        
 
-    [queue addInvocation:_inv(test7AndThen:)];
-    
-    [queue addInvocation:_inv(test8AndThen:)];
+        [queue addInvocation:_inv(test7AndThen:)]; // leak
+        
+        [queue addInvocation:_inv(test8AndThen:)]; //leak
 
-    [queue addInvocation:_inv(test9AndThen:)];
+        
+        [queue addInvocation:_inv(test9AndThen:)]; //no leak
 
-    [queue addInvocation:_inv(test10AndThen:)];
-    
-    [queue addInvocation:_inv(test11AndThen:)];
+        [queue addInvocation:_inv(test10AndThen:)]; //no leak
 
-    [queue addInvocation:_inv(test12AndThen:)];
+        [queue addInvocation:_inv(test11AndThen:)]; //no leak
 
-    [queue addInvocation:_inv(test13AndThen:)];
+        [queue addInvocation:_inv(test12AndThen:)]; //no leak
 
-    [queue addInvocation:_inv(test14AndThen:)];
+        [queue addInvocation:_inv(test13AndThen:)]; //leak
 
-    [queue invoke];
+        [queue addInvocation:_inv(test14AndThen:)]; //no leak
+        
+        [queue addInvocation:_inv(test15AndThen:)]; //no leak
+
+        [queue invoke];
         
     }
     
 }
+
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
@@ -537,10 +685,16 @@
     // Override point for customization after application launch.
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
+
+    ddLogLevel = LOG_LEVEL_VERBOSE;
+    [DDLog addLogger:[DDLogNSLogger sharedInstance]];
+
     
-    [self doStuff];
-//    [self doStuff2];
-//    [self doStuff3];
+//    [self testSingle];
+//    [self testQueue];
+//    [self testParallel];
+//    [self testInsist];
+    [self testAll];
     
     return YES;
 }

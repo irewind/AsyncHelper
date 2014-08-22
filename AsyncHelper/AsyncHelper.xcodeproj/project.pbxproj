@@ -7,21 +7,21 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B601C22819113B2C00907991 /* AHSingleInvocation.m in Sources */ = {isa = PBXBuildFile; fileRef = B601C22719113B2C00907991 /* AHSingleInvocation.m */; };
-		B601C22B19113D4300907991 /* AHParallelInvocation.m in Sources */ = {isa = PBXBuildFile; fileRef = B601C22A19113D4300907991 /* AHParallelInvocation.m */; };
-		B601C2511913EB3B00907991 /* AHQueueInvocation.m in Sources */ = {isa = PBXBuildFile; fileRef = B601C2501913EB3B00907991 /* AHQueueInvocation.m */; };
-		B601C2541917A86800907991 /* AHInsistentInvocation.m in Sources */ = {isa = PBXBuildFile; fileRef = B601C2531917A86800907991 /* AHInsistentInvocation.m */; };
-		B647081E19264F2D00CC22D7 /* NSString+Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = B647081D19264F2D00CC22D7 /* NSString+Utils.m */; };
+		B601C22819113B2C00907991 /* AHSingleInvocation.m in Sources */ = {isa = PBXBuildFile; fileRef = B601C22719113B2C00907991 /* AHSingleInvocation.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		B601C22B19113D4300907991 /* AHParallelInvocation.m in Sources */ = {isa = PBXBuildFile; fileRef = B601C22A19113D4300907991 /* AHParallelInvocation.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		B601C2511913EB3B00907991 /* AHQueueInvocation.m in Sources */ = {isa = PBXBuildFile; fileRef = B601C2501913EB3B00907991 /* AHQueueInvocation.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		B601C2541917A86800907991 /* AHInsistentInvocation.m in Sources */ = {isa = PBXBuildFile; fileRef = B601C2531917A86800907991 /* AHInsistentInvocation.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		B647081E19264F2D00CC22D7 /* NSString+Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = B647081D19264F2D00CC22D7 /* NSString+Utils.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		B678A83418C743BF00600A38 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B678A83318C743BF00600A38 /* Foundation.framework */; };
-		B678A83B18C743BF00600A38 /* AsyncHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = B678A83A18C743BF00600A38 /* AsyncHelper.m */; };
 		B678A84218C743BF00600A38 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B678A84118C743BF00600A38 /* XCTest.framework */; };
 		B678A84318C743BF00600A38 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B678A83318C743BF00600A38 /* Foundation.framework */; };
 		B678A84518C743BF00600A38 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B678A84418C743BF00600A38 /* UIKit.framework */; };
 		B678A84818C743BF00600A38 /* libAsyncHelper.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B678A83018C743BF00600A38 /* libAsyncHelper.a */; };
 		B678A84E18C743BF00600A38 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = B678A84C18C743BF00600A38 /* InfoPlist.strings */; };
 		B678A85018C743BF00600A38 /* AsyncHelperTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B678A84F18C743BF00600A38 /* AsyncHelperTests.m */; };
-		B678A86818C7444500600A38 /* NSObject+AsyncHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = B678A86718C7444500600A38 /* NSObject+AsyncHelper.m */; };
+		B678A86818C7444500600A38 /* NSObject+AsyncHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = B678A86718C7444500600A38 /* NSObject+AsyncHelper.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		B678A87818C7486E00600A38 /* NSObject+AsyncHelper.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = B678A86618C7444500600A38 /* NSObject+AsyncHelper.h */; };
+		B6AA50E51964117700E6D164 /* AHLogLevel.m in Sources */ = {isa = PBXBuildFile; fileRef = B6AA50E41964117700E6D164 /* AHLogLevel.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -62,8 +62,6 @@
 		B678A83018C743BF00600A38 /* libAsyncHelper.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libAsyncHelper.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		B678A83318C743BF00600A38 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		B678A83718C743BF00600A38 /* AsyncHelper-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AsyncHelper-Prefix.pch"; sourceTree = "<group>"; };
-		B678A83818C743BF00600A38 /* AsyncHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AsyncHelper.h; sourceTree = "<group>"; };
-		B678A83A18C743BF00600A38 /* AsyncHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AsyncHelper.m; sourceTree = "<group>"; };
 		B678A84018C743BF00600A38 /* AsyncHelperTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AsyncHelperTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B678A84118C743BF00600A38 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		B678A84418C743BF00600A38 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
@@ -72,6 +70,8 @@
 		B678A84F18C743BF00600A38 /* AsyncHelperTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AsyncHelperTests.m; sourceTree = "<group>"; };
 		B678A86618C7444500600A38 /* NSObject+AsyncHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+AsyncHelper.h"; sourceTree = "<group>"; };
 		B678A86718C7444500600A38 /* NSObject+AsyncHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+AsyncHelper.m"; sourceTree = "<group>"; };
+		B6AA50E31964117700E6D164 /* AHLogLevel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AHLogLevel.h; sourceTree = "<group>"; };
+		B6AA50E41964117700E6D164 /* AHLogLevel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AHLogLevel.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -131,8 +131,6 @@
 			children = (
 				B647081C19264F2D00CC22D7 /* NSString+Utils.h */,
 				B647081D19264F2D00CC22D7 /* NSString+Utils.m */,
-				B678A83818C743BF00600A38 /* AsyncHelper.h */,
-				B678A83A18C743BF00600A38 /* AsyncHelper.m */,
 				B678A83618C743BF00600A38 /* Supporting Files */,
 				B678A86618C7444500600A38 /* NSObject+AsyncHelper.h */,
 				B678A86718C7444500600A38 /* NSObject+AsyncHelper.m */,
@@ -145,6 +143,8 @@
 				B601C2501913EB3B00907991 /* AHQueueInvocation.m */,
 				B601C2521917A86800907991 /* AHInsistentInvocation.h */,
 				B601C2531917A86800907991 /* AHInsistentInvocation.m */,
+				B6AA50E31964117700E6D164 /* AHLogLevel.h */,
+				B6AA50E41964117700E6D164 /* AHLogLevel.m */,
 			);
 			path = AsyncHelper;
 			sourceTree = "<group>";
@@ -257,11 +257,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				B601C2541917A86800907991 /* AHInsistentInvocation.m in Sources */,
+				B6AA50E51964117700E6D164 /* AHLogLevel.m in Sources */,
 				B601C22819113B2C00907991 /* AHSingleInvocation.m in Sources */,
 				B601C2511913EB3B00907991 /* AHQueueInvocation.m in Sources */,
 				B678A86818C7444500600A38 /* NSObject+AsyncHelper.m in Sources */,
 				B601C22B19113D4300907991 /* AHParallelInvocation.m in Sources */,
-				B678A83B18C743BF00600A38 /* AsyncHelper.m in Sources */,
 				B647081E19264F2D00CC22D7 /* NSString+Utils.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -303,7 +303,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_ARC = NO;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
@@ -340,7 +340,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_ARC = NO;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
@@ -367,25 +367,41 @@
 		B678A85418C743BF00600A38 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				CLANG_ENABLE_OBJC_ARC = NO;
 				DSTROOT = /tmp/AsyncHelper.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "AsyncHelper/AsyncHelper-Prefix.pch";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"../External/**",
+				);
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				USER_HEADER_SEARCH_PATHS = "../External/**";
 			};
 			name = Debug;
 		};
 		B678A85518C743BF00600A38 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				CLANG_ENABLE_OBJC_ARC = NO;
 				DSTROOT = /tmp/AsyncHelper.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "AsyncHelper/AsyncHelper-Prefix.pch";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"../External/**",
+				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				USER_HEADER_SEARCH_PATHS = "../External/**";
 			};
 			name = Release;
 		};

@@ -25,14 +25,14 @@
 
 -(AHInsistentInvocation*)ifFailed:(AHSingleInvocation*)invocation retryEverySeconds:(NSNumber*)sec andThen:(CompletionBlock)complete
 {
-    AHInsistentInvocation* inv = [[AHInsistentInvocation alloc] initWithInvocation:invocation retryEverySeconds:sec andCompletionBlock:complete];
+    AHInsistentInvocation* inv = [[[AHInsistentInvocation alloc] initWithInvocation:invocation retryEverySeconds:sec andCompletionBlock:complete] autorelease];
     
     return inv;
 }
 
 -(AHInsistentInvocation*)ifFailed:(AHSingleInvocation*)invocation retryEverySeconds:(NSNumber*)sec forTimes:(NSNumber*)times andThen:(CompletionBlock)complete
 {
-    AHInsistentInvocation* inv = [[AHInsistentInvocation alloc] initWithInvocation:invocation retryEverySeconds:sec forTimes:times andCompletionBlock:complete];
+    AHInsistentInvocation* inv = [[[AHInsistentInvocation alloc] initWithInvocation:invocation retryEverySeconds:sec forTimes:times andCompletionBlock:complete] autorelease];
     
 //    [inv invoke];
     
@@ -41,7 +41,7 @@
 
 -(AHParallelInvocation*)parallelize:(NSArray*)invocations andThen:(CompletionBlock)complete
 {
-    AHParallelInvocation* inv = [[AHParallelInvocation alloc] initWithInvocations:invocations andCompletionBlock:complete];
+    AHParallelInvocation* inv = [[[AHParallelInvocation alloc] initWithInvocations:invocations andCompletionBlock:complete] autorelease];
     
     return inv;
 }
@@ -53,7 +53,7 @@
 
 -(AHQueueInvocation*)queue:(NSArray*)invocations andThen:(CompletionBlock)complete
 {
-    AHQueueInvocation* inv = [[AHQueueInvocation alloc] initWithInvocations:invocations andCompletionBlock:complete];
+    AHQueueInvocation* inv = [[[AHQueueInvocation alloc] initWithInvocations:invocations andCompletionBlock:complete] autorelease];
     
     return inv;
 }
@@ -65,7 +65,7 @@
 
 AHSingleInvocation* inv(id target,SEL selector)
 {
-    AHSingleInvocation* inv = [[AHSingleInvocation alloc] initWithTarget:target selector:selector arguments:@[]];
+    AHSingleInvocation* inv = [[[AHSingleInvocation alloc] initWithTarget:target selector:selector arguments:@[]] autorelease];
     return inv;
 }
 
@@ -74,7 +74,7 @@ AHSingleInvocation* invf(id target,SEL selector,...)
     va_list arguments;
     va_start ( arguments, selector );
     
-    NSMutableArray* argArray = [[NSMutableArray alloc] init];
+    NSMutableArray* argArray = [NSMutableArray array];
     
     id arg = nil;
     
@@ -87,7 +87,7 @@ AHSingleInvocation* invf(id target,SEL selector,...)
     while(arg!=nil);
     va_end ( arguments );
     
-    AHSingleInvocation* invocation = [[AHSingleInvocation alloc] initWithTarget:target selector:selector arguments:argArray];
+    AHSingleInvocation* invocation = [[[AHSingleInvocation alloc] initWithTarget:target selector:selector arguments:argArray] autorelease];
     
     return invocation;
 }

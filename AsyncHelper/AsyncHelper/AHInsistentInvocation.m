@@ -9,16 +9,25 @@
 #import "AHInsistentInvocation.h"
 #import "NSString+Utils.h"
 
+#import "DDLog.h"
+
+//#ifdef DEBUG
+//    static int ddLogLevel = LOG_LEVEL_VERBOSE;
+//#else
+//    static int ddLogLevel = LOG_LEVEL_ERROR;
+//#endif
+
 @interface AHInsistentInvocation ()
 @property (strong,nonatomic) id<AHInvocationProtocol> invocation;
+//@property (copy, nonatomic) CompletionBlock internalFinishedBlock;
 @property (strong,nonatomic) NSNumber* retryAfterSeconds;
 @property (strong,nonatomic) NSNumber* timesToRetry;
 @property (assign,nonatomic) int remainingRetries;
 @end
 
 @implementation AHInsistentInvocation
-@synthesize isRunning;
 @synthesize finishedBlock;
+@synthesize isRunning;
 @synthesize name;
 @synthesize wasSuccessful;
 @synthesize result;
@@ -29,8 +38,14 @@
     {
         self.invocation = invocation;
         self.retryAfterSeconds = sec;
-        self.name = AHNSStringF(@"%d_%@(%@)",[self hash], NSStringFromClass([self class]), invocation.name);
+        self.name = [NSString stringWithFormat:@"%lu_%@",(unsigned long)[self hash], NSStringFromClass([self class])];
+        
+        DDLogVerbose(@"[%@] alloc %@ %p",_classStr,self.name,self);
+        
         [self setFinishedBlock:complete];
+        
+        [self prepareInvocation];
+        
     }
     return self;
 }
@@ -41,50 +56,65 @@
     {
         self.invocation = invocation;
         self.retryAfterSeconds = sec;
-        self.name = AHNSStringF(@"%d_%@",[self hash], NSStringFromClass([self class]));
+        self.name = [NSString stringWithFormat:@"%lu_%@",(unsigned long)[self hash], NSStringFromClass([self class])];
+        
+        DDLogVerbose(@"[%@] alloc %@ %p",_classStr,self.name,self);
+        
         self.timesToRetry = times;
         
         [self setFinishedBlock:complete];
+        
+        [self prepareInvocation];
         
     }
     return self;
 }
 
-
--(void)setFinishedBlock:(CompletionBlock)complete
+-(void)prepareInvocation
 {
-    finishedBlock = [complete copy];
-    
     if (self.timesToRetry != nil)
         self.remainingRetries = self.timesToRetry.intValue;
     
     __block AHInsistentInvocation* bself = self;
     
+    __block ResponseBlock originalBlock = self.invocation.finishedBlock;
+    
+    void (^invokeBlock)()  =
+    ^(void)
+    {
+        if (bself.timesToRetry != nil && bself.remainingRetries!=0)
+            bself.remainingRetries--;
+        
+        [bself.invocation invoke];
+    };
+    
     CompletionBlock completionBlock =
     ^(BOOL success, id<AHInvocationProtocol> invocation)
     {
+        
+        DDLogVerbose(@"[%@] completionBlock %@",_classStr,self.name);
+        
         if (
             success == NO && (bself.timesToRetry == nil || (bself.timesToRetry != nil && bself.remainingRetries>0))
             )
         {
             double delayInSeconds = bself.retryAfterSeconds.doubleValue;
             dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-            dispatch_after(popTime, dispatch_get_main_queue(),
-               ^(void)
-               {
-                   if (bself.timesToRetry != nil && bself.remainingRetries!=0)
-                       bself.remainingRetries--;
-                   
-                   [bself.invocation invoke];
-               });
+            dispatch_after(popTime, dispatch_get_main_queue(),invokeBlock);
         }
         else
         {
             bself.isRunning = NO;
             bself.wasSuccessful = success;            
             bself.result = invocation.result;
+            if (originalBlock)
+            {
+                DDLogVerbose(@"[%@] originalBlock %@",_classStr,self.name);
+                originalBlock(success,invocation);
+            }
             if (bself.finishedBlock)
                 bself.finishedBlock(success,bself);
+            [bself release];
         }
     };
     
@@ -93,18 +123,31 @@
 
 -(void)invoke
 {
+    DDLogVerbose(@"[%@] invoking %@",_classStr,self.name);
+    
     self.isRunning = YES;
+    [self retain];
     [self.invocation invoke];
 }
 
 -(NSString*)description
 {
-    return AHNSStringF(@"%@: name:%@ retries:%@ interval:%@ wasSuccessful:%d result:%@ isRunning:%d",NSStringFromClass([self class]),self.name,self.timesToRetry,self.retryAfterSeconds,self.wasSuccessful,self.result,self.isRunning);
+    return [NSString stringWithFormat:@"%@: name:%@ retries:%@ interval:%@ wasSuccessful:%d result:%@ isRunning:%d",NSStringFromClass([self class]),self.name,self.timesToRetry,self.retryAfterSeconds,self.wasSuccessful,self.result,self.isRunning];
 }
 
 -(void)dealloc
 {
-    NSLog(@"dealloc %@",self.name);
+    DDLogVerbose(@"[%@] dealloc %@ %p",_classStr,self.name,self);
+    
+    self.invocation = nil;
+    self.retryAfterSeconds = nil;
+    self.timesToRetry = nil;
+    self.name = nil;
+    self.result = nil;
+    
+    [self setFinishedBlock:nil];
+    
+    [super dealloc];
 }
 
 @end

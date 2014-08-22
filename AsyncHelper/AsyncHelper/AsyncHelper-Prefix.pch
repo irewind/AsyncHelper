@@ -7,3 +7,7 @@
 #ifdef __OBJC__
     #import <Foundation/Foundation.h>
 #endif
+
+#import "AHLogLevel.h"
+
+#define _classStr NSStringFromClass([self class])
