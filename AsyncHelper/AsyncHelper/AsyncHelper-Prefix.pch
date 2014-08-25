@@ -9,3 +9,5 @@
 #endif
 
 #import "AHLogLevel.h"
+
+#define _classStr NSStringFromClass([self class])

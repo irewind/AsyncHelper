@@ -39,7 +39,9 @@
         self.invocations = [NSMutableArray array];
         self.preparedInvocations = [NSMutableArray array];
         self.name = [NSString stringWithFormat:@"%lu_%@",(unsigned long)[self hash], NSStringFromClass([self class])];
-        DDLogVerbose(@"alloc %@ %p",self.name,self);
+        
+        self.wasSuccessful = YES;
+        DDLogVerbose(@"[%@] alloc %@ %p",_classStr,self.name,self);
     }
     return self;
 }
@@ -55,7 +57,9 @@
         
         [self setFinishedBlock:complete];
         [self prepareInvocations];
-        DDLogVerbose(@"alloc %@ %p",self.name,self);
+        
+        self.wasSuccessful = YES;
+        DDLogVerbose(@"[%@] alloc %@ %p",_classStr,self.name,self);
     }
     return self;
 }
@@ -85,7 +89,7 @@
     {
         if (NO == [self.preparedInvocations containsObject:invocation])
         {
-            ResponseBlock originalBlock = invocation.finishedBlock;
+            ResponseBlock originalBlock = [invocation.finishedBlock copy];
             
             CompletionBlock b =  ^(BOOL success, id<AHInvocationProtocol> theInvocation)
             {
@@ -140,7 +144,7 @@
 
 -(void)invoke
 {
-    DDLogVerbose(@"invoking %@",self.name);
+    DDLogVerbose(@"[%@] invoking %@",_classStr,self.name);
     
     [self retain];
     
@@ -176,7 +180,7 @@
 
 -(void)dealloc
 {
-    DDLogVerbose(@"dealloc %@ %p",self.name,self);
+    DDLogVerbose(@"[%@] dealloc %@ %p",_classStr,self.name,self);
     
     self.invocations = nil;
     self.runningInvocations = nil;
