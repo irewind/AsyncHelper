@@ -72,11 +72,31 @@
 {
     __block AHQueueInvocation* bself = self;
     
+    CompletionBlock invocationCompleted =
+    [^(BOOL success, id<AHInvocationProtocol> invocation)
+    {
+        bself.wasSuccessful &= success;
+        [bself.runningInvocations removeObject:invocation];
+        
+        if (bself.runningInvocations.count == 0)
+        {
+            //            bself.wasSuccessful = successful;
+            bself.isRunning = NO;
+            if (bself.finishedBlock)
+                bself.finishedBlock (bself.wasSuccessful,bself);
+            [bself release];
+        }
+        else
+        {
+            [bself.runningInvocations[0] invoke];
+        }
+    } copy];
+    
     for (id<AHInvocationProtocol> inv in self.invocations)
     {
         if (NO == [self.preparedInvocations containsObject:inv])
         {
-            ResponseBlock originalBlock = [[inv.finishedBlock copy] autorelease];
+            ResponseBlock originalBlock = [inv.finishedBlock copy];
             
             __block CompletionBlock b =
             [^(BOOL success, id<AHInvocationProtocol> invocation)
@@ -84,15 +104,11 @@
                 if (originalBlock)
                 {
                     originalBlock(success,invocation);
-                    [originalBlock release];
                 }
-//                [bself retain];
-                bself.invocationCompletedBlock(success,invocation);
-//                [invocationCompleted release];
+
+                invocationCompleted(success,invocation);
                 [invocation setFinishedBlock:nil];
-//                [bself release];
                 
-                [b release];
             } copy];
             
             [inv setFinishedBlock:b];

@@ -85,8 +85,8 @@
     
     __block AHSingleInvocation* bself = self;
 
-    __block ResponseBlock completionBlock =
-    ^(BOOL success, NSObject* res)
+    ResponseBlock completionBlock =
+    [^(BOOL success, NSObject* res)
     {
         bself.isRunning = NO;
         bself.wasSuccessful = success;
@@ -97,14 +97,11 @@
             [bself setFinishedBlock:nil];
         }
         [bself release];
-    };
+    } copy];
     
     NSUInteger nrArgs = [[self.invocation methodSignature] numberOfArguments];
     
     [self.invocation setArgument:&completionBlock atIndex:nrArgs-1];
-    [completionBlock release];
-    
-    [completionBlock release];
 }
 
 -(void)invoke
@@ -127,8 +124,7 @@
 {
     DDLogVerbose(@"dealloc %@ %p",self.name,self);
     
-    [self.finishedBlock release];
-    
+    [self setFinishedBlock:nil];
     self.invocation = nil;
     
     self.name = nil;
