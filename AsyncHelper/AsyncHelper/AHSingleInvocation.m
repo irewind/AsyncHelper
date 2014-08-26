@@ -85,7 +85,9 @@
     
     __block AHSingleInvocation* bself = self;
 
-    ResponseBlock completionBlock =
+    ResponseBlock b;
+    ResponseBlock* pb = &b;
+    b =
     ^(BOOL success, NSObject* res)
     {
         bself.isRunning = NO;
@@ -100,7 +102,7 @@
     
     NSUInteger nrArgs = [[self.invocation methodSignature] numberOfArguments];
     
-    [self.invocation setArgument:&completionBlock atIndex:nrArgs-1];
+    [self.invocation setArgument:pb atIndex:nrArgs-1];
 }
 
 -(void)invoke

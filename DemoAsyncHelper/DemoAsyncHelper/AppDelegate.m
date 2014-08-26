@@ -69,7 +69,7 @@
 
 -(void)op4AndThen:(void(^)(BOOL success,NSObject* result))complete
 {
-    static int n2 = 200;
+    static int n2 = 30;
 //    NSLog(@"started op4, remaining %d",n2);
     
     dispatch_async(dispatch_get_main_queue(),
@@ -80,7 +80,7 @@
                        complete(ok,@"res4");
                        if (ok)
                        {
-                           n2=200;
+                           n2=30;
                        }
                    });
 }
@@ -669,7 +669,8 @@
         queue.name = @"main_AHQueueInvocation";
 
           [queue addInvocation:_inv(test16AndThen:)]; //leak
-        
+
+/*
         [queue addInvocation:_inv(test1AndThen:)]; //no leak
 
         [queue addInvocation:_inv(test2AndThen:)]; //no leak
@@ -704,7 +705,7 @@
         [queue addInvocation:_inv(test14AndThen:)]; //no leak
         
         [queue addInvocation:_inv(test15AndThen:)]; //no leak
-
+*/
         [queue invoke];
         
     }
@@ -724,12 +725,12 @@
     [DDLog addLogger:[DDLogNSLogger sharedInstance]];
 
     
-    [self testSingle];
-    [self testQueue];
-    [self testParallel];
+//    [self testSingle];
+//    [self testQueue];
+//    [self testParallel];
 //    [self testInsist];
 //    [self testLongInsist];
-//    [self testAll];
+    [self testAll];
     
     return YES;
 }

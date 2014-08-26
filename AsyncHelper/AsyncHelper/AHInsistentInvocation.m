@@ -88,7 +88,9 @@
         [bself.invocation invoke];
     };
     
-    CompletionBlock completionBlock =
+    CompletionBlock b;
+    CompletionBlock* pb = &b;
+    b =
     ^(BOOL success, id<AHInvocationProtocol> invocation)
     {
         
@@ -118,7 +120,7 @@
         }
     };
     
-    [self.invocation setFinishedBlock:completionBlock];
+    [self.invocation setFinishedBlock:*pb];
 }
 
 -(void)invoke
