@@ -70,7 +70,7 @@
     __block AHParallelInvocation* bself = self;
 
     CompletionBlock invocationCompleted =
-    [^(BOOL success, id<AHInvocationProtocol> invocation)
+    ^(BOOL success, id<AHInvocationProtocol> invocation)
     {
         bself.wasSuccessful &= success;
         [bself.runningInvocations removeObject:invocation];
@@ -83,7 +83,7 @@
                 bself.finishedBlock (bself.wasSuccessful,bself);
             [bself release];
         }
-    } copy];
+    };
     
     for (id<AHInvocationProtocol> invocation in self.invocations)
     {
@@ -91,7 +91,9 @@
         {
             ResponseBlock originalBlock = [invocation.finishedBlock copy];
             
-            CompletionBlock b =  ^(BOOL success, id<AHInvocationProtocol> theInvocation)
+            CompletionBlock b;
+            CompletionBlock* pb = &b;
+            b =  ^(BOOL success, id<AHInvocationProtocol> theInvocation)
             {
                 if (originalBlock)
                 {
@@ -100,7 +102,7 @@
                 invocationCompleted(success,theInvocation);
             };
             
-            [invocation setFinishedBlock:b];
+            [invocation setFinishedBlock:*pb];
             
             [self.preparedInvocations addObject:invocation];
         }

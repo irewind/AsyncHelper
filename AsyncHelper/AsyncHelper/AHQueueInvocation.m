@@ -73,7 +73,7 @@
     __block AHQueueInvocation* bself = self;
     
     CompletionBlock invocationCompleted =
-    [^(BOOL success, id<AHInvocationProtocol> invocation)
+    ^(BOOL success, id<AHInvocationProtocol> invocation)
     {
         bself.wasSuccessful &= success;
         [bself.runningInvocations removeObject:invocation];
@@ -90,7 +90,7 @@
         {
             [bself.runningInvocations[0] invoke];
         }
-    } copy];
+    };
     
     for (id<AHInvocationProtocol> inv in self.invocations)
     {
@@ -98,8 +98,10 @@
         {
             ResponseBlock originalBlock = [inv.finishedBlock copy];
             
-            __block CompletionBlock b =
-            [^(BOOL success, id<AHInvocationProtocol> invocation)
+            CompletionBlock b;
+            CompletionBlock* pb = &b;
+            b =
+            ^(BOOL success, id<AHInvocationProtocol> invocation)
             {
                 if (originalBlock)
                 {
@@ -109,9 +111,9 @@
                 invocationCompleted(success,invocation);
                 [invocation setFinishedBlock:nil];
                 
-            } copy];
+            };
             
-            [inv setFinishedBlock:b];
+            [inv setFinishedBlock:*pb];
             
             [self.preparedInvocations addObject:inv];
         }

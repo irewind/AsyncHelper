@@ -86,7 +86,7 @@
     __block AHSingleInvocation* bself = self;
 
     ResponseBlock completionBlock =
-    [^(BOOL success, NSObject* res)
+    ^(BOOL success, NSObject* res)
     {
         bself.isRunning = NO;
         bself.wasSuccessful = success;
@@ -96,7 +96,7 @@
             bself.finishedBlock(success,bself);
         }
         [bself release];
-    } copy];
+    };
     
     NSUInteger nrArgs = [[self.invocation methodSignature] numberOfArguments];
     

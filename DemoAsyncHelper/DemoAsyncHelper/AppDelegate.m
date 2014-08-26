@@ -26,16 +26,6 @@
     x++;
 }
 
--(void)op11AndThen:(void(^)(BOOL success,NSObject* result))complete
-{
-    NSLog(@"started op11");
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(),
-    ^{
-        NSLog(@"op11 done");
-        complete(YES,@(666));
-    });
-}
-
 -(void)op1AndThen:(void(^)(BOOL success,NSObject* result))complete
 {
     NSLog(@"started op1");
@@ -129,6 +119,35 @@
 {
     if (complete)
         complete(YES,nil);
+}
+
+//never-ending operation
+-(void)op8AndThen:(void(^)(BOOL success,NSObject* result))complete
+{
+    static int n2 = 1;
+    //    NSLog(@"started op4, remaining %d",n2);
+    
+    dispatch_async(dispatch_get_main_queue(),
+           ^{
+//                       n2--;
+               BOOL ok = n2<=0;
+               //                       NSLog(@"op4 done %d, remaining %d",ok,n2);
+               complete(ok,@"res8");
+               if (ok)
+               {
+                   n2=1;
+               }
+           });
+}
+
+-(void)op11AndThen:(void(^)(BOOL success,NSObject* result))complete
+{
+    NSLog(@"started op11");
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(),
+                   ^{
+                       NSLog(@"op11 done");
+                       complete(YES,@(666));
+                   });
 }
 
 -(void)test16AndThen:(ResponseBlock)complete
@@ -569,15 +588,15 @@
         
         [queue invoke];
         
-        AHQueueInvocation* queue2 = [self queue:@[
-                                                  _inv(op1AndThen:),
-                                                  _inv(op1AndThen:)
-                                                  ] andThen:^(BOOL success, id<AHInvocationProtocol> invocation) {
-            
-            NSLog(@"queue2 done, success: %d",success);
-        }];
-        
-        [queue2 invoke];
+//        AHQueueInvocation* queue2 = [self queue:@[
+//                                                  _inv(op1AndThen:),
+//                                                  _inv(op1AndThen:)
+//                                                  ] andThen:^(BOOL success, id<AHInvocationProtocol> invocation) {
+//            
+//            NSLog(@"queue2 done, success: %d",success);
+//        }];
+//        
+//        [queue2 invoke];
     }
 }
 
@@ -618,6 +637,21 @@
             NSLog(@"all done, success: %d, result: %@",success, invocation.result);
         }];
         
+        [insist invoke];
+    }
+}
+
+-(void)testLongInsist
+{
+    @autoreleasepool {
+        
+        AHInsistentInvocation* insist =
+        [self ifFailed:_inv(op8AndThen:) retryEverySeconds:@1 andThen:
+         ^(BOOL success, id<AHInvocationProtocol> invocation)
+         {
+             NSLog(@"testLongInsist done, success: %d, result: %@",success, invocation.result);
+         }];
+
         [insist invoke];
     }
 }
@@ -690,11 +724,12 @@
     [DDLog addLogger:[DDLogNSLogger sharedInstance]];
 
     
-//    [self testSingle];
-//    [self testQueue];
-//    [self testParallel];
+    [self testSingle];
+    [self testQueue];
+    [self testParallel];
 //    [self testInsist];
-    [self testAll];
+//    [self testLongInsist];
+//    [self testAll];
     
     return YES;
 }
