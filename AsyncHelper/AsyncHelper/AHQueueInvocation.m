@@ -96,7 +96,7 @@
     {
         if (NO == [self.preparedInvocations containsObject:inv])
         {
-            ResponseBlock originalBlock = [inv.finishedBlock copy];
+            CompletionBlock originalBlock = [inv.finishedBlock copy];
             
             CompletionBlock b;
             CompletionBlock* pb = &b;
@@ -109,7 +109,7 @@
                 }
 
                 invocationCompleted(success,invocation);
-                [invocation setFinishedBlock:nil];
+                [invocation setFinishedBlock:originalBlock];
                 
             };
             

@@ -68,7 +68,7 @@
 {
 //    __block BOOL successful = YES;
     __block AHParallelInvocation* bself = self;
-
+    
     CompletionBlock invocationCompleted =
     ^(BOOL success, id<AHInvocationProtocol> invocation)
     {
@@ -89,10 +89,11 @@
     {
         if (NO == [self.preparedInvocations containsObject:invocation])
         {
-            ResponseBlock originalBlock = [invocation.finishedBlock copy];
+            CompletionBlock originalBlock = [invocation.finishedBlock copy];
             
             CompletionBlock b;
             CompletionBlock* pb = &b;
+
             b =  ^(BOOL success, id<AHInvocationProtocol> theInvocation)
             {
                 if (originalBlock)
@@ -100,8 +101,31 @@
                     originalBlock(success,theInvocation);
                 }
                 invocationCompleted(success,theInvocation);
+                [theInvocation setFinishedBlock:originalBlock];
             };
-            
+
+/*
+            b =  ^(BOOL success, id<AHInvocationProtocol> theInvocation)
+            {
+//                if (originalBlock)
+//                {
+//                    originalBlock(success,theInvocation);
+//                }
+                invocationCompleted(success,theInvocation);
+            };
+*/
+
+/*
+            b =  ^(BOOL success, id<AHInvocationProtocol> theInvocation)
+            {
+                if (originalBlock)
+                {
+                    originalBlock(success,theInvocation);
+                }
+//                invocationCompleted(success,theInvocation);
+            };
+*/
+
             [invocation setFinishedBlock:*pb];
             
             [self.preparedInvocations addObject:invocation];
