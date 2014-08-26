@@ -94,7 +94,6 @@
         if (bself.finishedBlock)
         {
             bself.finishedBlock(success,bself);
-            [bself setFinishedBlock:nil];
         }
         [bself release];
     } copy];
