@@ -126,6 +126,7 @@
     DDLogVerbose(@"dealloc %@ %p",self.name,self);
     
     [self setFinishedBlock:nil];
+    
     self.invocation = nil;
     
     self.name = nil;

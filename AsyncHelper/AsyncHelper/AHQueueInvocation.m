@@ -55,7 +55,8 @@
     {
         self.runningInvocations = [NSMutableArray array];
         self.preparedInvocations = [NSMutableArray array];
-        self.invocations = [[invocations mutableCopy] autorelease];
+        self.invocations = [invocations mutableCopy];
+        [self.invocations release];
         
         self.name = [NSString stringWithFormat:@"%lu_%@",(unsigned long)[self hash], NSStringFromClass([self class])];
         
@@ -72,46 +73,59 @@
 {
     __block AHQueueInvocation* bself = self;
     
-    CompletionBlock invocationCompleted =
-    ^(BOOL success, id<AHInvocationProtocol> invocation)
-    {
-        bself.wasSuccessful &= success;
-        [bself.runningInvocations removeObject:invocation];
-        
-        if (bself.runningInvocations.count == 0)
-        {
-            //            bself.wasSuccessful = successful;
-            bself.isRunning = NO;
-            if (bself.finishedBlock)
-                bself.finishedBlock (bself.wasSuccessful,bself);
-            [bself release];
-        }
-        else
-        {
-            [bself.runningInvocations[0] invoke];
-        }
-    };
+//    CompletionBlock invocationCompleted =
+//    [^(BOOL success, id<AHInvocationProtocol> invocation)
+//    {
+//        bself.wasSuccessful &= success;
+//        [bself.runningInvocations removeObject:invocation];
+//        
+//        if (bself.runningInvocations.count == 0)
+//        {
+//            bself.isRunning = NO;
+//            if (bself.finishedBlock)
+//                bself.finishedBlock (bself.wasSuccessful,bself);
+//            [bself release];
+//        }
+//        else
+//        {
+//            [bself.runningInvocations[0] invoke];
+//        }
+//    } copy];
     
     for (id<AHInvocationProtocol> inv in self.invocations)
     {
         if (NO == [self.preparedInvocations containsObject:inv])
         {
-            CompletionBlock originalBlock = [inv.finishedBlock copy];
+            CompletionBlock originalBlock = [[inv.finishedBlock copy] autorelease];
             
-            CompletionBlock b;
+            __block CompletionBlock b;
             CompletionBlock* pb = &b;
             b =
-            ^(BOOL success, id<AHInvocationProtocol> invocation)
+            [[^(BOOL success, id<AHInvocationProtocol> invocation)
             {
                 if (originalBlock)
                 {
                     originalBlock(success,invocation);
                 }
 
-                invocationCompleted(success,invocation);
-                [invocation setFinishedBlock:originalBlock];
+                // begin invocationCompleted
+                bself.wasSuccessful &= success;
+                [bself.runningInvocations removeObject:invocation];
                 
-            };
+                if (bself.runningInvocations.count == 0)
+                {
+                    bself.isRunning = NO;
+                    if (bself.finishedBlock)
+                        bself.finishedBlock (bself.wasSuccessful,bself);
+                    [bself release];
+                }
+                else
+                {
+                    [bself.runningInvocations[0] invoke];
+                }
+                //invocationCompleted
+                [invocation setFinishedBlock:originalBlock];                
+            } copy] autorelease];
             
             [inv setFinishedBlock:*pb];
             

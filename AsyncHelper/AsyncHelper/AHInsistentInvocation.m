@@ -77,7 +77,7 @@
     
     __block AHInsistentInvocation* bself = self;
     
-    ResponseBlock originalBlock = [self.invocation.finishedBlock copy];
+    ResponseBlock originalBlock = [[self.invocation.finishedBlock copy] autorelease];
     
     void (^invokeBlock)()  =
     ^(void)

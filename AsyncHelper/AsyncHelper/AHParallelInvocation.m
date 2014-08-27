@@ -89,7 +89,7 @@
     {
         if (NO == [self.preparedInvocations containsObject:invocation])
         {
-            CompletionBlock originalBlock = [invocation.finishedBlock copy];
+            CompletionBlock originalBlock = [[invocation.finishedBlock copy] autorelease];
             
             CompletionBlock b;
             CompletionBlock* pb = &b;
@@ -103,28 +103,6 @@
                 invocationCompleted(success,theInvocation);
                 [theInvocation setFinishedBlock:originalBlock];
             };
-
-/*
-            b =  ^(BOOL success, id<AHInvocationProtocol> theInvocation)
-            {
-//                if (originalBlock)
-//                {
-//                    originalBlock(success,theInvocation);
-//                }
-                invocationCompleted(success,theInvocation);
-            };
-*/
-
-/*
-            b =  ^(BOOL success, id<AHInvocationProtocol> theInvocation)
-            {
-                if (originalBlock)
-                {
-                    originalBlock(success,theInvocation);
-                }
-//                invocationCompleted(success,theInvocation);
-            };
-*/
 
             [invocation setFinishedBlock:*pb];
             
