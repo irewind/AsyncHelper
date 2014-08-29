@@ -690,11 +690,11 @@
     [DDLog addLogger:[DDLogNSLogger sharedInstance]];
 
     
-//    [self testSingle];
-//    [self testQueue];
-//    [self testParallel];
+    [self testSingle];
+    [self testQueue];
+    [self testParallel];
     [self testInsist];
-//    [self testAll];
+    [self testAll];
     
     return YES;
 }
