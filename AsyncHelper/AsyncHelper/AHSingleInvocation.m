@@ -17,7 +17,7 @@
 //#endif
 
 @interface AHSingleInvocation ()
-    @property(retain,nonatomic) NSInvocation* invocation;
+@property(retain,nonatomic) NSInvocation* invocation;
 @end
 
 @implementation AHSingleInvocation
@@ -84,23 +84,25 @@
     DDLogVerbose(@"prepare %@",self.name);
     
     __block AHSingleInvocation* bself = self;
-
-    ResponseBlock completionBlock =
+    
+    ResponseBlock b;
+    ResponseBlock* pb = &b;
+    b =
     ^(BOOL success, NSObject* res)
     {
         bself.isRunning = NO;
         bself.wasSuccessful = success;
         bself.result = res == nil?res : @{bself.name:res};
         if (bself.finishedBlock)
+        {
             bself.finishedBlock(success,bself);
+        }
         [bself release];
     };
     
     NSUInteger nrArgs = [[self.invocation methodSignature] numberOfArguments];
     
-    [self.invocation setArgument:&completionBlock atIndex:nrArgs-1];
-    
-    [completionBlock release];
+    [self.invocation setArgument:pb atIndex:nrArgs-1];
 }
 
 -(void)invoke
@@ -123,7 +125,7 @@
 {
     DDLogVerbose(@"dealloc %@ %p",self.name,self);
     
-    [self.finishedBlock release];
+    [self setFinishedBlock:nil];
     
     self.invocation = nil;
     
