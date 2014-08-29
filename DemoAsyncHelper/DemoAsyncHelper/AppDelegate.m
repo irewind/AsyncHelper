@@ -722,9 +722,9 @@
 //    [self testSingle];
 //    [self testQueue];
 //    [self testParallel];
-//    [self testInsist];
+    [self testInsist];
 //    [self testLongInsist];
-    [self testAll];
+//    [self testAll];
     
     return YES;
 }
