@@ -17,7 +17,7 @@
 //#endif
 
 @interface AHSingleInvocation ()
-    @property(retain,nonatomic) NSInvocation* invocation;
+@property(retain,nonatomic) NSInvocation* invocation;
 @end
 
 @implementation AHSingleInvocation
@@ -84,7 +84,7 @@
     DDLogVerbose(@"prepare %@",self.name);
     
     __block AHSingleInvocation* bself = self;
-
+    
     ResponseBlock b;
     ResponseBlock* pb = &b;
     b =

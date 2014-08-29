@@ -24,7 +24,6 @@
 @property (retain,nonatomic) NSMutableArray* runningInvocations;
 @property (retain,nonatomic) NSMutableArray* preparedInvocations;
 @property (retain,nonatomic) NSMutableArray* invocations;
-@property (copy, nonatomic) CompletionBlock invocationCompletedBlock;
 @end
 
 @implementation AHQueueInvocation
@@ -96,7 +95,7 @@
     {
         if (NO == [self.preparedInvocations containsObject:inv])
         {
-            CompletionBlock originalBlock = [[inv.finishedBlock copy] autorelease];
+            CompletionBlock originalBlock = inv.finishedBlock;
             
             __block CompletionBlock b;
             CompletionBlock* pb = &b;
@@ -203,14 +202,8 @@
 
 -(void)dealloc
 {
-    DDLogVerbose(@"[%@] dealloc %@ %p",_classStr,self.name,self);    
-    for (AHSingleInvocation* inv in self.invocations)
-    {
-        DDLogInfo(@"block:%p retainCount: %lu",inv.finishedBlock, (unsigned long)[inv.finishedBlock retainCount]);
-    }
+    DDLogVerbose(@"[%@] dealloc %@ %p",_classStr,self.name,self);
     
-    DDLogInfo(@"block:%p retainCount: %lu",self.finishedBlock, (unsigned long)[self.finishedBlock retainCount]);
-    self.invocationCompletedBlock = nil;
     self.preparedInvocations = nil;
     self.invocations = nil;
     self.runningInvocations = nil;

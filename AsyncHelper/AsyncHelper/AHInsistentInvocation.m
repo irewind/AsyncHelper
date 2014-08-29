@@ -91,6 +91,8 @@
     CompletionBlock completionBlock =
     ^(BOOL success, id<AHInvocationProtocol> invocation)
     {
+//        DDLogVerbose(@"[%@] completionBlock %@",_classStr,self.name);
+        
         if (
             success == NO && (bself.timesToRetry == nil || (bself.timesToRetry != nil && bself.remainingRetries>0))
             )
@@ -105,6 +107,7 @@
             bself.wasSuccessful = success;            
             bself.result = invocation.result;
             if (originalBlock)
+            {
                 originalBlock(success,invocation);
             if (bself.finishedBlock)
                 bself.finishedBlock(success,bself);
