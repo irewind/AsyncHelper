@@ -109,7 +109,6 @@
             bself.result = invocation.result;
             if (originalBlock)
             {
-                DDLogVerbose(@"[%@] originalBlock %@",_classStr,self.name);
                 originalBlock(success,invocation);
             }
             if (bself.finishedBlock)
