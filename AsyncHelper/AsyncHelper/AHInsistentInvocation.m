@@ -77,7 +77,7 @@
     
     __block AHInsistentInvocation* bself = self;
     
-    __block ResponseBlock originalBlock = self.invocation.finishedBlock;
+    __block CompletionBlock originalBlock = self.invocation.finishedBlock;
     
     void (^invokeBlock)()  =
     ^(void)

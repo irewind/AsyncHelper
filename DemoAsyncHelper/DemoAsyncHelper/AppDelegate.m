@@ -693,8 +693,8 @@
 //    [self testSingle];
 //    [self testQueue];
 //    [self testParallel];
-//    [self testInsist];
-    [self testAll];
+    [self testInsist];
+//    [self testAll];
     
     return YES;
 }
