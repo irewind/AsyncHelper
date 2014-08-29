@@ -40,7 +40,7 @@
         self.retryAfterSeconds = sec;
         self.name = [NSString stringWithFormat:@"%lu_%@",(unsigned long)[self hash], NSStringFromClass([self class])];
         
-        DDLogVerbose(@"[%@] alloc %@ %p",_classStr,self.name,self);
+        DDLogVerbose(@"alloc %@ %p",self.name,self);
         
         [self setFinishedBlock:complete];
         
@@ -58,7 +58,7 @@
         self.retryAfterSeconds = sec;
         self.name = [NSString stringWithFormat:@"%lu_%@",(unsigned long)[self hash], NSStringFromClass([self class])];
         
-        DDLogVerbose(@"[%@] alloc %@ %p",_classStr,self.name,self);
+        DDLogVerbose(@"alloc %@ %p",self.name,self);
         
         self.timesToRetry = times;
         
@@ -77,7 +77,7 @@
     
     __block AHInsistentInvocation* bself = self;
     
-    ResponseBlock originalBlock = [[self.invocation.finishedBlock copy] autorelease];
+    __block CompletionBlock originalBlock = self.invocation.finishedBlock;
     
     void (^invokeBlock)()  =
     ^(void)
@@ -88,14 +88,9 @@
         [bself.invocation invoke];
     };
     
-    CompletionBlock b;
-    CompletionBlock* pb = &b;
-    b =
+    CompletionBlock completionBlock =
     ^(BOOL success, id<AHInvocationProtocol> invocation)
     {
-        
-        DDLogVerbose(@"[%@] completionBlock %@",_classStr,self.name);
-        
         if (
             success == NO && (bself.timesToRetry == nil || (bself.timesToRetry != nil && bself.remainingRetries>0))
             )
@@ -110,22 +105,19 @@
             bself.wasSuccessful = success;            
             bself.result = invocation.result;
             if (originalBlock)
-            {
-                DDLogVerbose(@"[%@] originalBlock %@",_classStr,self.name);
                 originalBlock(success,invocation);
-            }
             if (bself.finishedBlock)
                 bself.finishedBlock(success,bself);
             [bself release];
         }
     };
     
-    [self.invocation setFinishedBlock:*pb];
+    [self.invocation setFinishedBlock:completionBlock];
 }
 
 -(void)invoke
 {
-    DDLogVerbose(@"[%@] invoking %@",_classStr,self.name);
+    DDLogVerbose(@"invoking %@",self.name);
     
     self.isRunning = YES;
     [self retain];
@@ -139,7 +131,7 @@
 
 -(void)dealloc
 {
-    DDLogVerbose(@"[%@] dealloc %@ %p",_classStr,self.name,self);
+    DDLogVerbose(@"dealloc %@ %p",self.name,self);
     
     self.invocation = nil;
     self.retryAfterSeconds = nil;

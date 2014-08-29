@@ -7,6 +7,7 @@
 //
 
 #import "NSString+Utils.h"
+#import "AHInvocationProtocol.h"
 
 @implementation NSString (Utils)
 

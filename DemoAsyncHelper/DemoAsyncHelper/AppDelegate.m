@@ -151,7 +151,7 @@
 }
 
 -(void)test16AndThen:(ResponseBlock)complete
-{
+{    
     [[self queue:@[
                   _inv(op1AndThen:),
                   [self parallelize:@[
@@ -667,30 +667,24 @@
         }];
         
         queue.name = @"main_AHQueueInvocation";
+        
+        [queue addInvocation:_inv(test16AndThen:)]; //leak
 
-          [queue addInvocation:_inv(test16AndThen:)]; //leak
-
-/*
         [queue addInvocation:_inv(test1AndThen:)]; //no leak
 
         [queue addInvocation:_inv(test2AndThen:)]; //no leak
 
         [queue addInvocation:_inv(test3AndThen:)]; //no leak
 
-
-
         [queue addInvocation:_inv(test4AndThen:)];
 
         [queue addInvocation:_inv(test5AndThen:)]; //leak!
 
-
         [queue addInvocation:_inv(test6AndThen:)]; //no leak
-        
 
         [queue addInvocation:_inv(test7AndThen:)]; // leak
         
         [queue addInvocation:_inv(test8AndThen:)]; //leak
-
         
         [queue addInvocation:_inv(test9AndThen:)]; //no leak
 
@@ -705,7 +699,7 @@
         [queue addInvocation:_inv(test14AndThen:)]; //no leak
         
         [queue addInvocation:_inv(test15AndThen:)]; //no leak
-*/
+
         [queue invoke];
         
     }

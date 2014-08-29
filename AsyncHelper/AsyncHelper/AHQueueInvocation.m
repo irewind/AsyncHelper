@@ -103,6 +103,9 @@
             b =
             [[^(BOOL success, id<AHInvocationProtocol> invocation)
             {
+//                CompletionBlock o = invocation.finishedBlock;
+                
+//                DDLogInfo(@"block:%p retainCount: %lu",o, (unsigned long)[o retainCount]);
                 if (originalBlock)
                 {
                     originalBlock(success,invocation);
@@ -124,12 +127,20 @@
                     [bself.runningInvocations[0] invoke];
                 }
                 //invocationCompleted
-                [invocation setFinishedBlock:originalBlock];                
+                [invocation setFinishedBlock:originalBlock];
+//                DDLogInfo(@"block:%p retainCount: %lu",o, (unsigned long)[o retainCount]);
+                
             } copy] autorelease];
+            
+//            DDLogInfo(@"block:%p retainCount: %lu",b, (unsigned long)[b retainCount]);
             
             [inv setFinishedBlock:*pb];
             
+//            DDLogInfo(@"block:%p retainCount: %lu",inv.finishedBlock, (unsigned long)[inv.finishedBlock retainCount]);
+            
             [self.preparedInvocations addObject:inv];
+            
+//            DDLogInfo(@"block:%p retainCount: %lu",b, (unsigned long)[b retainCount]);
         }
     }
 }
@@ -192,8 +203,13 @@
 
 -(void)dealloc
 {
-    DDLogVerbose(@"[%@] dealloc %@ %p",_classStr,self.name,self);
+    DDLogVerbose(@"[%@] dealloc %@ %p",_classStr,self.name,self);    
+    for (AHSingleInvocation* inv in self.invocations)
+    {
+        DDLogInfo(@"block:%p retainCount: %lu",inv.finishedBlock, (unsigned long)[inv.finishedBlock retainCount]);
+    }
     
+    DDLogInfo(@"block:%p retainCount: %lu",self.finishedBlock, (unsigned long)[self.finishedBlock retainCount]);
     self.invocationCompletedBlock = nil;
     self.preparedInvocations = nil;
     self.invocations = nil;
