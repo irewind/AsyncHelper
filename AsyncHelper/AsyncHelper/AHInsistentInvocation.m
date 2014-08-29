@@ -11,15 +11,8 @@
 
 #import "DDLog.h"
 
-//#ifdef DEBUG
-//    static int ddLogLevel = LOG_LEVEL_VERBOSE;
-//#else
-//    static int ddLogLevel = LOG_LEVEL_ERROR;
-//#endif
-
 @interface AHInsistentInvocation ()
 @property (strong,nonatomic) id<AHInvocationProtocol> invocation;
-//@property (copy, nonatomic) CompletionBlock internalFinishedBlock;
 @property (strong,nonatomic) NSNumber* retryAfterSeconds;
 @property (strong,nonatomic) NSNumber* timesToRetry;
 @property (assign,nonatomic) int remainingRetries;
@@ -40,7 +33,7 @@
         self.retryAfterSeconds = sec;
         self.name = [NSString stringWithFormat:@"%lu_%@",(unsigned long)[self hash], NSStringFromClass([self class])];
         
-        DDLogVerbose(@"alloc %@ %p",self.name,self);
+//        DDLogVerbose(@"alloc %@ %p",self.name,self);
         
         [self setFinishedBlock:complete];
         
@@ -58,7 +51,7 @@
         self.retryAfterSeconds = sec;
         self.name = [NSString stringWithFormat:@"%lu_%@",(unsigned long)[self hash], NSStringFromClass([self class])];
         
-        DDLogVerbose(@"alloc %@ %p",self.name,self);
+//        DDLogVerbose(@"alloc %@ %p",self.name,self);
         
         self.timesToRetry = times;
         
@@ -91,8 +84,6 @@
     CompletionBlock completionBlock =
     ^(BOOL success, id<AHInvocationProtocol> invocation)
     {
-//        DDLogVerbose(@"[%@] completionBlock %@",_classStr,self.name);
-        
         if (
             success == NO && (bself.timesToRetry == nil || (bself.timesToRetry != nil && bself.remainingRetries>0))
             )
@@ -109,6 +100,7 @@
             if (originalBlock)
             {
                 originalBlock(success,invocation);
+            }
             if (bself.finishedBlock)
                 bself.finishedBlock(success,bself);
             [bself release];

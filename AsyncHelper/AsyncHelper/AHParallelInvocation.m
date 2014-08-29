@@ -66,7 +66,6 @@
 
 -(void)prepareInvocations
 {
-//    __block BOOL successful = YES;
     __block AHParallelInvocation* bself = self;
     
     CompletionBlock invocationCompleted =
@@ -77,7 +76,6 @@
         DDLogVerbose(@"%@ remaining invocations: %lu",bself.name,(unsigned long)bself.runningInvocations.count);
         if (bself.runningInvocations.count == 0)
         {
-//            bself.wasSuccessful = successful;
             bself.isRunning = NO;
             if (bself.finishedBlock)
                 bself.finishedBlock (bself.wasSuccessful,bself);

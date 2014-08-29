@@ -43,7 +43,7 @@
         self.name = [NSString stringWithFormat:@"%lu_%@",(unsigned long)[self hash], NSStringFromSelector(invocation.selector)];
         [invocation retainArguments];
         
-        DDLogVerbose(@"alloc %@ %p",self.name,self);
+//        DDLogVerbose(@"alloc %@ %p",self.name,self);
         [self prepareInvocation];
     }
     return self;
@@ -60,7 +60,7 @@
         [invocation setTarget:target];
         
         self.name = [NSString stringWithFormat:@"%lu_%@",(unsigned long)[self hash], NSStringFromSelector(invocation.selector)];
-        DDLogVerbose(@"alloc %@ %p",self.name,self);
+//        DDLogVerbose(@"alloc %@ %p",self.name,self);
         
         NSInteger index = 2;
         for (NSObject* arg in arguments)
@@ -81,7 +81,7 @@
 
 -(void)prepareInvocation
 {
-    DDLogVerbose(@"prepare %@",self.name);
+//    DDLogVerbose(@"prepare %@",self.name);
     
     __block AHSingleInvocation* bself = self;
     

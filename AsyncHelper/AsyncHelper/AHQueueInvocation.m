@@ -72,24 +72,24 @@
 {
     __block AHQueueInvocation* bself = self;
     
-//    CompletionBlock invocationCompleted =
-//    [^(BOOL success, id<AHInvocationProtocol> invocation)
-//    {
-//        bself.wasSuccessful &= success;
-//        [bself.runningInvocations removeObject:invocation];
-//        
-//        if (bself.runningInvocations.count == 0)
-//        {
-//            bself.isRunning = NO;
-//            if (bself.finishedBlock)
-//                bself.finishedBlock (bself.wasSuccessful,bself);
-//            [bself release];
-//        }
-//        else
-//        {
-//            [bself.runningInvocations[0] invoke];
-//        }
-//    } copy];
+    CompletionBlock invocationCompleted =
+    ^(BOOL success, id<AHInvocationProtocol> invocation)
+    {
+        bself.wasSuccessful &= success;
+        [bself.runningInvocations removeObject:invocation];
+        
+        if (bself.runningInvocations.count == 0)
+        {
+            bself.isRunning = NO;
+            if (bself.finishedBlock)
+                bself.finishedBlock (bself.wasSuccessful,bself);
+            [bself release];
+        }
+        else
+        {
+            [bself.runningInvocations[0] invoke];
+        }
+    };
     
     for (id<AHInvocationProtocol> inv in self.invocations)
     {
@@ -102,44 +102,20 @@
             b =
             [[^(BOOL success, id<AHInvocationProtocol> invocation)
             {
-//                CompletionBlock o = invocation.finishedBlock;
-                
-//                DDLogInfo(@"block:%p retainCount: %lu",o, (unsigned long)[o retainCount]);
                 if (originalBlock)
                 {
                     originalBlock(success,invocation);
                 }
 
-                // begin invocationCompleted
-                bself.wasSuccessful &= success;
-                [bself.runningInvocations removeObject:invocation];
-                
-                if (bself.runningInvocations.count == 0)
-                {
-                    bself.isRunning = NO;
-                    if (bself.finishedBlock)
-                        bself.finishedBlock (bself.wasSuccessful,bself);
-                    [bself release];
-                }
-                else
-                {
-                    [bself.runningInvocations[0] invoke];
-                }
-                //invocationCompleted
+                invocationCompleted(success,invocation);
+
                 [invocation setFinishedBlock:originalBlock];
-//                DDLogInfo(@"block:%p retainCount: %lu",o, (unsigned long)[o retainCount]);
                 
             } copy] autorelease];
             
-//            DDLogInfo(@"block:%p retainCount: %lu",b, (unsigned long)[b retainCount]);
-            
             [inv setFinishedBlock:*pb];
             
-//            DDLogInfo(@"block:%p retainCount: %lu",inv.finishedBlock, (unsigned long)[inv.finishedBlock retainCount]);
-            
             [self.preparedInvocations addObject:inv];
-            
-//            DDLogInfo(@"block:%p retainCount: %lu",b, (unsigned long)[b retainCount]);
         }
     }
 }
