@@ -150,26 +150,6 @@
                    });
 }
 
--(void)test16AndThen:(ResponseBlock)complete
-{    
-    [[self queue:@[
-                  _inv(op1AndThen:),
-                  [self parallelize:@[
-                                      _inv(op1AndThen:)
-                                      ]],
-                  [self queue:@[
-                                _inv(op1AndThen:)
-                                ]],
-                 ]
-    andThen:^(BOOL success, id<AHInvocationProtocol> invocation) {
-      
-        if (complete)
-            complete(success,invocation.result);
-    }] invoke];
-    
-}
-
-
 -(void)test1AndThen:(ResponseBlock)complete
 {
     NSLog(@"begin test1");
@@ -564,6 +544,60 @@
 }
 
 
+-(void)test16AndThen:(ResponseBlock)complete
+{
+    [[self queue:@[
+                   _inv(op1AndThen:),
+                   [self parallelize:@[
+                                       _inv(op1AndThen:)
+                                       ]],
+                   [self queue:@[
+                                 _inv(op1AndThen:)
+                                 ]],
+                   ]
+         andThen:^(BOOL success, id<AHInvocationProtocol> invocation) {
+             
+             if (complete)
+                 complete(success,invocation.result);
+         }] invoke];
+    
+}
+
+//test insistent operation with recursive blocks
+
+-(void)test17AndThen:(ResponseBlock)complete
+{
+    __block int cycles = 100;
+    
+    CompletionBlock __block completionBlock;
+    CompletionBlock completionBlock2 =
+    [^(BOOL success, id<AHInvocationProtocol> invocation)
+     {
+         if (cycles == 0)
+         {
+             if (complete)
+             {
+                 complete(NO, nil);
+             }
+         }
+         
+         if (success && cycles > 0)
+         {
+             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(),
+                ^{
+                    cycles--;
+                    [[self ifFailed:_inv(op3AndThen:) retryEverySeconds:@1 andThen:completionBlock] invoke];
+                });
+             
+         }
+     } copy];
+    
+    completionBlock = completionBlock2;
+    
+    [[self ifFailed:_inv(op3AndThen:) retryEverySeconds:@1 andThen:completionBlock] invoke];
+}
+
+
 -(void)testSingle
 {
     @autoreleasepool {
@@ -656,6 +690,18 @@
     }
 }
 
+-(void)testRecursiveInsist
+{
+    @autoreleasepool {
+        
+        [self test17AndThen:
+         ^(BOOL success, id<AHInvocationProtocol> invocation)
+         {
+             NSLog(@"testRecursiveInsist done, success: %d, result: %@",success, invocation.result);
+         }];
+    }
+}
+
 -(void)testAll
 {
     @autoreleasepool
@@ -717,13 +763,13 @@
 
     ddLogLevel = LOG_LEVEL_VERBOSE;
     [DDLog addLogger:[DDLogNSLogger sharedInstance]];
-
     
-    [self testSingle];
-    [self testQueue];
-    [self testParallel];
-    [self testInsist];
-    [self testAll];
+//    [self testSingle];
+//    [self testQueue];
+//    [self testParallel];
+//    [self testInsist];
+//    [self testAll];
+    [self testRecursiveInsist];
     
     return YES;
 }
