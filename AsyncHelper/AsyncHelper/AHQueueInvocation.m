@@ -95,7 +95,7 @@
     {
         if (NO == [self.preparedInvocations containsObject:inv])
         {
-            CompletionBlock originalBlock = inv.finishedBlock;
+            CompletionBlock originalBlock = [[inv.finishedBlock copy] autorelease];
             
             __block CompletionBlock b;
             CompletionBlock* pb = &b;
@@ -107,7 +107,9 @@
                     originalBlock(success,invocation);
                 }
 
+                [bself retain];
                 invocationCompleted(success,invocation);
+                [bself release];
 
                 [invocation setFinishedBlock:originalBlock];
                 
