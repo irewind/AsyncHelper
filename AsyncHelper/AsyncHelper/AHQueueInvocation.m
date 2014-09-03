@@ -7,7 +7,6 @@
 //
 
 #import "AHQueueInvocation.h"
-//#import "AHSingleInvocation.h"
 #import "NSString+Utils.h"
 
 #import "DDLog.h"
@@ -68,26 +67,41 @@
     return self;
 }
 
+#define _log_line DDLogVerbose(@"%s %d",__FILE__,__LINE__);
+
 -(void)prepareInvocations
 {
     __block AHQueueInvocation* bself = self;
+    _log_line
     
     CompletionBlock invocationCompleted =
     ^(BOOL success, id<AHInvocationProtocol> invocation)
     {
+        _log_line
         bself.wasSuccessful &= success;
+        _log_line
         [bself.runningInvocations removeObject:invocation];
+        _log_line
         
         if (bself.runningInvocations.count == 0)
         {
+            _log_line
             bself.isRunning = NO;
+            _log_line
             if (bself.finishedBlock)
+            {
+                _log_line
                 bself.finishedBlock (bself.wasSuccessful,bself);
+            }
+            _log_line
             [bself release];
+            _log_line
         }
         else
         {
+            _log_line
             [bself.runningInvocations[0] invoke];
+            _log_line
         }
     };
     
@@ -118,6 +132,7 @@
             [self.preparedInvocations addObject:inv];
         }
     }
+    _log_line
 }
 
 -(void)addInvocation:(id<AHInvocationProtocol>)invocation
