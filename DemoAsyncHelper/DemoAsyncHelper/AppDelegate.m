@@ -150,6 +150,27 @@
                    });
 }
 
+-(void)compoundOpAndThen:(void(^)(BOOL success,NSObject* result))complete
+{
+    NSLog(@"started compoundOp");
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(),
+       ^{
+           [self op2AndThen:
+            ^(BOOL success, NSObject *result)
+           {
+                [self op2AndThen:
+                 ^(BOOL success, NSObject *result)
+                {
+                    NSLog(@"compoundOp done");
+                    if (complete)
+                    {
+                        complete(YES,@(666));
+                    }
+                }];
+           }];
+       });
+}
+
 -(void)test1AndThen:(ResponseBlock)complete
 {
     NSLog(@"begin test1");
@@ -549,7 +570,7 @@
     [[self queue:@[
                    _inv(op1AndThen:),
                    [self parallelize:@[
-                                       _inv(op1AndThen:)
+                                       _inv(op1AndThen:),
                                        ]],
                    [self queue:@[
                                  _inv(op1AndThen:)
@@ -597,6 +618,24 @@
     [[self ifFailed:_inv(op3AndThen:) retryEverySeconds:@1 andThen:completionBlock] invoke];
 }
 
+
+-(void)test18AndThen:(ResponseBlock)complete
+{
+    [[self queue:@[
+                   _inv(compoundOpAndThen:),
+                   [self parallelize:@[
+                                       _inv(compoundOpAndThen:),
+                                       ]],
+                   [self queue:@[
+                                 _inv(compoundOpAndThen:)
+                                 ]],
+                   ]
+         andThen:^(BOOL success, id<AHInvocationProtocol> invocation) {
+             
+             if (complete)
+                 complete(success,invocation.result);
+         }] invoke];
+}
 
 -(void)testSingle
 {
@@ -713,39 +752,43 @@
         }];
         
         queue.name = @"main_AHQueueInvocation";
-        
-        [queue addInvocation:_inv(test16AndThen:)]; //leak
+/*
+        [queue addInvocation:_inv(test1AndThen:)];
 
-        [queue addInvocation:_inv(test1AndThen:)]; //no leak
+        [queue addInvocation:_inv(test2AndThen:)];
 
-        [queue addInvocation:_inv(test2AndThen:)]; //no leak
-
-        [queue addInvocation:_inv(test3AndThen:)]; //no leak
+        [queue addInvocation:_inv(test3AndThen:)];
 
         [queue addInvocation:_inv(test4AndThen:)];
 
-        [queue addInvocation:_inv(test5AndThen:)]; //leak!
+        [queue addInvocation:_inv(test5AndThen:)];
 
-        [queue addInvocation:_inv(test6AndThen:)]; //no leak
+        [queue addInvocation:_inv(test6AndThen:)];
 
-        [queue addInvocation:_inv(test7AndThen:)]; // leak
+        [queue addInvocation:_inv(test7AndThen:)];
         
-        [queue addInvocation:_inv(test8AndThen:)]; //leak
+        [queue addInvocation:_inv(test8AndThen:)];
         
-        [queue addInvocation:_inv(test9AndThen:)]; //no leak
+        [queue addInvocation:_inv(test9AndThen:)];
 
-        [queue addInvocation:_inv(test10AndThen:)]; //no leak
+        [queue addInvocation:_inv(test10AndThen:)];
 
-        [queue addInvocation:_inv(test11AndThen:)]; //no leak
+        [queue addInvocation:_inv(test11AndThen:)];
 
-        [queue addInvocation:_inv(test12AndThen:)]; //no leak
+        [queue addInvocation:_inv(test12AndThen:)];
 
-        [queue addInvocation:_inv(test13AndThen:)]; //leak
+        [queue addInvocation:_inv(test13AndThen:)];
 
-        [queue addInvocation:_inv(test14AndThen:)]; //no leak
+        [queue addInvocation:_inv(test14AndThen:)];
         
-        [queue addInvocation:_inv(test15AndThen:)]; //no leak
+        [queue addInvocation:_inv(test15AndThen:)];
+        
+        [queue addInvocation:_inv(test16AndThen:)];
+*/
+//        [queue addInvocation:_inv(test17AndThen:)];
 
+        [queue addInvocation:_inv(test18AndThen:)];
+        
         [queue invoke];
         
     }
@@ -768,8 +811,8 @@
 //    [self testQueue];
 //    [self testParallel];
 //    [self testInsist];
-//    [self testAll];
-    [self testRecursiveInsist];
+    [self testAll];
+//    [self testRecursiveInsist];
     
     return YES;
 }
