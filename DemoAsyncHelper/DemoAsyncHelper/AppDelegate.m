@@ -752,7 +752,7 @@
         }];
         
         queue.name = @"main_AHQueueInvocation";
-/*
+
         [queue addInvocation:_inv(test1AndThen:)];
 
         [queue addInvocation:_inv(test2AndThen:)];
@@ -784,8 +784,8 @@
         [queue addInvocation:_inv(test15AndThen:)];
         
         [queue addInvocation:_inv(test16AndThen:)];
-*/
-//        [queue addInvocation:_inv(test17AndThen:)];
+
+        [queue addInvocation:_inv(test17AndThen:)];
 
         [queue addInvocation:_inv(test18AndThen:)];
         

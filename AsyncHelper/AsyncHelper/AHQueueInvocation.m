@@ -114,7 +114,7 @@
             __block CompletionBlock b;
             CompletionBlock* pb = &b;
             b =
-            [[^(BOOL success, id<AHInvocationProtocol> invocation)
+            ^(BOOL success, id<AHInvocationProtocol> invocation)
             {
                 if (originalBlock)
                 {
@@ -126,8 +126,7 @@
                 [bself release];
 
                 [invocation setFinishedBlock:originalBlock];
-                
-            } copy] autorelease];
+            };
             
             [inv setFinishedBlock:*pb];
             
