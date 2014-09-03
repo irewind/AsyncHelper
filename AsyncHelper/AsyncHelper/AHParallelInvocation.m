@@ -73,7 +73,6 @@
     {
         bself.wasSuccessful &= success;
         [bself.runningInvocations removeObject:invocation];
-        DDLogVerbose(@"%@ remaining invocations: %lu",bself.name,(unsigned long)bself.runningInvocations.count);
         if (bself.runningInvocations.count == 0)
         {
             bself.isRunning = NO;

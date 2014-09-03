@@ -576,8 +576,11 @@
                                  _inv(op1AndThen:)
                                  ]],
                    ]
-         andThen:^(BOOL success, id<AHInvocationProtocol> invocation) {
-             
+         andThen:^(BOOL success, id<AHInvocationProtocol> invocation)
+    {
+        NSLog(@"test16 done %d, results: %@",success,invocation.result);
+        NSLog(@"--------16--------");
+        
              if (complete)
                  complete(success,invocation.result);
          }] invoke];
@@ -785,7 +788,7 @@
         
         [queue addInvocation:_inv(test16AndThen:)];
 
-        [queue addInvocation:_inv(test17AndThen:)];
+//        [queue addInvocation:_inv(test17AndThen:)];
 
         [queue addInvocation:_inv(test18AndThen:)];
         

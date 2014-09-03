@@ -509,6 +509,7 @@
 				INFOPLIST_FILE = "DemoAsyncHelper/DemoAsyncHelper-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				USER_HEADER_SEARCH_PATHS = "../CocoaLumberjack/Lumberjack/** ../**";
+				VALID_ARCHS = "armv7 armv7s";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -530,6 +531,7 @@
 				INFOPLIST_FILE = "DemoAsyncHelper/DemoAsyncHelper-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				USER_HEADER_SEARCH_PATHS = "../CocoaLumberjack/Lumberjack/** ../**";
+				VALID_ARCHS = "armv7 armv7s";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
