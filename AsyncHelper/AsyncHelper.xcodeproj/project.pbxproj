@@ -20,7 +20,7 @@
 		B678A84E18C743BF00600A38 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = B678A84C18C743BF00600A38 /* InfoPlist.strings */; };
 		B678A85018C743BF00600A38 /* AsyncHelperTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B678A84F18C743BF00600A38 /* AsyncHelperTests.m */; };
 		B678A86818C7444500600A38 /* NSObject+AsyncHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = B678A86718C7444500600A38 /* NSObject+AsyncHelper.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		B678A87818C7486E00600A38 /* NSObject+AsyncHelper.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = B678A86618C7444500600A38 /* NSObject+AsyncHelper.h */; };
+		B678A87818C7486E00600A38 /* NSObject+AsyncHelper.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = B678A86618C7444500600A38 /* NSObject+AsyncHelper.h */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		B6AA50E51964117700E6D164 /* AHLogLevel.m in Sources */ = {isa = PBXBuildFile; fileRef = B6AA50E41964117700E6D164 /* AHLogLevel.m */; };
 /* End PBXBuildFile section */
 
@@ -37,13 +37,13 @@
 /* Begin PBXCopyFilesBuildPhase section */
 		B678A82E18C743BF00600A38 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 8;
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
 				B678A87818C7486E00600A38 /* NSObject+AsyncHelper.h in CopyFiles */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
+			runOnlyForDeploymentPostprocessing = 1;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
