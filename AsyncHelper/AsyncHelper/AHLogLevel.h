@@ -9,6 +9,6 @@
 #ifndef EXTERNAL_H
 #define EXTERNAL_H
 
-extern int ddLogLevel ;
+//extern int ddLogLevel ;
 
 #endif

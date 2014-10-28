@@ -11,12 +11,15 @@
 
 #import "DDLog.h"
 
+
 @interface AHInsistentInvocation ()
 @property (strong,nonatomic) id<AHInvocationProtocol> invocation;
 @property (strong,nonatomic) NSNumber* retryAfterSeconds;
 @property (strong,nonatomic) NSNumber* timesToRetry;
 @property (assign,nonatomic) int remainingRetries;
 @end
+
+static int ddLogLevel = LOG_LEVEL_ERROR;
 
 @implementation AHInsistentInvocation
 @synthesize finishedBlock;

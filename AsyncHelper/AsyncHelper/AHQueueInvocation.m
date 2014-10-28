@@ -11,11 +11,11 @@
 
 #import "DDLog.h"
 
-//#ifdef DEBUG
-//static int ddLogLevel = LOG_LEVEL_VERBOSE;
-//#else
-//static int ddLogLevel = LOG_LEVEL_ERROR;
-//#endif
+#ifdef DEMO_ASYNC
+static int ddLogLevel = LOG_LEVEL_VERBOSE;
+#else
+static int ddLogLevel = LOG_LEVEL_ERROR;
+#endif
 
 
 @interface AHQueueInvocation ()
