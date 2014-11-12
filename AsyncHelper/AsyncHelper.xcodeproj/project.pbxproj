@@ -49,14 +49,14 @@
 
 /* Begin PBXFileReference section */
 		B601C22619113B2C00907991 /* AHSingleInvocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AHSingleInvocation.h; sourceTree = "<group>"; };
-		B601C22719113B2C00907991 /* AHSingleInvocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = AHSingleInvocation.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		B601C22719113B2C00907991 /* AHSingleInvocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = AHSingleInvocation.m; sourceTree = "<group>"; };
 		B601C22919113D4300907991 /* AHParallelInvocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AHParallelInvocation.h; sourceTree = "<group>"; };
-		B601C22A19113D4300907991 /* AHParallelInvocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = AHParallelInvocation.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		B601C22A19113D4300907991 /* AHParallelInvocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = AHParallelInvocation.m; sourceTree = "<group>"; };
 		B601C23619114AB100907991 /* AHInvocationProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AHInvocationProtocol.h; sourceTree = "<group>"; };
 		B601C24F1913EB3B00907991 /* AHQueueInvocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AHQueueInvocation.h; sourceTree = "<group>"; };
-		B601C2501913EB3B00907991 /* AHQueueInvocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = AHQueueInvocation.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		B601C2501913EB3B00907991 /* AHQueueInvocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = AHQueueInvocation.m; sourceTree = "<group>"; };
 		B601C2521917A86800907991 /* AHInsistentInvocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AHInsistentInvocation.h; sourceTree = "<group>"; };
-		B601C2531917A86800907991 /* AHInsistentInvocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = AHInsistentInvocation.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		B601C2531917A86800907991 /* AHInsistentInvocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = AHInsistentInvocation.m; sourceTree = "<group>"; };
 		B647081C19264F2D00CC22D7 /* NSString+Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Utils.h"; sourceTree = "<group>"; };
 		B647081D19264F2D00CC22D7 /* NSString+Utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Utils.m"; sourceTree = "<group>"; };
 		B678A83018C743BF00600A38 /* libAsyncHelper.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libAsyncHelper.a; sourceTree = BUILT_PRODUCTS_DIR; };
