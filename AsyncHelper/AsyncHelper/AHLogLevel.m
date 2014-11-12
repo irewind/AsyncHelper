@@ -9,4 +9,4 @@
 #import "AHLogLevel.h"
 #import "DDLog.h"
 
-int ddLogLevel = LOG_LEVEL_INFO;
+//int ddLogLevel = LOG_LEVEL_INFO;
