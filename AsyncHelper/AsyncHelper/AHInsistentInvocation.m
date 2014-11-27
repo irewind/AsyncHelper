@@ -19,7 +19,6 @@
 @property (assign,nonatomic) int remainingRetries;
 @end
 
-static int ddLogLevel = LOG_LEVEL_ERROR;
 
 @implementation AHInsistentInvocation
 @synthesize finishedBlock;
@@ -115,8 +114,6 @@ static int ddLogLevel = LOG_LEVEL_ERROR;
 
 -(void)invoke
 {
-    DDLogVerbose(@"invoking %@",self.name);
-    
     self.isRunning = YES;
     [self retain];
     [self.invocation invoke];
@@ -129,8 +126,6 @@ static int ddLogLevel = LOG_LEVEL_ERROR;
 
 -(void)dealloc
 {
-    DDLogVerbose(@"dealloc %@ %p",self.name,self);
-    
     self.invocation = nil;
     self.retryAfterSeconds = nil;
     self.timesToRetry = nil;

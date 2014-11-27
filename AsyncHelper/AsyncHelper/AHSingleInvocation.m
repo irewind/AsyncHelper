@@ -17,7 +17,7 @@
 #ifdef DEMO_ASYNC
 static int ddLogLevel = LOG_LEVEL_VERBOSE;
 #else
-static int ddLogLevel = LOG_LEVEL_ERROR;
+//static int ddLogLevel = LOG_LEVEL_ERROR;
 #endif
 
 @implementation AHSingleInvocation
@@ -111,7 +111,6 @@ static int ddLogLevel = LOG_LEVEL_ERROR;
     {
         [self retain];
         self.isRunning = YES;
-        DDLogVerbose(@"invoking %@",self.name);
         [self.invocation invoke];
     }
 }
@@ -123,8 +122,6 @@ static int ddLogLevel = LOG_LEVEL_ERROR;
 
 -(void)dealloc
 {
-    DDLogVerbose(@"dealloc %@ %p",self.name,self);
-    
     [self setFinishedBlock:nil];
     
     self.invocation = nil;

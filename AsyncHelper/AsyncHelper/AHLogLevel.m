@@ -9,4 +9,6 @@
 #import "AHLogLevel.h"
 #import "DDLog.h"
 
+#ifdef IRW_ORIG
 int ddLogLevel = LOG_LEVEL_INFO;
+#endif

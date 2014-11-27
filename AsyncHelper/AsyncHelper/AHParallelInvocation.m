@@ -15,7 +15,7 @@
 #ifdef DEMO_ASYNC
 static int ddLogLevel = LOG_LEVEL_VERBOSE;
 #else
-static int ddLogLevel = LOG_LEVEL_ERROR;
+//static int ddLogLevel = LOG_LEVEL_ERROR;
 #endif
 
 @interface AHParallelInvocation ()
@@ -41,7 +41,7 @@ static int ddLogLevel = LOG_LEVEL_ERROR;
         self.name = [NSString stringWithFormat:@"%lu_%@",(unsigned long)[self hash], NSStringFromClass([self class])];
         
         self.wasSuccessful = YES;
-        DDLogVerbose(@"[%@] alloc %@ %p",_classStr,self.name,self);
+//        DDLogVerbose(@"[%@] alloc %@ %p",_classStr,self.name,self);
     }
     return self;
 }
@@ -59,7 +59,7 @@ static int ddLogLevel = LOG_LEVEL_ERROR;
         [self prepareInvocations];
         
         self.wasSuccessful = YES;
-        DDLogVerbose(@"[%@] alloc %@ %p",_classStr,self.name,self);
+//        DDLogVerbose(@"[%@] alloc %@ %p",_classStr,self.name,self);
     }
     return self;
 }
@@ -142,7 +142,7 @@ static int ddLogLevel = LOG_LEVEL_ERROR;
 
 -(void)invoke
 {
-    DDLogVerbose(@"[%@] invoking %@",_classStr,self.name);
+//    DDLogVerbose(@"[%@] invoking %@",_classStr,self.name);
     
     [self retain];
     
@@ -178,7 +178,7 @@ static int ddLogLevel = LOG_LEVEL_ERROR;
 
 -(void)dealloc
 {
-    DDLogVerbose(@"[%@] dealloc %@ %p",_classStr,self.name,self);
+//    DDLogVerbose(@"[%@] dealloc %@ %p",_classStr,self.name,self);
     
     self.invocations = nil;
     self.runningInvocations = nil;
